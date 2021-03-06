@@ -1,2 +1,2 @@
-# tf2autobot.com
+# autobot.tf
 Official TF2Autobot website
