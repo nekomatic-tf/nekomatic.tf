@@ -1,0 +1,28 @@
+body {
+    background-color:rgb(68, 16, 15);
+}
+
+h1 {
+    color:rgb(253, 113, 26);
+}
+
+h3 {
+    color:rgb(253, 113, 26);
+}
+
+h5 {
+    color:rgb(253, 113, 26);
+}
+
+a {
+    color:rgb(0, 0, 0);
+    text-decoration: none;
+}
+
+a:hover {
+    color:rgb(68, 16, 15)
+}
+
+.block {
+    background-color:rgb(253, 113, 26)
+}
