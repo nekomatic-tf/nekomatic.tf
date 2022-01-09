@@ -66,7 +66,7 @@ init()
             res.render('items/index', {
                 sku: sku,
                 name: itemName,
-                image: getImage(sku, item, itemName, baseItemData),
+                image: getImage(schema, sku, item, itemName, baseItemData),
                 description: baseItemData.item_description,
                 bptfUrl: generateBptfUrl(schema, item),
             });

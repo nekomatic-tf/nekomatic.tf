@@ -2171,7 +2171,7 @@ const qualityColor = {
 
 const SKU = require('@tf2autobot/tf2-sku');
 
-function getImage(sku, item, itemName, baseItemData) {
+function getImage(schema, sku, item, itemName, baseItemData) {
     const parts = sku.split(';');
     const newItem = SKU.fromString(`${parts[0]};6`);
 
