@@ -159,6 +159,9 @@ function generateBptfUrl(schema, item) {
             : item.killstreak === 2
             ? 'Specialized Killstreak Kit'
             : 'Professional Killstreak Kit'
+        : name.includes('Haunted Metal Scrap') ||
+          name.includes("Horseless Headless Horsemann's Headtaker")
+        ? name.replace('Unique ', '')
         : name;
 
     const quality =
