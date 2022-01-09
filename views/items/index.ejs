@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head'); %>
+</head>
+<body class="container">
+
+<header>
+  <%- include('../partials/header'); %>
+  <style>
+    .websites a:link, a:visited {
+        background-color: #f44336;
+        color: white;
+        padding: 15px 25px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .websites a:hover, a:active {
+        background-color: red;
+    }
+  </style>
+</header>
+
+<main>
+  <div class="jumbotron">
+    <h1><%= name %></h1>
+    <div class="websites">
+        <img src="<%= image %>"></img>
+        <a href="https://marketplace.tf/items/tf2/<%= sku %>">Marketplace.tf</a>
+        <a href="<%= bptfUrl %>">Backpack.tf</a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <%- include('../partials/footer'); %>
+</footer>
+
+</body>
+</html>
