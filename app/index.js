@@ -63,6 +63,7 @@ init()
                 sku: req.params.sku,
                 name: itemName,
                 image: baseItemData.image_url_large,
+                description: baseItemData.item_description,
                 bptfUrl: generateBptfUrl(schema, item),
             });
         });
@@ -70,25 +71,6 @@ init()
         app.listen(port, () => {
             console.log(`Server listening at http://localhost:${port}`);
         });
-
-        // app.get('/', (req, res) => {
-        //     res.sendFile(path.join(__dirname, '../views/index.html'));
-        // });
-        // app.get('/download/schema', (req, res) => {
-        //     res.download(schemaPath);
-        // });
-        // app.get('/json/schema', (req, res) => {
-        //     res.json(schemaManager.schema.raw);
-        // });
-        // app.get('/items/:sku', (req, res) => {
-        //     console.log(req.params.sku);
-        //     const item = schemaManager.schema.getItemBySKU(req.params.sku);
-        //     const html = ejs.render('<%= item.name; %>', { item: item });
-        //     res.sendFile(html);
-        // });
-        // app.listen(port, () => {
-        //     console.log(`Server listening at http://localhost:${port}`);
-        // });
     })
     .catch((err) => {
         throw new Error(err);
