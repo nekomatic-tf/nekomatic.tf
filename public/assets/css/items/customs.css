@@ -1,0 +1,64 @@
+body {
+    padding-top: 50px;
+    color: #222;
+    background: #fff;
+    font: 100% system-ui;
+}
+
+a {
+    color: #0033cc;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        color: #eee;
+        background: #121212;
+    }
+
+    body a {
+        color: #809fff;
+    }
+
+    .jumbotron h1 {
+        color: #222;
+    }
+
+    a {
+        color: #0033cc;
+    }
+
+    .jumbotron {
+        background-color: #242525;
+    }
+
+    .jumbotron h1 {
+        color: rgb(226, 215, 215);
+    }
+
+    .jumbotron h1 a {
+        color: #809fff;
+    }
+}
+
+.jumbotron-content a:link,
+a:visited {
+    background-color: #f44336;
+    color: white;
+    padding: 15px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.jumbotron-content a:hover,
+a:active {
+    background-color: red;
+}
+
+.jumbotron-content img {
+    max-width: 100%;
+    height: auto;
+    width: auto\9; /* ie8 */
+    padding-right: 5em;
+    padding-left: 5em;
+}
