@@ -54,17 +54,19 @@ init()
             res.json(schemaManager.schema.raw);
         });
         app.get('/items/:sku', (req, res) => {
-            console.log(req.params.sku);
-            const schema = schemaManager.schema;
-            const baseItemData = schema.getItemBySKU(req.params.sku);
+            const sku = req.params.sku;
+            console.log(sku);
 
-            const item = SKU.fromString(req.params.sku);
+            const schema = schemaManager.schema;
+            const baseItemData = schema.getItemBySKU(sku);
+
+            const item = SKU.fromString(sku);
             const itemName = schema.getName(item, true);
 
             res.render('items/index', {
-                sku: req.params.sku,
+                sku: sku,
                 name: itemName,
-                image: getImage(item, itemName, baseItemData),
+                image: getImage(sku, item, itemName, baseItemData),
                 description: baseItemData.item_description,
                 bptfUrl: generateBptfUrl(schema, item),
             });

@@ -1,4 +1,3 @@
-
 // TODO: Unusualifiers
 
 const australiumImageURL = {
@@ -9,7 +8,8 @@ const australiumImageURL = {
     '211;11;australium':
         'cUwoUWRLlrTZ8j8fqCc2ACfIHnpQ35pFWgGVtkFEqMuawNTQ-IwaaVfgICfRs9Vm9UXdmvpcwV4TipO4CZ0yx42dGigAL/',
     // Australium SMG
-    '203;11;australium': 'IUxQcWiTltzRHt8TnH_WJRrhXmYpmvchRimI4xlMtbOfmNGdhdlTGV_VdDqBjrV-9CH43uZMzV4f457UBxvSrc7I/',
+    '203;11;australium':
+        'IUxQcWiTltzRHt8TnH_WJRrhXmYpmvchRimI4xlMtbOfmNGdhdlTGV_VdDqBjrV-9CH43uZMzV4f457UBxvSrc7I/',
     // Australium Stickybomb Launcher
     '207;11;australium':
         'cUxQFVBjpoTpMhcrZAfOZBuMInsgK4p9Z3QlnkBN8Ma2xNGBldwbGBfQHCqNj9Vy-UXJm6sVmVYS0oLlWeFm9soqSYbd_N4tEAYCODYMwr6jb/',
@@ -56,9 +56,11 @@ const australiumImageURL = {
     '132;11;australium':
         'IUwQdXALvtypGt8_pAfazBOESnN974ZFWjW8ylVJ_Y-C3aWEyKwGbUvUHWaRpo1--CHE2vsRmUITh9bhWehKv6tX00uGxPA/',
     // Australium Knife
-    '194;11;australium': 'cUwwfVB3nhz9MhMzZAfOeD-VOyIJs55YAjDA8wAd6NrHnMm4xcFKSU_ZcCPQ49QzoXXQ0vcUxAYDu8vUWJ1teRmVbCw/',
+    '194;11;australium':
+        'cUwwfVB3nhz9MhMzZAfOeD-VOyIJs55YAjDA8wAd6NrHnMm4xcFKSU_ZcCPQ49QzoXXQ0vcUxAYDu8vUWJ1teRmVbCw/',
     // Australium Wrench
-    '197;11;australium': 'cUxADWBXhsAdEh8TiMv6NGucF1Ypg4ZNWgG9qyAB5YOfjaTRmJweaB_cPCaNjpAq9CnVgvZI1UNTn8bhIOVK4UnPgIXo/'
+    '197;11;australium':
+        'cUxADWBXhsAdEh8TiMv6NGucF1Ypg4ZNWgG9qyAB5YOfjaTRmJweaB_cPCaNjpAq9CnVgvZI1UNTn8bhIOVK4UnPgIXo/',
 };
 
 const paintCan = {
@@ -148,7 +150,7 @@ const paintCan = {
         'TeKvZLFJtnqWSMU5PShIcCxWVd2H5fLn-siSQrbOhrZcLFzwvo7vKMFXrjazbKEC3YDlltU7ILYTmKrTT3t-mdE2nBQewrRwpRKfEHoGxPOM3aPhM8045d-zTgwxczDhgvmeRW1Z8/',
     // Zepheniah's Greed
     '5028;6':
-        'Tde_ROEs5nqWSMU5PShIcCxWVd2H5fLn-siSQrbOhrZcLFzwvo7vKMFXrjazbKEC3YDlltU7ILYTmKrTT3t-mdE2nBQewrRwpRKfEHoGxPOM3aPhM8045d-zTgwxczDhgvPiWjbeE/'
+        'Tde_ROEs5nqWSMU5PShIcCxWVd2H5fLn-siSQrbOhrZcLFzwvo7vKMFXrjazbKEC3YDlltU7ILYTmKrTT3t-mdE2nBQewrRwpRKfEHoGxPOM3aPhM8045d-zTgwxczDhgvPiWjbeE/',
 };
 
 const ks1Images = {
@@ -692,7 +694,7 @@ const ks1Images = {
         'y1FfJDT5zn1ia9p8MdjSzwnEreOfG3G5OTLFfieAGgcwSrddZ22I_2Ggt7vFFj-aQrsrFQ4Ce6sN92VBNMrabgx9itAdomi_xntlTkt4PJceJUmyx3NCDqV0lXFcc5hXj32tcZW2zF9vaFhuWbjxD-GVbu7skSIkQx1vH7ZLJMvM7Cjo_JfnM6rRIKFkO690sNWV2FAXXNIVUZM_x6BBqZvzqAh8aYkuEl0jHbg8MjyfAvDulXidXea7aelb4pBRXgoSSR21mnQuXkAh7q_fbVxB5Hcm9faaqdPwkII1ldUA3Q',
     // Batsaber
     '6527;6;uncraftable;kt-1;td-30667':
-        'y1FfJDT5zn1ia9puOd_5zATppufDHyL0amWReniJSFg_HrYINT7Q_jH34L-QFDufRbssElgCf6MG-zAaOtfJYUUrjdpc-lqgxxktUERwJ4NPfQjq9WxCbO1rnnJHY8IPziWfb5TUhUFma0Z8A-WwV9OLboyljigsXQw2X-BDMIaRvCX6ocqmZ67VcqZ0e7F18MOCxEUbQM8dUqI52ZpHqJvNuQxQYosCF18OFrxgM2CIAv_iwHuRCOvgOLAI7JJYVAsSS0_oyn1zCR8v76jYPgRAtyou9LzS8ZqHTEk8ug'
+        'y1FfJDT5zn1ia9puOd_5zATppufDHyL0amWReniJSFg_HrYINT7Q_jH34L-QFDufRbssElgCf6MG-zAaOtfJYUUrjdpc-lqgxxktUERwJ4NPfQjq9WxCbO1rnnJHY8IPziWfb5TUhUFma0Z8A-WwV9OLboyljigsXQw2X-BDMIaRvCX6ocqmZ67VcqZ0e7F18MOCxEUbQM8dUqI52ZpHqJvNuQxQYosCF18OFrxgM2CIAv_iwHuRCOvgOLAI7JJYVAsSS0_oyn1zCR8v76jYPgRAtyou9LzS8ZqHTEk8ug',
     /*
         Don't have:
         - Sandvich (42)
@@ -1335,7 +1337,7 @@ const ks2Images = {
         'y1FfJDT5zn1ia9p8MdjSzwnEreOfG3G5OTLFfieAGgcwSrddZ22I_2Ggt7vFFj-aQrsrFQ4Ce6sN92VBNMrabgx9itAdomi_xntlTkt4PJceJUmyx3NCDqV0lXFcc5hXj32tcZW2zF9vaFhuWbjxD-GVbu7skSIkQx1vH7ZLJMvM7Cjo_JfnM6rRIKFkO690sNWV2FAXXNIVUZM_x6BBqZvzqAh8Z4kvHFtSF-otNmqFBv60l36fCOWybudY5sAFU10aHkq4ySAtWh8tuavZbAlDtGBmrPVZFtZhjQ',
     // Batsaber
     '6523;6;uncraftable;kt-2;td-30667':
-        'y1FfJDT5zn1ia9puOd_5zATppufDHyL0amWReniJSFg_HrYINT7Q_jH34L-QFDufRbssElgCf6MG-zAaOtfJYUUrjdpc-lqgxxktUERwJ4NPfQjq9WxCbO1rnnJHY8IPziWfb5TUhUFma0Z8A-WwV9OLboyljigsXQw2X-BDMIaRvCX6ocqmZ67VcqZ0e7F18MOCxEUbQM8dUqI52ZpHqJvNtwxRbI1zHQ0fEup6N27SAPnglXiYD-XjPOBc4cVQA1wfGBvrziJ_Xhsp7v3abhMA7inKI5ZAtw'
+        'y1FfJDT5zn1ia9puOd_5zATppufDHyL0amWReniJSFg_HrYINT7Q_jH34L-QFDufRbssElgCf6MG-zAaOtfJYUUrjdpc-lqgxxktUERwJ4NPfQjq9WxCbO1rnnJHY8IPziWfb5TUhUFma0Z8A-WwV9OLboyljigsXQw2X-BDMIaRvCX6ocqmZ67VcqZ0e7F18MOCxEUbQM8dUqI52ZpHqJvNtwxRbI1zHQ0fEup6N27SAPnglXiYD-XjPOBc4cVQA1wfGBvrziJ_Xhsp7v3abhMA7inKI5ZAtw',
 };
 
 const ks3Images = {
@@ -1825,7 +1827,7 @@ const ks3Images = {
         'y1FfJDT5zn1ia9p8MdjSzwnEreOfG3G5OTLFfieAGgcwSrddZ22I_2Ggt7vFFj-aQrsrFQ4Ce6sN92VBNMrabgx9itAdomi_xntlTkt4PJceJUmyx3NCDqV0lXFcc5hXj32tcZW2zF9vaFhuWbjxD-GVbu7skSIkQx1vH7ZLJMvM7Cjo_JfnM6rRIKFkO690sNWV2FAXXNIVUZM_x6BBqZvzqAh8eYkvHmEQEKspMHeCUPqzxyyYWeWwNuYK7cBRVF0YQ0vvySB8CBgv7v_RbVxB439z8_bGsY3umeDq3Fn-',
     // Batsaber
     '6526;6;uncraftable;kt-3;td-30667':
-        'y1FfJDT5zn1ia9puOd_5zATppufDHyL0amWReniJSFg_HrYINT7Q_jH34L-QFDufRbssElgCf6MG-zAaOtfJYUUrjdpc-lqgxxktUERwJ4NPfQjq9WxCbO1rnnJHY8IPziWfb5TUhUFma0Z8A-WwV9OLboyljigsXQw2X-BDMIaRvCX6ocqmZ67VcqZ0e7F18MOCxEUbQM8dUqI52ZpHqJvNqQxRbrcxGkwbFPd9YWrVUKvnxHiaV-SxN-AI5sVSXl1IGBu6nCV9CU8h76jYOQwVsSpy7OLM-CRiV0it'
+        'y1FfJDT5zn1ia9puOd_5zATppufDHyL0amWReniJSFg_HrYINT7Q_jH34L-QFDufRbssElgCf6MG-zAaOtfJYUUrjdpc-lqgxxktUERwJ4NPfQjq9WxCbO1rnnJHY8IPziWfb5TUhUFma0Z8A-WwV9OLboyljigsXQw2X-BDMIaRvCX6ocqmZ67VcqZ0e7F18MOCxEUbQM8dUqI52ZpHqJvNqQxRbrcxGkwbFPd9YWrVUKvnxHiaV-SxN-AI5sVSXl1IGBu6nCV9CU8h76jYOQwVsSpy7OLM-CRiV0it',
 };
 
 const strangifierImages = {
@@ -2149,25 +2151,32 @@ const strangifierImages = {
         '22xZMnCojCBSaPB_LMrFyAz0pOayEXX5ZgjILjPeGRA_SrcMM2_fq2X34-qcQjnIFb19RwwCL6oH9GNIbsiKPkc81YUIrze82VRzGVAhf8IXTxfrlyRdY-VwjigfIpo90SX9Jorfhlp0MRs9W9euVrHCcYWmkDl9AE1mcOkbaYuLvy3s7saxKq7SIPwzZOdu8sLa3lUdQdJTTYksypFBvqH1vgNGeYE-JFIdA74re2mCUfnhkX-ZWLezPuZb5pRWXlgSS0y6znJ-XR8ovfraPg1G4nxz8fOM75PnqvzY_ms',
     // Spine-Tingling Skull
     '6522;6;td-578':
-        '22VDJi7H1Xt_a_ZTOvTKwRf8pKzbHnf0aTOVLniNSAc8RLMPZG6K-mXw4-zAEWyfFespEFtQeaEGoGAcI4nXaARkidAKlH3oyhQzTE59NMxLd16E0iVOYfNzm3RULMYFmEu5JpnZm1thaFAzB-_mOfXDYoG7lyckS0snX_lOaY-RuDO1pcD8M6TZc7soJ7V1_suA0mkVSs8ZTJQ99JNHqZn39V0QPthrGQ9NR71_ZG7TV6zhyn-QX-C1aucMt5dRAloZHk-7yXYuDBg3qKeOs5jNmRs'
+        '22VDJi7H1Xt_a_ZTOvTKwRf8pKzbHnf0aTOVLniNSAc8RLMPZG6K-mXw4-zAEWyfFespEFtQeaEGoGAcI4nXaARkidAKlH3oyhQzTE59NMxLd16E0iVOYfNzm3RULMYFmEu5JpnZm1thaFAzB-_mOfXDYoG7lyckS0snX_lOaY-RuDO1pcD8M6TZc7soJ7V1_suA0mkVSs8ZTJQ99JNHqZn39V0QPthrGQ9NR71_ZG7TV6zhyn-QX-C1aucMt5dRAloZHk-7yXYuDBg3qKeOs5jNmRs',
 };
 
 const qualityColor = {
-    '0': '11711154', // Normal - #B2B2B2
-    '1': '5076053', // Genuine - #4D7455
-    '3': '4678289', // Vintage - #476291
-    '5': '8802476', // Unusual - #8650AC
-    '6': '16766720', // Unique - #FFD700
-    '7': '7385162', // Community - #70B04A
-    '8': '10817401', // Valve - #A50F79
-    '9': '7385162', //Self-Made - #70B04A
-    '11': '13593138', //Strange - #CF6A32
-    '13': '3732395', //Haunted - #38F3AB
-    '14': '11141120', //Collector's - #AA0000
-    '15': '16711422' // Decorated Weapon
+    0: '11711154', // Normal - #B2B2B2
+    1: '5076053', // Genuine - #4D7455
+    3: '4678289', // Vintage - #476291
+    5: '8802476', // Unusual - #8650AC
+    6: '16766720', // Unique - #FFD700
+    7: '7385162', // Community - #70B04A
+    8: '10817401', // Valve - #A50F79
+    9: '7385162', //Self-Made - #70B04A
+    11: '13593138', //Strange - #CF6A32
+    13: '3732395', //Haunted - #38F3AB
+    14: '11141120', //Collector's - #AA0000
+    15: '16711422', // Decorated Weapon
 };
 
-function getImage (item, itemName, baseItemData) {
+const SKU = require('@tf2autobot/tf2-sku');
+
+function getImage(sku, item, itemName, baseItemData) {
+    const parts = sku.split(';');
+    const newItem = SKU.fromString(`${parts[0]};6`);
+
+    const name = schema.getName(newItem, false);
+
     let itemImageUrlPrint;
 
     if (!baseItemData || !item) {
@@ -2181,29 +2190,32 @@ function getImage (item, itemName, baseItemData) {
         // Get image for Non-Craftable Killstreak/Specialized Killstreak/Professional Killstreak [Weapon] Kit
         const front =
             'https://community.cloudflare.steamstatic.com/economy/image/IzMF03bi9WpSBq-S-ekoE33L-iLqGFHVaU25ZzQNQcXdEH9myp0du1AHE66AL6lNU5Fw_2yIWtaMjIpQmjAT';
-    
+
         const url = itemName.includes('Specialized')
             ? ks2Images[sku]
             : itemName.includes('Professional')
             ? ks3Images[sku]
             : ks1Images[sku];
-    
+
         if (url) {
             itemImageUrlPrint = `${front}${url}/520fx520f`;
         }
-    
+
         if (!itemImageUrlPrint) {
             itemImageUrlPrint = baseItemData.image_url_large;
         }
-    } else if (itemName.includes('Strangifier') && !itemName.includes('Chemistry Set')) {
+    } else if (
+        itemName.includes('Strangifier') &&
+        !itemName.includes('Chemistry Set')
+    ) {
         const front =
             'https://community.cloudflare.steamstatic.com/economy/image/IzMF03bi9WpSBq-S-ekoE33L-iLqGFHVaU25ZzQNQcXdEH9myp0du1AHE66AL6lNU5Fw_2yIWtaMjIpQmjAT';
         const url = strangifierImages[sku];
-    
+
         if (url) {
             itemImageUrlPrint = `${front}${url}/520fx520f`;
         }
-    
+
         if (!itemImageUrlPrint) {
             itemImageUrlPrint = baseItemData.image_url_large;
         }
@@ -2215,9 +2227,9 @@ function getImage (item, itemName, baseItemData) {
         const australiumSKU = parts[0] + ';11;australium';
         itemImageUrlPrint = `https://steamcommunity-a.akamaihd.net/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgE${australiumImageURL[australiumSKU]}512fx512f`;
     } else if (item.paintkit !== null) {
-        itemImageUrlPrint = `https://scrap.tf/img/items/warpaint/${encodeURIComponent(name)}_${item.paintkit}_${
-            item.wear
-        }_${item.festive === true ? 1 : 0}.png`;
+        itemImageUrlPrint = `https://scrap.tf/img/items/warpaint/${encodeURIComponent(
+            name
+        )}_${item.paintkit}_${item.wear}_${item.festive === true ? 1 : 0}.png`;
     } else {
         itemImageUrlPrint = baseItemData.image_url_large;
     }
