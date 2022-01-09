@@ -4,7 +4,7 @@
   "description": "Official TF2Autobot website",
   "main": "index.js",
   "dependencies": {
-    "@tf2autobot/tf2-schema": "^2.2.2",
+    "@tf2autobot/tf2-schema": "^2.2.3",
     "@tf2autobot/tf2-sku": "^2.0.3",
     "death": "^1.1.0",
     "dotenv": "^10.0.0",
