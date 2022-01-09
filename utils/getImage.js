@@ -2393,9 +2393,6 @@ const SKU = require('@tf2autobot/tf2-sku');
 
 function getImage(schema, sku, item, itemName, baseItemData) {
     const parts = sku.split(';');
-    const newItem = SKU.fromString(`${parts[0]};6`);
-
-    const name = schema.getName(newItem, false);
 
     let itemImageUrlPrint;
 
@@ -2450,8 +2447,9 @@ function getImage(schema, sku, item, itemName, baseItemData) {
         const australiumSKU = parts[0] + ';11;australium';
         itemImageUrlPrint = `https://steamcommunity-a.akamaihd.net/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgE${australiumImageURL[australiumSKU]}512fx512f`;
     } else if (item.paintkit !== null) {
+        const newItem = SKU.fromString(`${parts[0]};6`);
         itemImageUrlPrint = `https://scrap.tf/img/items/warpaint/${encodeURIComponent(
-            name
+            schema.getName(newItem, false)
         )}_${item.paintkit}_${item.wear}_${item.festive === true ? 1 : 0}.png`;
     } else {
         itemImageUrlPrint = baseItemData.image_url_large;
