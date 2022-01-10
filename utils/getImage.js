@@ -2374,6 +2374,17 @@ const unusualifierImages = {
         '3G9DJDbHyXxoWu1jLPTRyAD-reefI3j2ejDBYXSLGQY5S7teMj6PqzGks-vCEznISOp4QwhWKKtX9GQdNMyPakY_1dMVu2u_0U1wGUcXapUbIEHonyRVOLAimR4KdJZShyP1JoKA2AhjBw9qV7j5U7zCedj4xy5LFBtqH74TZIuD6WWsocP8bvOGO6FqM_xu_MqJxBkHQdQPS5wywplPvozNtwxRbI1zGg1IQukoZW6BXP_lkXidC-GzarUO4ckEUFEZHx7rz3xzCEgs6PCPYxMA7imVFQNbRQ',
 };
 
+const festivizedNoSpecialImages = {
+    // Scattergun (Stock)
+    '13': 'https://community.cloudflare.steamstatic.com/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgEMaQkUTxr2vTx8gdzjAM2FC-8OiJU22oNW2CJ_lBN8Ie2KNjJ0Zg3UBO4LDaw-oV_vXiFquZBhVoLi9b1eK1m94oOUZrElONpETMjRXPWOM12u9Atm1w3ZZzLf/360fx360f',
+    // Scattergun (Ugradeable)
+    '200': 'https://community.cloudflare.steamstatic.com/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgEMaQkUTxr2vTx8gdzjAM2FC-8OiJU22oNW2CJ_lBN8Ie2KNjJ0Zg3UBO4LDaw-oV_vXiFquZBhVoLi9b1eK1m94oOUZrElONpETMjRXPWOM12u9Atm1w3ZZzLf/360fx360f'
+};
+
+const festivizedAussieImages = {
+    // Scattergun
+}
+
 const SKU = require('@tf2autobot/tf2-sku');
 
 function getImage(schema, sku, item, itemName, baseItemData) {

@@ -27,20 +27,18 @@ init()
         const hours12 = 12 * 60 * 60 * 1000;
         const mins2 = 2 * 60 * 1000;
 
-        let schema = schemaManager.schema;
-        let schemaItems = schema.raw.schema.items;
-        let schemaItemsSize = schemaItems.length;
-        let currentMaximumDefindex = schemaItems[schemaItemsSize - 1].defindex;
+        let defindexes = getDefindexes(schemaManager.schema);
 
         setInterval(() => {
-            fs.writeFileSync(schemaPath, JSON.stringify(schema.raw), {
-                encoding: 'utf8',
-            });
+            fs.writeFileSync(
+                schemaPath,
+                JSON.stringify(schemaManager.schema.raw),
+                {
+                    encoding: 'utf8',
+                }
+            );
 
-            schema = schemaManager.schema;
-            schemaItems = schema.raw.schema.items;
-            schemaItemsSize = schemaItems.length;
-            currentMaximumDefindex = schemaItems[schemaItemsSize - 1].defindex;
+            defindexes = getDefindexes(schemaManager.schema);
         }, hours12 + mins2);
 
         const app = express();
@@ -67,15 +65,16 @@ init()
         });
         app.get('/json/schema', (req, res) => {
             log.debug(`Got GET /json/schema request`);
-            res.json(schema.raw);
+            res.json(schemaManager.schema.raw);
         });
         app.get('/items/:sku', (req, res) => {
             const sku = req.params.sku;
             const item = SKU.fromString(sku);
 
-            if (testSKU(sku) && item.defindex <= currentMaximumDefindex) {
+            if (testSKU(sku) && defindexes[item.defindex] !== undefined) {
                 log.debug(`Got GET /items/${sku} request`);
 
+                const schema = schemaManager.schema;
                 const baseItemData = schema.getItemBySKU(sku);
                 const itemName = schema.getName(item, true);
 
@@ -89,11 +88,10 @@ init()
                 });
             } else {
                 log.warn(`Failed on GET /items/${sku} request`);
-                if (item.defindex > currentMaximumDefindex) {
+                if (defindexes[item.defindex] === undefined) {
                     res.json({
                         success: false,
-                        message:
-                            'Input defindex is too big. Item does not exist. Please try again.',
+                        message: 'Item does not exist. Please try again.',
                     });
                 } else {
                     res.json({
@@ -112,6 +110,19 @@ init()
         log.error(err);
         throw new Error(err);
     });
+
+function getDefindexes(schema) {
+    let schemaItems = schema.raw.schema.items;
+    let schemaItemsSize = schemaItems.length;
+    let defindexes = {};
+
+    for (i = 0; i < schemaItemsSize; i++) {
+        const schemaItem = schemaItems[i];
+        defindexes[schemaItem.defindex] = schemaItem.item_name;
+    }
+
+    return defindexes;
+}
 
 const ON_DEATH = require('death');
 const inspect = require('util');
