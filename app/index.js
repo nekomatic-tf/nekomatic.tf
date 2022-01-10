@@ -17,26 +17,18 @@ const getImage = require('../utils/getImage');
 const getQualityColor = require('../utils/getQualityColor');
 const testSKU = require('../utils/validateSKU');
 
-const ejs = require('ejs');
-
 log.debug('Initializing tf2schema...');
 init()
     .then((schemaManager) => {
         const schemaPath = path.join(__dirname, '../public/files/schema.json');
 
+        let defindexes = getDefindexes(schemaManager.schema);
+        generateSchemaFile(schemaManager.schema, schemaPath);
+
         const hours12 = 12 * 60 * 60 * 1000;
         const mins2 = 2 * 60 * 1000;
-
-        let defindexes = getDefindexes(schemaManager.schema);
-
         setInterval(() => {
-            fs.writeFileSync(
-                schemaPath,
-                JSON.stringify(schemaManager.schema.raw),
-                {
-                    encoding: 'utf8',
-                }
-            );
+            generateSchemaFile(schemaManager.schema, schemaPath);
 
             defindexes = getDefindexes(schemaManager.schema);
         }, hours12 + mins2);
@@ -110,6 +102,12 @@ init()
         log.error(err);
         throw new Error(err);
     });
+
+function generateSchemaFile(schema, schemaPath) {
+    fs.writeFileSync(schemaPath, JSON.stringify(schema.raw, null, 2), {
+        encoding: 'utf8',
+    });
+}
 
 function getDefindexes(schema) {
     let schemaItems = schema.raw.schema.items;
