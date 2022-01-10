@@ -54,6 +54,9 @@ init()
             'ejs'
         );
 
+        // TODO: Error handling/landing page
+        // TODO: Refactor - use router, etc...
+
         app.get('/', (req, res) => {
             log.debug(`Got GET / request (main page)`);
             res.sendFile(path.join(__dirname, '../views/index.html'));
