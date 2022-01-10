@@ -8,6 +8,7 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 const fs = require('fs');
 
 const init = require('./schema');
+const log = require('./lib/logger');
 const express = require('express');
 
 const SKU = require('@tf2autobot/tf2-sku');
@@ -16,6 +17,7 @@ const getImage = require('../utils/getImage');
 
 const ejs = require('ejs');
 
+log.debug('Initializing tf2schema...');
 init()
     .then((schemaManager) => {
         const schemaPath = path.join(__dirname, '../public/files/schema.json');
@@ -45,17 +47,21 @@ init()
         );
 
         app.get('/', (req, res) => {
+            log.debug(`Receive request for main page.`);
             res.sendFile(path.join(__dirname, '../views/index.html'));
         });
         app.get('/download/schema', (req, res) => {
+            log.debug(`Receive request for: /download/schema`);
             res.download(schemaPath);
         });
         app.get('/json/schema', (req, res) => {
+            log.debug(`Receive request for: /json/schema`);
             res.json(schemaManager.schema.raw);
         });
         app.get('/items/:sku', (req, res) => {
             const sku = req.params.sku;
-            console.log(sku);
+            console.log(req);
+            log.debug(`Receive request for: ${sku}`);
 
             const schema = schemaManager.schema;
             const baseItemData = schema.getItemBySKU(sku);
@@ -73,10 +79,11 @@ init()
         });
 
         app.listen(port, () => {
-            console.log(`Server listening at http://localhost:${port}`);
+            log.info(`Server listening at http://localhost:${port}`);
         });
     })
     .catch((err) => {
+        log.error(err);
         throw new Error(err);
     });
 
@@ -87,7 +94,7 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
     const crashed = signalOrErr !== 'SIGINT';
 
     if (crashed) {
-        console.error(
+        log.error(
             [
                 'Server' +
                     ' crashed! Please create an issue with the following log:',
@@ -101,7 +108,7 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
             ].join('\r\n')
         );
     } else {
-        console.warn('Received kill signal `' + signalOrErr + '`');
+        log.warn('Received kill signal `' + signalOrErr + '`');
     }
 
     process.exit(1);
