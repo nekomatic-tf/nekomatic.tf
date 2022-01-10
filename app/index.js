@@ -49,21 +49,21 @@ init()
         );
 
         app.get('/', (req, res) => {
-            log.debug(`Receive request for main page.`);
+            log.debug(`Got GET / request (main page)`);
             res.sendFile(path.join(__dirname, '../views/index.html'));
         });
         app.get('/download/schema', (req, res) => {
-            log.debug(`Receive request for: /download/schema`);
+            log.debug(`Got GET /download/schema request`);
             res.download(schemaPath);
         });
         app.get('/json/schema', (req, res) => {
-            log.debug(`Receive request for: /json/schema`);
+            log.debug(`Got GET /json/schema request`);
             res.json(schemaManager.schema.raw);
         });
         app.get('/items/:sku', (req, res) => {
             const sku = req.params.sku;
             if (testSKU(sku)) {
-                log.debug(`Receive request for: ${sku}`);
+                log.debug(`Got GET /items/${sku} request`);
 
                 const schema = schemaManager.schema;
                 const baseItemData = schema.getItemBySKU(sku);
@@ -80,6 +80,7 @@ init()
                     bptfUrl: generateBptfUrl(schema, item),
                 });
             } else {
+                log.warn(`Failed on GET /items/${sku} request`);
                 res.json({
                     success: false,
                     message: 'Invalid sku format. Please try again.',
