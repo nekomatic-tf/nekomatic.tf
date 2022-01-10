@@ -60,7 +60,6 @@ init()
         });
         app.get('/items/:sku', (req, res) => {
             const sku = req.params.sku;
-            console.log(req);
             log.debug(`Receive request for: ${sku}`);
 
             const schema = schemaManager.schema;
