@@ -15,6 +15,7 @@ const SKU = require('@tf2autobot/tf2-sku');
 const generateBptfUrl = require('../utils/generateBptfUrl');
 const getImage = require('../utils/getImage');
 const getQualityColor = require('../utils/getQualityColor');
+const testSKU = require('../utils/validateSKU');
 
 const ejs = require('ejs');
 
@@ -61,22 +62,29 @@ init()
         });
         app.get('/items/:sku', (req, res) => {
             const sku = req.params.sku;
-            log.debug(`Receive request for: ${sku}`);
+            if (testSKU(sku)) {
+                log.debug(`Receive request for: ${sku}`);
 
-            const schema = schemaManager.schema;
-            const baseItemData = schema.getItemBySKU(sku);
+                const schema = schemaManager.schema;
+                const baseItemData = schema.getItemBySKU(sku);
 
-            const item = SKU.fromString(sku);
-            const itemName = schema.getName(item, true);
+                const item = SKU.fromString(sku);
+                const itemName = schema.getName(item, true);
 
-            res.render('items/index', {
-                sku: sku,
-                name: itemName,
-                quality: getQualityColor(item.quality),
-                image: getImage(schema, sku, item, itemName, baseItemData),
-                description: baseItemData.item_description,
-                bptfUrl: generateBptfUrl(schema, item),
-            });
+                res.render('items/index', {
+                    sku: sku,
+                    name: itemName,
+                    quality: getQualityColor(item.quality),
+                    image: getImage(schema, sku, item, itemName, baseItemData),
+                    description: baseItemData.item_description,
+                    bptfUrl: generateBptfUrl(schema, item),
+                });
+            } else {
+                res.json({
+                    success: false,
+                    message: 'Invalid sku format. Please try again.',
+                });
+            }
         });
 
         app.listen(port, () => {
