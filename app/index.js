@@ -26,20 +26,19 @@ init()
 
         const hours12 = 12 * 60 * 60 * 1000;
         const mins2 = 2 * 60 * 1000;
-        let schemaItems = schemaManager.schema.raw.schema.items;
+
+        let schema = schemaManager.schema;
+        let schemaItems = schema.raw.schema.items;
         let schemaItemsSize = schemaItems.length;
         let currentMaximumDefindex = schemaItems[schemaItemsSize - 1].defindex;
 
         setInterval(() => {
-            fs.writeFileSync(
-                schemaPath,
-                JSON.stringify(schemaManager.schema.raw),
-                {
-                    encoding: 'utf8',
-                }
-            );
+            fs.writeFileSync(schemaPath, JSON.stringify(schema.raw), {
+                encoding: 'utf8',
+            });
 
-            schemaItems = schemaManager.schema.raw.schema.items;
+            schema = schemaManager.schema;
+            schemaItems = schema.raw.schema.items;
             schemaItemsSize = schemaItems.length;
             currentMaximumDefindex = schemaItems[schemaItemsSize - 1].defindex;
         }, hours12 + mins2);
@@ -65,7 +64,7 @@ init()
         });
         app.get('/json/schema', (req, res) => {
             log.debug(`Got GET /json/schema request`);
-            res.json(schemaManager.schema.raw);
+            res.json(schema.raw);
         });
         app.get('/items/:sku', (req, res) => {
             const sku = req.params.sku;
@@ -74,7 +73,6 @@ init()
             if (testSKU(sku) && item.defindex <= currentMaximumDefindex) {
                 log.debug(`Got GET /items/${sku} request`);
 
-                const schema = schemaManager.schema;
                 const baseItemData = schema.getItemBySKU(sku);
                 const itemName = schema.getName(item, true);
 
