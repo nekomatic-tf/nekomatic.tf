@@ -14,6 +14,7 @@ const express = require('express');
 const SKU = require('@tf2autobot/tf2-sku');
 const generateBptfUrl = require('../utils/generateBptfUrl');
 const getImage = require('../utils/getImage');
+const getQualityColor = require('../utils/getQualityColor');
 
 const ejs = require('ejs');
 
@@ -71,6 +72,7 @@ init()
             res.render('items/index', {
                 sku: sku,
                 name: itemName,
+                quality: getQualityColor(item.quality),
                 image: getImage(schema, sku, item, itemName, baseItemData),
                 description: baseItemData.item_description,
                 bptfUrl: generateBptfUrl(schema, item),

@@ -2374,21 +2374,6 @@ const unusualifierImages = {
         '3G9DJDbHyXxoWu1jLPTRyAD-reefI3j2ejDBYXSLGQY5S7teMj6PqzGks-vCEznISOp4QwhWKKtX9GQdNMyPakY_1dMVu2u_0U1wGUcXapUbIEHonyRVOLAimR4KdJZShyP1JoKA2AhjBw9qV7j5U7zCedj4xy5LFBtqH74TZIuD6WWsocP8bvOGO6FqM_xu_MqJxBkHQdQPS5wywplPvozNtwxRbI1zGg1IQukoZW6BXP_lkXidC-GzarUO4ckEUFEZHx7rz3xzCEgs6PCPYxMA7imVFQNbRQ',
 };
 
-const qualityColor = {
-    0: '11711154', // Normal - #B2B2B2
-    1: '5076053', // Genuine - #4D7455
-    3: '4678289', // Vintage - #476291
-    5: '8802476', // Unusual - #8650AC
-    6: '16766720', // Unique - #FFD700
-    7: '7385162', // Community - #70B04A
-    8: '10817401', // Valve - #A50F79
-    9: '7385162', //Self-Made - #70B04A
-    11: '13593138', //Strange - #CF6A32
-    13: '3732395', //Haunted - #38F3AB
-    14: '11141120', //Collector's - #AA0000
-    15: '16711422', // Decorated Weapon
-};
-
 const SKU = require('@tf2autobot/tf2-sku');
 
 function getImage(schema, sku, item, itemName, baseItemData) {

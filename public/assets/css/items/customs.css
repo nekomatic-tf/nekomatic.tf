@@ -9,6 +9,10 @@ a {
     color: #0033cc;
 }
 
+h1 {
+    padding-left: 10px;
+}
+
 @media (prefers-color-scheme: dark) {
     body {
         color: #eee;
@@ -61,4 +65,8 @@ a:active {
     width: auto\9; /* ie8 */
     padding-right: 5em;
     padding-left: 5em;
+}
+
+.quality-box {
+    width: 15px;
 }
