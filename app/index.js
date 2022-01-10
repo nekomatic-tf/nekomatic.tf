@@ -26,6 +26,9 @@ init()
 
         const hours12 = 12 * 60 * 60 * 1000;
         const mins2 = 2 * 60 * 1000;
+        let schemaItems = schemaManager.schema.raw.schema.items;
+        let schemaItemsSize = schemaItems.length;
+        let currentMaximumDefindex = schemaItems[schemaItemsSize - 1].defindex;
 
         setInterval(() => {
             fs.writeFileSync(
@@ -35,6 +38,10 @@ init()
                     encoding: 'utf8',
                 }
             );
+
+            schemaItems = schemaManager.schema.raw.schema.items;
+            schemaItemsSize = schemaItems.length;
+            currentMaximumDefindex = schemaItems[schemaItemsSize - 1].defindex;
         }, hours12 + mins2);
 
         const app = express();
@@ -62,13 +69,13 @@ init()
         });
         app.get('/items/:sku', (req, res) => {
             const sku = req.params.sku;
-            if (testSKU(sku)) {
+            const item = SKU.fromString(sku);
+
+            if (testSKU(sku) && item.defindex <= currentMaximumDefindex) {
                 log.debug(`Got GET /items/${sku} request`);
 
                 const schema = schemaManager.schema;
                 const baseItemData = schema.getItemBySKU(sku);
-
-                const item = SKU.fromString(sku);
                 const itemName = schema.getName(item, true);
 
                 res.render('items/index', {
@@ -81,10 +88,18 @@ init()
                 });
             } else {
                 log.warn(`Failed on GET /items/${sku} request`);
-                res.json({
-                    success: false,
-                    message: 'Invalid sku format. Please try again.',
-                });
+                if (item.defindex > currentMaximumDefindex) {
+                    res.json({
+                        success: false,
+                        message:
+                            'Input defindex is too big. Item does not exist. Please try again.',
+                    });
+                } else {
+                    res.json({
+                        success: false,
+                        message: 'Invalid sku format. Please try again.',
+                    });
+                }
             }
         });
 
