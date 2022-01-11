@@ -46,6 +46,7 @@ init()
 
         // TODO: Error handling/landing page
         // TODO: Refactor - use router, etc...
+        // TODO: Implement rate limiter with (should be done elsewhere)
 
         app.get('/', (req, res) => {
             log.debug(`Got GET / request (main page)`);
