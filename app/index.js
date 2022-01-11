@@ -110,9 +110,9 @@ function generateSchemaFile(schema, schemaPath) {
 }
 
 function getDefindexes(schema) {
-    let schemaItems = schema.raw.schema.items;
-    let schemaItemsSize = schemaItems.length;
-    let defindexes = {};
+    const schemaItems = schema.raw.schema.items;
+    const schemaItemsSize = schemaItems.length;
+    const defindexes = {};
 
     for (i = 0; i < schemaItemsSize; i++) {
         const schemaItem = schemaItems[i];
