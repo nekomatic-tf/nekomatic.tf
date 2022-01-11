@@ -2472,7 +2472,7 @@ const festivizedImages = {
     // Medi Gun (Stock)
     29: 'mMnvA-aHAfQ_ktk664Ma2glmlAVyM_a7DzFiYRDLF6UQDfY5rVq9UH9iv8I0V9K3oboEcAq94tTONeN6MdBKHMfYDqDSMl366VV43vZbbk8wZQ',
     // Medi Gun (Upgradeable)
-    208: 'mMnvA-aHAfQ_ktk664Ma2glmlAVyM_a7DzFiYRDLF6UQDfY5rVq9UH9iv8I0V9K3oboEcAq94tTONeN6MdBKHMfYDqDSMl366VV43vZbbk8wZQ',
+    211: 'mMnvA-aHAfQ_ktk664Ma2glmlAVyM_a7DzFiYRDLF6UQDfY5rVq9UH9iv8I0V9K3oboEcAq94tTONeN6MdBKHMfYDqDSMl366VV43vZbbk8wZQ',
     // Kritzkrieg
     35: 'mMnvA-aHAfQ_ktk664Ma2glkhwRpPOa0PDJ1TQLHErRXSvB0rV7tX3Bkv5U3BtSwor5UeQXmvdSQOuJ-N9oZGpTTXPWFN1-p6Uk60r8dccJIwLwlpQ',
     // Quick-Fix
