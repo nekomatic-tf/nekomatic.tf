@@ -83,7 +83,7 @@ init()
                 if (defindexes[item.defindex] === undefined) {
                     res.json({
                         success: false,
-                        message: 'Item does not exist. Please try again.',
+                        message: 'Item does not exist. Please try again. Your can download tf2 schema here: https://autobot.tf/download/schema',
                     });
                 } else {
                     res.json({
