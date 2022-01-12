@@ -8,7 +8,9 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 const fs = require('fs');
 
 const init = require('./schema');
+
 const log = require('./lib/logger');
+log.initLogger();
 const express = require('express');
 
 const SKU = require('@tf2autobot/tf2-sku');
@@ -17,7 +19,7 @@ const getImage = require('../utils/getImage');
 const getQualityColor = require('../utils/getQualityColor');
 const testSKU = require('../utils/validateSKU');
 
-log.debug('Initializing tf2schema...');
+log.default.debug('Initializing tf2schema...');
 init()
     .then((schemaManager) => {
         const schemaPath = path.join(__dirname, '../public/files/schema.json');
@@ -49,15 +51,15 @@ init()
         // TODO: Implement rate limiter with (should be done elsewhere)
 
         app.get('/', (req, res) => {
-            log.debug(`Got GET / request (main page)`);
+            log.default.debug(`Got GET / request (main page)`);
             res.sendFile(path.join(__dirname, '../views/index.html'));
         });
         app.get('/download/schema', (req, res) => {
-            log.debug(`Got GET /download/schema request`);
+            log.default.debug(`Got GET /download/schema request`);
             res.download(schemaPath);
         });
         app.get('/json/schema', (req, res) => {
-            log.debug(`Got GET /json/schema request`);
+            log.default.debug(`Got GET /json/schema request`);
             res.json(schemaManager.schema.raw);
         });
         app.get('/items/:sku', (req, res) => {
@@ -65,7 +67,7 @@ init()
             const item = SKU.fromString(sku);
 
             if (testSKU(sku) && defindexes[item.defindex] !== undefined) {
-                log.debug(`Got GET /items/${sku} request`);
+                log.default.debug(`Got GET /items/${sku} request`);
 
                 const schema = schemaManager.schema;
                 const baseItemData = schema.getItemBySKU(sku);
@@ -80,11 +82,12 @@ init()
                     bptfUrl: generateBptfUrl(schema, item),
                 });
             } else {
-                log.warn(`Failed on GET /items/${sku} request`);
+                log.default.warn(`Failed on GET /items/${sku} request`);
                 if (defindexes[item.defindex] === undefined) {
                     res.json({
                         success: false,
-                        message: 'Item does not exist. Please try again. Your can download tf2 schema here: https://autobot.tf/download/schema',
+                        message:
+                            'Item does not exist. Please try again. Your can download tf2 schema here: https://autobot.tf/download/schema',
                     });
                 } else {
                     res.json({
@@ -96,11 +99,11 @@ init()
         });
 
         app.listen(port, () => {
-            log.info(`Server listening at http://localhost:${port}`);
+            log.default.info(`Server listening at http://localhost:${port}`);
         });
     })
     .catch((err) => {
-        log.error(err);
+        log.default.error(err);
         throw new Error(err);
     });
 
@@ -130,7 +133,7 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
     const crashed = signalOrErr !== 'SIGINT';
 
     if (crashed) {
-        log.error(
+        log.default.error(
             [
                 'Server' +
                     ' crashed! Please create an issue with the following log:',
@@ -144,7 +147,7 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
             ].join('\r\n')
         );
     } else {
-        log.warn('Received kill signal `' + signalOrErr + '`');
+        log.default.warn('Received kill signal `' + signalOrErr + '`');
     }
 
     process.exit(1);

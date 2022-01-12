@@ -82,57 +82,60 @@ const logger = winston.createLogger({
 const debugPath = path.join(__dirname, `../../logs/debug-%DATE%.log`);
 const errorPath = path.join(__dirname, `../../logs/error-%DATE%.log`);
 
-const transports = [
-    {
-        type: 'DailyRotateFile',
-        filename: debugPath,
-        level: 'debug',
-        filter: 'private',
-        datePattern: 'YYYY-MM-DD',
-        zippedArchive: true,
-        maxFiles: '14d',
-    },
-    {
-        type: 'File',
-        filename: errorPath,
-        level: 'error',
-    },
-    {
-        type: 'Console',
-        level: 'debug',
-    },
-];
+const initLogger = function () {
+    const transports = [
+        {
+            type: 'DailyRotateFile',
+            filename: debugPath,
+            level: 'debug',
+            filter: 'private',
+            datePattern: 'YYYY-MM-DD',
+            zippedArchive: true,
+            maxFiles: '14d',
+        },
+        {
+            type: 'File',
+            filename: errorPath,
+            level: 'error',
+        },
+        {
+            type: 'Console',
+            level: 'debug',
+        },
+    ];
 
-transports.forEach(function (transport) {
-    const type = transport.type;
+    transports.forEach(function (transport) {
+        const type = transport.type;
 
-    delete transport.type;
+        delete transport.type;
 
-    if (['File', 'DailyRotateFile'].includes(type)) {
-        transport['format'] = fileFormat;
-    } else if (type === 'Console') {
-        transport['format'] = consoleFormat;
-    }
-
-    const filter = transport.filter;
-
-    if (filter) {
-        delete transport.filter;
-
-        if (filter === 'trade') {
-            transport['format'] = winston.format.combine(
-                levelFilter(filter)(),
-                transport['format']
-            );
-        } else if (filter === 'private') {
-            transport['format'] = winston.format.combine(
-                privateFilter(),
-                transport['format']
-            );
+        if (['File', 'DailyRotateFile'].includes(type)) {
+            transport['format'] = fileFormat;
+        } else if (type === 'Console') {
+            transport['format'] = consoleFormat;
         }
-    }
 
-    logger.add(new winston.transports[type](transport));
-});
+        const filter = transport.filter;
 
-module.exports = logger;
+        if (filter) {
+            delete transport.filter;
+
+            if (filter === 'trade') {
+                transport['format'] = winston.format.combine(
+                    levelFilter(filter)(),
+                    transport['format']
+                );
+            } else if (filter === 'private') {
+                transport['format'] = winston.format.combine(
+                    privateFilter(),
+                    transport['format']
+                );
+            }
+        }
+
+        logger.add(new winston.transports[type](transport));
+    });
+};
+
+exports.initLogger = initLogger;
+exports.default = logger;
