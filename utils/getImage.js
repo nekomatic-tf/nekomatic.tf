@@ -1845,20 +1845,24 @@ async function getImage(schema, item, itemName, baseItemData) {
         itemImageUrlPrint = baseItemData.image_url_large;
     }
 
+    let toReturn = [itemImageUrlPrint, itemImageUrlPrint];
+
     if (item.effect !== null) {
         try {
-            itemImageUrlPrint = await mergeImage(
+            const mergedImage = await mergeImage(
                 needResize
                     ? await resizeImage(itemImageUrlPrint)
                     : itemImageUrlPrint,
                 item.effect
             );
+
+            toReturn = [mergedImage, itemImageUrlPrint];
         } catch (err) {
             log.default.error(err);
         }
     }
 
-    return itemImageUrlPrint;
+    return toReturn;
 }
 
 async function resizeImage(itemImage) {

@@ -72,7 +72,7 @@ init()
                 const schema = schemaManager.schema;
                 const baseItemData = schema.getItemBySKU(sku);
                 const itemName = schema.getName(item, true);
-                const image = await getImage(
+                const [image, metaImage] = await getImage(
                     schema,
                     item,
                     itemName,
@@ -83,7 +83,8 @@ init()
                     sku: sku,
                     name: itemName,
                     quality: getQualityColor(item.quality),
-                    image: image,
+                    metaImage,
+                    image,
                     description: baseItemData.item_description,
                     bptfUrl: generateBptfUrl(schema, item),
                 });
