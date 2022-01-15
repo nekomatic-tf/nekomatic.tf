@@ -62,7 +62,7 @@ init()
             log.default.debug(`Got GET /json/schema request`);
             res.json(schemaManager.schema.raw);
         });
-        app.get('/items/:sku', (req, res) => {
+        app.get('/items/:sku', async (req, res) => {
             const sku = req.params.sku;
             const item = SKU.fromString(sku);
 
@@ -72,12 +72,19 @@ init()
                 const schema = schemaManager.schema;
                 const baseItemData = schema.getItemBySKU(sku);
                 const itemName = schema.getName(item, true);
+                const image = await getImage(
+                    schema,
+                    sku,
+                    item,
+                    itemName,
+                    baseItemData
+                );
 
                 res.render('items/index', {
                     sku: sku,
                     name: itemName,
                     quality: getQualityColor(item.quality),
-                    image: getImage(schema, sku, item, itemName, baseItemData),
+                    image: image,
                     description: baseItemData.item_description,
                     bptfUrl: generateBptfUrl(schema, item),
                 });

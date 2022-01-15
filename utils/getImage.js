@@ -2526,8 +2526,11 @@ const festivizedImages = {
 };
 
 const SKU = require('@tf2autobot/tf2-sku');
+const mergeImages = require('merge-images');
+const { Canvas, Image } = require('canvas');
+const log = require('../app/lib/logger');
 
-function getImage(schema, sku, item, itemName, baseItemData) {
+async function getImage(schema, sku, item, itemName, baseItemData) {
     const parts = sku.split(';');
 
     let itemImageUrlPrint;
@@ -2578,11 +2581,11 @@ function getImage(schema, sku, item, itemName, baseItemData) {
     } else if (Object.keys(paintCan).includes(`${parts[0]};6`)) {
         itemImageUrlPrint = `https://steamcommunity-a.akamaihd.net/economy/image/IzMF03bi9WpSBq-S-ekoE33L-iLqGFHVaU25ZzQNQcXdEH9myp0erksICf${
             paintCan[`${parts[0]};6`]
-        }512fx512f`;
+        }520fx520f`;
     } else if (item.australium === true) {
         // No festivized image available for Australium
         const australiumSKU = parts[0] + ';11;australium';
-        itemImageUrlPrint = `https://steamcommunity-a.akamaihd.net/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgE${australiumImageURL[australiumSKU]}512fx512f`;
+        itemImageUrlPrint = `https://steamcommunity-a.akamaihd.net/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgE${australiumImageURL[australiumSKU]}520fx520f`;
     } else if (item.paintkit !== null) {
         const newItem = SKU.fromString(`${parts[0]};6`);
         itemImageUrlPrint = `https://scrap.tf/img/items/warpaint/${encodeURIComponent(
@@ -2596,6 +2599,25 @@ function getImage(schema, sku, item, itemName, baseItemData) {
             : baseItemData.image_url_large;
     } else {
         itemImageUrlPrint = baseItemData.image_url_large;
+    }
+
+    if (item.effect !== null) {
+        try {
+            const imageBase64 = await mergeImages(
+                [
+                    `https://backpack.tf/images/440/particles/${item.effect}_380x380.png`,
+                    itemImageUrlPrint,
+                ],
+                {
+                    Canvas: Canvas,
+                    Image: Image,
+                }
+            );
+
+            itemImageUrlPrint = imageBase64;
+        } catch (err) {
+            log.default.error(err);
+        }
     }
 
     return itemImageUrlPrint;
