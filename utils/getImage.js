@@ -1891,7 +1891,7 @@ async function mergeImage(itemImage, effectId) {
     try {
         const imageBase64 = await mergeImages(
             [
-                `https://backpack.tf/images/440/particles/${effectId}_380x380.png`,
+                `https://marketplace.tf/images/particles/${effectId}_380x380.png`,
                 itemImage,
             ],
             {
