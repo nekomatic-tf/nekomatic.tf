@@ -74,7 +74,6 @@ init()
                 const itemName = schema.getName(item, true);
                 const image = await getImage(
                     schema,
-                    sku,
                     item,
                     itemName,
                     baseItemData
