@@ -1763,10 +1763,12 @@ const festivizedImages = {
 const SKU = require('@tf2autobot/tf2-sku');
 const mergeImages = require('merge-images');
 const { Canvas, Image } = require('canvas');
+const Jimp = require('jimp');
 const log = require('../app/lib/logger');
 
 async function getImage(schema, item, itemName, baseItemData) {
     let itemImageUrlPrint;
+    let needResize = false;
 
     if (!baseItemData || !item) {
         return 'https://jberlife.com/wp-content/uploads/2019/07/sorry-image-not-available.jpg';
@@ -1787,10 +1789,11 @@ async function getImage(schema, item, itemName, baseItemData) {
             : ks1Images[item.target];
 
         if (url) {
-            itemImageUrlPrint = `${front}${url}/520fx520f`;
+            itemImageUrlPrint = `${front}${url}/380fx380f`;
         }
 
         if (!itemImageUrlPrint) {
+            needResize = true;
             itemImageUrlPrint = baseItemData.image_url_large;
         }
     } else if (
@@ -1805,21 +1808,22 @@ async function getImage(schema, item, itemName, baseItemData) {
             : strangifierImages[item.target];
 
         if (url) {
-            itemImageUrlPrint = `${front}${url}/520fx520f`;
+            itemImageUrlPrint = `${front}${url}/380fx380f`;
         }
 
         if (!itemImageUrlPrint) {
+            needResize = true;
             itemImageUrlPrint = baseItemData.image_url_large;
         }
     } else if (paintCans.includes(item.defindex)) {
         itemImageUrlPrint = `https://steamcommunity-a.akamaihd.net/economy/image/IzMF03bi9WpSBq-S-ekoE33L-iLqGFHVaU25ZzQNQcXdEH9myp0erksICf${
             paintCan[item.defindex]
-        }520fx520f`;
+        }380fx380f`;
     } else if (item.australium === true) {
         // No festivized image available for Australium
         itemImageUrlPrint = `https://steamcommunity-a.akamaihd.net/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgE${
             australiumImageURL[item.defindex]
-        }520fx520f`;
+        }380fx380f`;
     } else if (item.paintkit !== null) {
         const newItem = SKU.fromString(`${item.defindex};6`);
         itemImageUrlPrint = `https://scrap.tf/img/items/warpaint/${encodeURIComponent(
@@ -1828,33 +1832,76 @@ async function getImage(schema, item, itemName, baseItemData) {
     } else if (item.festive) {
         const front =
             'https://community.cloudflare.steamstatic.com/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgEMaQkUTxr2vTx8';
-        itemImageUrlPrint = festivizedImages[item.defindex]
-            ? `${front}${festivizedImages[item.defindex]}/520fx520f`
-            : baseItemData.image_url_large;
+        if (festivizedImages[item.defindex]) {
+            itemImageUrlPrint = `${front}${
+                festivizedImages[item.defindex]
+            }/380fx380f`;
+        } else {
+            needResize = true;
+            itemImageUrlPrint = baseItemData.image_url_large;
+        }
     } else {
+        needResize = true;
         itemImageUrlPrint = baseItemData.image_url_large;
     }
 
     if (item.effect !== null) {
         try {
-            const imageBase64 = await mergeImages(
-                [
-                    `https://backpack.tf/images/440/particles/${item.effect}_380x380.png`,
-                    itemImageUrlPrint,
-                ],
-                {
-                    Canvas: Canvas,
-                    Image: Image,
-                }
+            itemImageUrlPrint = await mergeImage(
+                needResize
+                    ? await resizeImage(itemImageUrlPrint)
+                    : itemImageUrlPrint,
+                item.effect
             );
-
-            itemImageUrlPrint = imageBase64;
         } catch (err) {
             log.default.error(err);
         }
     }
 
     return itemImageUrlPrint;
+}
+
+async function resizeImage(itemImage) {
+    return new Promise((resolve, reject) => {
+        Jimp.read({ url: itemImage })
+            .then((image) => {
+                image
+                    .resize(380, 380)
+                    .getBase64Async(image.getMIME())
+                    .then((resizedBase64) => {
+                        return resolve(resizedBase64);
+                    })
+                    .catch((err) => {
+                        log.default.error(err);
+                        return reject(err);
+                    });
+            })
+            .catch((err) => {
+                log.default.error(err);
+                return reject(err);
+            });
+    });
+}
+
+async function mergeImage(itemImage, effectId) {
+    try {
+        const imageBase64 = await mergeImages(
+            [
+                `https://backpack.tf/images/440/particles/${effectId}_380x380.png`,
+                itemImage,
+            ],
+            {
+                Canvas: Canvas,
+                Image: Image,
+            }
+        );
+
+        return imageBase64;
+    } catch (err) {
+        log.default.error(err);
+    }
+
+    return itemImage;
 }
 
 module.exports = getImage;
