@@ -80,7 +80,7 @@ init()
                 );
 
                 res.render('items/index', {
-                    sku: sku,
+                    sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
                     name: itemName,
                     quality: getQualityColor(item.quality),
                     metaImage,
