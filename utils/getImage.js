@@ -1847,6 +1847,7 @@ async function getImage(schema, item, itemName, baseItemData) {
 
     let toReturn = [itemImageUrlPrint, itemImageUrlPrint];
 
+    // TODO: Later just get the effect image and make it overlays instead of merge thingy
     if (item.effect !== null) {
         try {
             const mergedImage = await mergeImage(
