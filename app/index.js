@@ -157,5 +157,6 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
         log.default.warn('Received kill signal `' + signalOrErr + '`');
     }
 
+    log.default.info('Server uptime:' + process.uptime());
     process.exit(1);
 });
