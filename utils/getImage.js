@@ -1815,7 +1815,7 @@ async function getImage(schema, item, itemName, baseItemData) {
             needResize = true;
             itemImageUrlPrint = baseItemData.image_url_large;
         }
-    } else if (paintCans.includes(item.defindex)) {
+    } else if (paintCans.includes(`${item.defindex}`)) {
         itemImageUrlPrint = `https://steamcommunity-a.akamaihd.net/economy/image/IzMF03bi9WpSBq-S-ekoE33L-iLqGFHVaU25ZzQNQcXdEH9myp0erksICf${
             paintCan[item.defindex]
         }380fx380f`;
