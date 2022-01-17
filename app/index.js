@@ -62,7 +62,7 @@ init()
         });
         app.get('/json/schema', (req, res) => {
             log.default.debug(`Got GET /json/schema request`);
-            res.json(schemaManager.schema.raw);
+            res.json(schemaManager.schema);
         });
         app.get('/items/:sku', async (req, res) => {
             const protocol =
@@ -126,7 +126,7 @@ init()
     });
 
 function generateSchemaFile(schema, schemaPath) {
-    fs.writeFileSync(schemaPath, JSON.stringify(schema.raw, null, 2), {
+    fs.writeFileSync(schemaPath, JSON.stringify(schema, null, 2), {
         encoding: 'utf8',
     });
 }
