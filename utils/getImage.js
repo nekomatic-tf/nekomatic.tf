@@ -1766,7 +1766,10 @@ const { Canvas, Image } = require('canvas');
 const Jimp = require('jimp');
 const log = require('../app/lib/logger');
 
-async function getImage(schema, item, itemName, baseItemData, isPhone) {
+const fs = require('fs');
+const path = require('path');
+
+async function getImage(schema, item, itemName, baseItemData, domain) {
     let itemImageUrlPrint;
     let needResize = false;
 
@@ -1847,24 +1850,77 @@ async function getImage(schema, item, itemName, baseItemData, isPhone) {
 
     let toReturn = [itemImageUrlPrint, itemImageUrlPrint];
 
-    // TODO: Later just get the effect image and make it overlays instead of merge thingy
-    // The base64 took so long to load on mobile phone
-    if (item.effect !== null && !isPhone) {
-        try {
-            const mergedImage = await mergeImage(
-                needResize
-                    ? await resizeImage(itemImageUrlPrint)
-                    : itemImageUrlPrint,
-                item.effect
-            );
+    // TODO: Later just get the effect image and make it overlays instead of merge thingy (hmmm...)
+    if (item.effect !== null) {
+        const folderContents = fs.readdirSync(
+            path.join(__dirname, '../public/assets/image/items/')
+        );
 
-            toReturn = [mergedImage, itemImageUrlPrint];
-        } catch (err) {
-            log.default.error(err);
+        let fileFound = false;
+        const adjustedItem = Object.assign({}, item);
+        adjustedItem.craftable = true;
+        adjustedItem.tradable = true;
+        adjustedItem.killstreak = 0;
+        adjustedItem.australium = false;
+        adjustedItem.festive = false;
+        adjustedItem.quality2 = null;
+        adjustedItem.craftnumber = null;
+        adjustedItem.crateseries = null;
+        adjustedItem.output = null;
+        adjustedItem.outputQuality = null;
+        adjustedItem.paint = null;
+        const sku = SKU.fromObject(adjustedItem); // defindex;quality;effect[;paintkit; wear]
+
+        // cloud database?
+        folderContents.forEach((file, i) => {
+            if (!file.endsWith('.png')) return;
+            if (file.includes(sku)) {
+                log.default.debug(`File found!`);
+                fileFound = true;
+                toReturn = [
+                    `${domain}/assets/image/items/${file}`,
+                    `${domain}/assets/image/items/${file}`,
+                ];
+            }
+        });
+
+        if (!fileFound) {
+            log.default.debug(`File not found, merging images...`);
+            try {
+                const mergedImage = await mergeImage(
+                    needResize
+                        ? await resizeImage(itemImageUrlPrint)
+                        : itemImageUrlPrint,
+                    item.effect
+                );
+
+                const toSave = mergedImage.replace(
+                    /^data:image\/png;base64,/,
+                    ''
+                );
+
+                // save to cloud database?
+                fs.writeFileSync(
+                    path.join(
+                        __dirname,
+                        `../public/assets/image/items/${sku}.png`
+                    ),
+                    toSave,
+                    'base64'
+                );
+                return [
+                    `${domain}/assets/image/items/${sku}.png`,
+                    `${domain}/assets/image/items/${sku}.png`,
+                ];
+            } catch (err) {
+                log.default.error(err);
+            }
+        } else {
+            return toReturn;
         }
+    } else {
+        return toReturn;
     }
-
-    return toReturn;
 }
 
 async function resizeImage(itemImage) {
