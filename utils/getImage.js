@@ -1914,6 +1914,7 @@ async function getImage(schema, item, itemName, baseItemData, domain) {
                 ];
             } catch (err) {
                 log.default.error(err);
+                return toReturn;
             }
         } else {
             return toReturn;
