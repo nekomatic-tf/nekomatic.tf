@@ -83,7 +83,7 @@ init()
                 const schema = schemaManager.schema;
                 const baseItemData = schema.getItemBySKU(sku);
                 const itemName = schema.getName(item, true);
-                const [image, metaImage] = await getImage(
+                const image = await getImage(
                     schema,
                     item,
                     itemName,
@@ -95,9 +95,8 @@ init()
                     sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
                     name: itemName,
                     quality: getQualityColor(item.quality),
-                    metaImage,
                     image,
-                    description: baseItemData.item_description,
+                    description: baseItemData?.item_description,
                     bptfUrl: generateBptfUrl(schema, item),
                 });
             } else {

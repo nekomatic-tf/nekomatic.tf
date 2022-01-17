@@ -1848,7 +1848,7 @@ async function getImage(schema, item, itemName, baseItemData, domain) {
         itemImageUrlPrint = baseItemData.image_url_large;
     }
 
-    let toReturn = [itemImageUrlPrint, itemImageUrlPrint];
+    let toReturn = itemImageUrlPrint;
 
     // TODO: Later just get the effect image and make it overlays instead of merge thingy (hmmm...)
     if (item.effect !== null) {
@@ -1877,10 +1877,7 @@ async function getImage(schema, item, itemName, baseItemData, domain) {
             if (file.includes(sku)) {
                 log.default.debug(`File found!`);
                 fileFound = true;
-                toReturn = [
-                    `${domain}/assets/image/items/${file}`,
-                    `${domain}/assets/image/items/${file}`,
-                ];
+                toReturn = `${domain}/assets/image/items/${file}`;
             }
         });
 
@@ -1908,18 +1905,19 @@ async function getImage(schema, item, itemName, baseItemData, domain) {
                     toSave,
                     'base64'
                 );
-                return [
-                    `${domain}/assets/image/items/${sku}.png`,
-                    `${domain}/assets/image/items/${sku}.png`,
-                ];
+
+                return `${domain}/assets/image/items/${sku}.png`;
             } catch (err) {
+                // Caught an error, return default image
                 log.default.error(err);
                 return toReturn;
             }
         } else {
+            // File found, should return image link #1880
             return toReturn;
         }
     } else {
+        // Effect is null, return default image url
         return toReturn;
     }
 }
