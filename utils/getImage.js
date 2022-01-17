@@ -1824,9 +1824,11 @@ async function getImage(schema, item, itemName, baseItemData, domain) {
         }380fx380f`;
     } else if (item.australium === true) {
         // No festivized image available for Australium
-        itemImageUrlPrint = `https://steamcommunity-a.akamaihd.net/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgE${
-            australiumImageURL[item.defindex]
-        }380fx380f`;
+        itemImageUrlPrint = australiumImageURL[item.defindex]
+            ? `https://steamcommunity-a.akamaihd.net/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgE${
+                  australiumImageURL[item.defindex]
+              }380fx380f`
+            : itemImageUrlPrint;
     } else if (item.paintkit !== null) {
         const newItem = SKU.fromString(`${item.defindex};6`);
         itemImageUrlPrint = `https://scrap.tf/img/items/warpaint/${encodeURIComponent(
