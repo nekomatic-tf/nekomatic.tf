@@ -1766,7 +1766,7 @@ const { Canvas, Image } = require('canvas');
 const Jimp = require('jimp');
 const log = require('../app/lib/logger');
 
-async function getImage(schema, item, itemName, baseItemData) {
+async function getImage(schema, item, itemName, baseItemData, isPhone) {
     let itemImageUrlPrint;
     let needResize = false;
 
@@ -1848,7 +1848,8 @@ async function getImage(schema, item, itemName, baseItemData) {
     let toReturn = [itemImageUrlPrint, itemImageUrlPrint];
 
     // TODO: Later just get the effect image and make it overlays instead of merge thingy
-    if (item.effect !== null) {
+    // The base64 took so long to load on mobile phone
+    if (item.effect !== null && !isPhone) {
         try {
             const mergedImage = await mergeImage(
                 needResize

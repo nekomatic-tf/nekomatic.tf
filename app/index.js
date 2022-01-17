@@ -12,6 +12,7 @@ const init = require('./schema');
 const log = require('./lib/logger');
 log.initLogger();
 const express = require('express');
+const device = require('express-device');
 
 const SKU = require('@tf2autobot/tf2-sku');
 const generateBptfUrl = require('../utils/generateBptfUrl');
@@ -45,6 +46,7 @@ init()
             'view engine',
             'ejs'
         );
+        app.use(device.capture());
 
         // TODO: Error handling/landing page
         // TODO: Refactor - use router, etc...
@@ -65,9 +67,13 @@ init()
         app.get('/items/:sku', async (req, res) => {
             const sku = req.params.sku;
             const item = SKU.fromString(sku);
+            const deviceType = req.device.type.toLowerCase();
+            const isPhone = deviceType === 'phone';
 
             if (testSKU(sku) && defindexes[item.defindex] !== undefined) {
-                log.default.debug(`Got GET /items/${sku} request`);
+                log.default.debug(
+                    `Got GET /items/${sku} request from ${deviceType}`
+                );
 
                 const schema = schemaManager.schema;
                 const baseItemData = schema.getItemBySKU(sku);
@@ -76,7 +82,8 @@ init()
                     schema,
                     item,
                     itemName,
-                    baseItemData
+                    baseItemData,
+                    isPhone
                 );
 
                 res.render('items/index', {
