@@ -193,8 +193,6 @@ class Pricelist {
             this.prices[sku].buy = newPrices.buy;
             this.prices[sku].sell = newPrices.sell;
             this.prices[sku].time = data.time;
-
-            log.default.debug(`${sku} updated`);
         }
     }
 
