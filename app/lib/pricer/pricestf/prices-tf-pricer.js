@@ -127,7 +127,7 @@ class PricesTfPricer {
                             })
                         );
                     });
-                } else if (data.type === 'PRICE_UPDATED') {
+                } else if (data.type === 'PRICE_CHANGED') {
                     const item = this.parsePriceUpdatedData(data);
                     onPriceChange(item);
                 }
