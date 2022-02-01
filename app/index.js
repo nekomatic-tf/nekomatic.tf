@@ -20,107 +20,174 @@ const getImage = require('../utils/getImage');
 const getQualityColor = require('../utils/getQualityColor');
 const testSKU = require('../utils/validateSKU');
 
-log.default.debug('Initializing tf2schema...');
-init()
-    .then((schemaManager) => {
-        const schemaPath = path.join(__dirname, '../public/files/schema.json');
+const api = require('./lib/pricer/pricestf/prices-tf-api');
+const pricer = require('./lib/pricer/pricestf/prices-tf-pricer');
+const Pricelist = require('./classes/Pricelist');
 
-        let defindexes = getDefindexes(schemaManager.schema);
-        generateSchemaFile(schemaManager.schema, schemaPath);
+const pricestfApi = new api.default();
+const pricestfPricer = new pricer.default(pricestfApi);
 
-        const hours12 = 12 * 60 * 60 * 1000;
-        const mins2 = 2 * 60 * 1000;
-        setInterval(() => {
-            generateSchemaFile(schemaManager.schema, schemaPath);
-
-            defindexes = getDefindexes(schemaManager.schema);
-        }, hours12 + mins2);
-
-        const app = express();
-        // const router = express.Router();
-
-        const port = process.env.PORT;
-
-        // .set('views', path.join(__dirname, '../views/'))
-        app.use(express.static(path.join(__dirname, '../public'))).set(
-            'view engine',
-            'ejs'
-        );
-        // app.use(device.capture());
-
-        // TODO: Error handling/landing page
-        // TODO: Refactor - use router, etc...
-        // TODO: Implement rate limiter with (should be done elsewhere)
-
-        app.get('/', (req, res) => {
-            log.default.debug(`Got GET / request (main page)`);
-            res.sendFile(path.join(__dirname, '../views/index.html'));
-        });
-        app.get('/download/schema', (req, res) => {
-            log.default.debug(`Got GET /download/schema request`);
-            res.download(schemaPath);
-        });
-        app.get('/json/schema', (req, res) => {
-            log.default.debug(`Got GET /json/schema request`);
-            res.json(schemaManager.schema);
-        });
-        app.get('/items/:sku', async (req, res) => {
-            const protocol =
-                req.headers['x-forwarded-proto'] === undefined
-                    ? 'http'
-                    : req.headers['x-forwarded-proto'];
-            const host = req.headers.host;
-            const domain = `${protocol}://${host}`;
-
-            const sku = req.params.sku;
-            const item = SKU.fromString(sku);
-            // const deviceType = req.device.type.toLowerCase();
-            // const isPhone = deviceType === 'phone';
-
-            if (testSKU(sku) && defindexes[item.defindex] !== undefined) {
-                log.default.debug(`Got GET /items/${sku} request`);
-
-                const schema = schemaManager.schema;
-                const baseItemData = schema.getItemBySKU(sku);
-                const itemName = schema.getName(item, true);
-                const image = await getImage(
-                    schema,
-                    item,
-                    itemName,
-                    baseItemData,
-                    domain
+log.default.debug('Initializing pricer...');
+pricestfPricer
+    .init()
+    .then(() => {
+        log.default.debug('Initializing tf2schema...');
+        init()
+            .then((schemaManager) => {
+                const schemaPath = path.join(
+                    __dirname,
+                    '../public/files/schema.json'
                 );
 
-                res.render('items/index', {
-                    sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
-                    name: itemName,
-                    quality: getQualityColor(item.quality),
-                    image,
-                    description: baseItemData?.item_description,
-                    bptfUrl: generateBptfUrl(schema, item),
-                });
-            } else {
-                log.default.warn(`Failed on GET /items/${sku} request`);
-                if (defindexes[item.defindex] === undefined) {
-                    res.json({
-                        success: false,
-                        message:
-                            'Item does not exist. Please try again. Your can download tf2 schema here: https://autobot.tf/download/schema',
-                    });
-                } else {
-                    res.json({
-                        success: false,
-                        message: 'Invalid sku format. Please try again.',
-                    });
-                }
-            }
-        });
+                let defindexes = getDefindexes(schemaManager.schema);
+                generateSchemaFile(schemaManager.schema, schemaPath);
 
-        app.listen(port, () => {
-            log.default.info(`Server listening at http://localhost:${port}`);
-        });
+                const hours12 = 12 * 60 * 60 * 1000;
+                const mins2 = 2 * 60 * 1000;
+                setInterval(() => {
+                    generateSchemaFile(schemaManager.schema, schemaPath);
+
+                    defindexes = getDefindexes(schemaManager.schema);
+                }, hours12 + mins2);
+
+                const pricelist = new Pricelist.default(
+                    schemaManager.schema,
+                    pricestfPricer
+                );
+
+                log.default.debug('Initializing pricelist...');
+                pricelist
+                    .init()
+                    .then(() => {
+                        const app = express();
+                        // const router = express.Router();
+
+                        const port = process.env.PORT;
+
+                        // .set('views', path.join(__dirname, '../views/'))
+                        app.use(
+                            express.static(path.join(__dirname, '../public'))
+                        ).set('view engine', 'ejs');
+                        // app.use(device.capture());
+
+                        // TODO: Error handling/landing page
+                        // TODO: Refactor - use router, etc...
+                        // TODO: Implement rate limiter with (should be done elsewhere)
+
+                        app.get('/', (req, res) => {
+                            log.default.debug(`Got GET / request (main page)`);
+                            res.sendFile(
+                                path.join(__dirname, '../views/index.html')
+                            );
+                        });
+                        app.get('/download/schema', (req, res) => {
+                            log.default.debug(
+                                `Got GET /download/schema request`
+                            );
+                            res.download(schemaPath);
+                        });
+                        app.get('/json/schema', (req, res) => {
+                            log.default.debug(`Got GET /json/schema request`);
+                            res.json(schemaManager.schema);
+                        });
+                        app.get('/json/pricelist', (req, res) => {
+                            log.default.debug(
+                                `Got GET /json/pricelist request`
+                            );
+                            res.json({
+                                success: true,
+                                items: pricelist.prices,
+                            });
+                        });
+                        app.get('/json/pricelist-array', (req, res) => {
+                            log.default.debug(
+                                `Got GET /json/pricelist-array request`
+                            );
+                            res.json({
+                                success: true,
+                                items: pricelist.getPricesArray,
+                            });
+                        });
+                        app.get('/items/:sku', async (req, res) => {
+                            const protocol =
+                                req.headers['x-forwarded-proto'] === undefined
+                                    ? 'http'
+                                    : req.headers['x-forwarded-proto'];
+                            const host = req.headers.host;
+                            const domain = `${protocol}://${host}`;
+
+                            const sku = req.params.sku;
+                            const item = SKU.fromString(sku);
+                            // const deviceType = req.device.type.toLowerCase();
+                            // const isPhone = deviceType === 'phone';
+
+                            if (
+                                testSKU(sku) &&
+                                defindexes[item.defindex] !== undefined
+                            ) {
+                                log.default.debug(
+                                    `Got GET /items/${sku} request`
+                                );
+
+                                const schema = schemaManager.schema;
+                                const baseItemData = schema.getItemBySKU(sku);
+                                const itemName = schema.getName(item, true);
+                                const image = await getImage(
+                                    schema,
+                                    item,
+                                    itemName,
+                                    baseItemData,
+                                    domain
+                                );
+
+                                res.render('items/index', {
+                                    sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
+                                    name: itemName,
+                                    quality: getQualityColor(item.quality),
+                                    image,
+                                    description: baseItemData?.item_description,
+                                    bptfUrl: generateBptfUrl(schema, item),
+                                });
+                            } else {
+                                log.default.warn(
+                                    `Failed on GET /items/${sku} request`
+                                );
+                                if (defindexes[item.defindex] === undefined) {
+                                    res.json({
+                                        success: false,
+                                        message:
+                                            'Item does not exist. Please try again. Your can download tf2 schema here: https://autobot.tf/download/schema',
+                                    });
+                                } else {
+                                    res.json({
+                                        success: false,
+                                        message:
+                                            'Invalid sku format. Please try again.',
+                                    });
+                                }
+                            }
+                        });
+
+                        app.listen(port, () => {
+                            log.default.info(
+                                `Server listening at http://localhost:${port}`
+                            );
+                        });
+                    })
+                    .catch((err) => {
+                        log.default.debug('Error initializing pricelist.');
+                        log.default.error(err);
+                        throw new Error(err);
+                    });
+            })
+            .catch((err) => {
+                log.default.debug('Error initializing schema.');
+                log.default.error(err);
+                throw new Error(err);
+            });
     })
     .catch((err) => {
+        log.default.debug('Error initializing pricestf pricer.');
         log.default.error(err);
         throw new Error(err);
     });
@@ -169,5 +236,6 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
     }
 
     log.default.info('Server uptime:' + process.uptime());
+    pricestfPricer.shutdown();
     process.exit(1);
 });
