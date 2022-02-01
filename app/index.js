@@ -232,6 +232,6 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
     }
 
     log.default.info('Server uptime:' + process.uptime());
-    pricestfPricer.shutdown();
+    pricestfPricer?.shutdown();
     process.exit(1);
 });
