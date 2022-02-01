@@ -61,6 +61,11 @@ pricestfPricer
                 pricelist
                     .init()
                     .then(() => {
+                        log.default.debug('Connecting to pricestf websocket...');
+                        pricestfPricer.connect();
+                        log.default.debug('Connected!');
+
+                        log.default.debug('Setting up server...');
                         const app = express();
                         // const router = express.Router();
 
