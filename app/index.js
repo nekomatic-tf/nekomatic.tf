@@ -1,6 +1,8 @@
 const { version: SERVER_VERSION } = require('../package.json');
 process.env.SERVER_VERSION = SERVER_VERSION;
 
+// TODO: UPGRADE TO TYPESCRIPT
+
 const path = require('path');
 const dotenv = require('dotenv');
 dotenv.config({ path: path.join(__dirname, '../.env') });
