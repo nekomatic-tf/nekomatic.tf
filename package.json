@@ -1,6 +1,6 @@
 {
   "name": "autobot.tf",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "description": "Official TF2Autobot website",
   "main": "index.js",
   "dependencies": {
