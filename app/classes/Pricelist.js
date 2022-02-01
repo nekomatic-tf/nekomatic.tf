@@ -210,8 +210,6 @@ class Pricelist {
     get getPricesArray() {
         const toArray = [];
         const skus = Object.keys(this.prices);
-        const schemaItems = this.schema.raw.schema.items;
-        const schemaItemsSize = schemaItems.length;
 
         for (let i = 0; i < skus.length; i++) {
             const sku = skus[i];
@@ -220,24 +218,9 @@ class Pricelist {
             }
 
             const item = this.prices[sku];
-
-            const itemObj = SKU.fromString(sku);
-            let itemName = this.schema.getName(itemObj, false);
-
-            if (itemName === 'Mann Co. Supply Crate Key') {
-                if (itemObj.defindex !== 5021) {
-                    for (i = 0; i < schemaItemsSize; i++) {
-                        if (itemObj.defindex === schemaItems[i].defindex) {
-                            itemName = schemaItems[i].name;
-                            break;
-                        }
-                    }
-                }
-            }
-
             toArray.push({
                 sku: sku,
-                name: itemName,
+                name: this.schema.getName(SKU.fromString(sku), false),
                 source: 'bptf',
                 time: item.time,
                 buy: item.buy,
