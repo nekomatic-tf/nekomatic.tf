@@ -219,9 +219,26 @@ class Pricelist {
 
             const item = this.prices[sku];
 
+            const itemObj = SKU.fromString(sku);
+            let itemName = this.schema.getName(itemObj, false);
+
+            if (itemName === 'Mann Co. Supply Crate Key') {
+                if (itemObj.defindex !== 5021) {
+                    const schemaItems = this.schema.raw.schema.items;
+                    const schemaItemsSize = schemaItems.length;
+
+                    for (i = 0; i < schemaItemsSize; i++) {
+                        if (itemObj.defindex === schemaItems[i].defindex) {
+                            itemName = schemaItems[i].name;
+                            break;
+                        }
+                    }
+                }
+            }
+
             toArray.push({
                 sku: sku,
-                name: this.schema.getName(SKU.fromString(sku), false),
+                name: itemName,
                 source: 'bptf',
                 time: item.time,
                 buy: item.buy,
