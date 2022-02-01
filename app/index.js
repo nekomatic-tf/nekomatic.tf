@@ -82,23 +82,23 @@ pricestfPricer
                         // TODO: Implement rate limiter with (should be done elsewhere)
 
                         app.get('/', (req, res) => {
-                            log.default.debug(`Got GET / request (main page)`);
+                            log.default.info(`Got GET / request (main page)`);
                             res.sendFile(
                                 path.join(__dirname, '../views/index.html')
                             );
                         });
                         app.get('/download/schema', (req, res) => {
-                            log.default.debug(
+                            log.default.info(
                                 `Got GET /download/schema request`
                             );
                             res.download(schemaPath);
                         });
                         app.get('/json/schema', (req, res) => {
-                            log.default.debug(`Got GET /json/schema request`);
+                            log.default.info(`Got GET /json/schema request`);
                             res.json(schemaManager.schema);
                         });
                         app.get('/json/pricelist', (req, res) => {
-                            log.default.debug(
+                            log.default.info(
                                 `Got GET /json/pricelist request`
                             );
                             res.json({
@@ -107,7 +107,7 @@ pricestfPricer
                             });
                         });
                         app.get('/json/pricelist-array', (req, res) => {
-                            log.default.debug(
+                            log.default.info(
                                 `Got GET /json/pricelist-array request`
                             );
                             res.json({
@@ -132,7 +132,7 @@ pricestfPricer
                                 testSKU(sku) &&
                                 defindexes[item.defindex] !== undefined
                             ) {
-                                log.default.debug(
+                                log.default.info(
                                     `Got GET /items/${sku} request`
                                 );
 
@@ -181,20 +181,9 @@ pricestfPricer
                             );
                         });
                     })
-                    .catch((err) => {
-                        log.default.debug('Error initializing pricelist.');
-                        log.default.error(err);
-                        throw new Error(err);
-                    });
             })
-            .catch((err) => {
-                log.default.debug('Error initializing schema.');
-                log.default.error(err);
-                throw new Error(err);
-            });
     })
     .catch((err) => {
-        log.default.debug('Error initializing pricestf pricer.');
         log.default.error(err);
         throw new Error(err);
     });
