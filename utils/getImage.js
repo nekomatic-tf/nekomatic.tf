@@ -1876,7 +1876,7 @@ async function getImage(schema, item, itemName, baseItemData, domain) {
         // cloud database?
         folderContents.forEach((file, i) => {
             if (!file.endsWith('.png')) return;
-            if (file.includes(sku)) {
+            if (sku === file.replace('.png', '')) {
                 log.default.debug(`File found!`);
                 fileFound = true;
                 toReturn = `${domain}/assets/image/items/${file}`;
