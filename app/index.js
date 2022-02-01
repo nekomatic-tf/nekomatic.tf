@@ -163,7 +163,7 @@ pricestfPricer
                                     res.json({
                                         success: false,
                                         message:
-                                            'Item does not exist. Please try again. Your can download tf2 schema here: https://autobot.tf/download/schema',
+                                            `Item does not exist. Please try again. Your can download tf2 schema here: ${domain}/download/schema`,
                                     });
                                 } else {
                                     res.json({
@@ -177,7 +177,7 @@ pricestfPricer
 
                         app.listen(port, () => {
                             log.default.info(
-                                `Server listening at http://localhost:${port}`
+                                `Server is now live at http://localhost:${port}`
                             );
                         });
                     })

@@ -27,9 +27,14 @@ class PricesTfPricer {
         const minDelay = 200;
 
         do {
-            await new Promise(resolve => setTimeout(resolve, delay));
+            await new Promise((resolve) => setTimeout(resolve, delay));
             const start = new Date().getTime();
-            log.default.debug('Getting page ' + currentPage.toString() + ' of ' + totalPages.toString());
+            log.default.debug(
+                'Getting page ' +
+                    currentPage.toString() +
+                    ' of ' +
+                    totalPages.toString()
+            );
             const response = await this.api.getPricelistPage(currentPage);
             currentPage++;
             totalPages = response.meta.totalPages;
@@ -39,7 +44,9 @@ class PricesTfPricer {
             delay = Math.max(0, minDelay - time);
         } while (currentPage < totalPages);
 
-        const parsed = prices.map(v => this.parseItem(this.parsePrices2Item(v)));
+        const parsed = prices.map((v) =>
+            this.parseItem(this.parsePrices2Item(v))
+        );
         return { items: parsed };
     }
 
@@ -47,11 +54,11 @@ class PricesTfPricer {
         const r = await this.api.requestCheck(sku);
         if (r.enqueued) {
             return {
-                sku: sku
+                sku: sku,
             };
         } else {
             return {
-                sku: null
+                sku: null,
             };
         }
     }
@@ -77,14 +84,14 @@ class PricesTfPricer {
             sku: item.sku,
             buy: new Currencies({
                 keys: item.buyKeys,
-                metal: Currencies.toRefined(item.buyHalfScrap / 2)
+                metal: Currencies.toRefined(item.buyHalfScrap / 2),
             }),
             sell: new Currencies({
                 keys: item.sellKeys,
-                metal: Currencies.toRefined(item.sellHalfScrap / 2)
+                metal: Currencies.toRefined(item.sellHalfScrap / 2),
             }),
             source: 'bptf',
-            time: Math.floor(new Date(item.updatedAt).getTime() / 1000)
+            time: Math.floor(new Date(item.updatedAt).getTime() / 1000),
         };
     }
 
@@ -94,7 +101,7 @@ class PricesTfPricer {
             sell: r.sell,
             sku: r.sku,
             source: r.source,
-            time: r.time
+            time: r.time,
         };
     }
 
@@ -115,8 +122,8 @@ class PricesTfPricer {
                             JSON.stringify({
                                 type: 'AUTH',
                                 data: {
-                                    accessToken: this.api.token
-                                }
+                                    accessToken: this.api.token,
+                                },
                             })
                         );
                     });
