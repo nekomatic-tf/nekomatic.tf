@@ -1950,7 +1950,10 @@ async function mergeImage(itemImage, effectId) {
     try {
         const imageBase64 = await mergeImages(
             [
-                `https://marketplace.tf/images/particles/${effectId}_380x380.png`,
+                path.join(
+                    __dirname,
+                    `../public/assets/image/effects/${effectId}_380x380.png`
+                ),
                 itemImage,
             ],
             {
