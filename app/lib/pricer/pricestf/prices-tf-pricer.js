@@ -132,7 +132,7 @@ class PricesTfPricer {
                     onPriceChange(item);
                 }
             } catch (e) {
-                log.default.error(e);
+                // e always undefined, do nothing.
             }
         });
     }
