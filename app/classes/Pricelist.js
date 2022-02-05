@@ -86,7 +86,7 @@ class Pricelist {
 
                 this.pricer.bindHandlePriceEvent(this.boundHandlePriceChange);
 
-                return resolve();
+                return resolve(this);
             });
         });
     }
@@ -144,6 +144,7 @@ class Pricelist {
                 sell: new Currencies(data.sell),
             };
 
+            // update data in pricelist (memory)
             if (sku === '5021;6') {
                 this.keyPrices = {
                     buy: new Currencies({
@@ -154,56 +155,15 @@ class Pricelist {
                         keys: 0,
                         metal: data.sell.metal,
                     }),
-                    time: data.time,
+                    time: data.time ?? this.keyPrices.time,
                 };
-            }
-
-            const item = this.prices[sku];
-
-            let buyChangesValue = null;
-            let sellChangesValue = null;
-
-            if (item) {
-                const oldPrice = {
-                    buy: item.buy,
-                    sell: item.sell,
-                };
-
-                let oldBuyValue = 0;
-                let newBuyValue = 0;
-                let oldSellValue = 0;
-                let newSellValue = 0;
-
-                if (data.sku === '5021;6') {
-                    oldBuyValue = oldPrice.buy.toValue();
-                    newBuyValue = newPrices.buy.toValue();
-                    oldSellValue = oldPrice.sell.toValue();
-                    newSellValue = newPrices.sell.toValue();
-                } else {
-                    oldBuyValue = oldPrice.buy.toValue(this.keyPrice);
-                    newBuyValue = newPrices.buy.toValue(this.keyPrice);
-                    oldSellValue = oldPrice.sell.toValue(this.keyPrice);
-                    newSellValue = newPrices.sell.toValue(this.keyPrice);
-                }
-
-                buyChangesValue = Math.round(newBuyValue - oldBuyValue);
-                sellChangesValue = Math.round(newSellValue - oldSellValue);
-
-                if (buyChangesValue === 0 && sellChangesValue === 0) {
-                    // Ignore
-                    return;
-                }
-            }
-
-            // update data in pricelist (memory)
-            if (sku === '5021;6') {
                 this.prices[sku].buy = this.keyPrices.buy;
                 this.prices[sku].sell = this.keyPrices.sell;
             } else {
                 this.prices[sku].buy = newPrices.buy;
                 this.prices[sku].sell = newPrices.sell;
             }
-            this.prices[sku].time = data.time;
+            this.prices[sku].time = data.time ?? this.prices[sku].time;
         }
     }
 
