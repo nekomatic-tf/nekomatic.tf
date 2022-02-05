@@ -60,7 +60,7 @@ pricestfPricer
                 log.default.debug('Initializing pricelist...');
                 pricelist
                     .init()
-                    .then(() => {
+                    .then((pricelist2) => {
                         log.default.debug('Connecting to pricestf websocket...');
                         pricestfPricer.connect();
                         log.default.debug('Connected!');
@@ -103,7 +103,7 @@ pricestfPricer
                             );
                             res.json({
                                 success: true,
-                                items: pricelist.prices,
+                                items: pricelist2.prices,
                             });
                         });
                         app.get('/json/pricelist-array', (req, res) => {
@@ -112,7 +112,7 @@ pricestfPricer
                             );
                             res.json({
                                 success: true,
-                                items: pricelist.getPricesArray,
+                                items: pricelist2.getPricesArray,
                             });
                         });
                         app.get('/items/:sku', async (req, res) => {
