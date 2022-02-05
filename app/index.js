@@ -34,154 +34,150 @@ pricestfPricer
     .init()
     .then(() => {
         log.default.debug('Initializing tf2schema...');
-        init()
-            .then((schemaManager) => {
-                const schemaPath = path.join(
-                    __dirname,
-                    '../public/files/schema.json'
-                );
+        init().then((schemaManager) => {
+            const schemaPath = path.join(
+                __dirname,
+                '../public/files/schema.json'
+            );
 
-                let defindexes = getDefindexes(schemaManager.schema);
+            let defindexes = getDefindexes(schemaManager.schema);
+            generateSchemaFile(schemaManager.schema, schemaPath);
+
+            const hours12 = 12 * 60 * 60 * 1000;
+            const mins2 = 2 * 60 * 1000;
+            setInterval(() => {
                 generateSchemaFile(schemaManager.schema, schemaPath);
 
-                const hours12 = 12 * 60 * 60 * 1000;
-                const mins2 = 2 * 60 * 1000;
-                setInterval(() => {
-                    generateSchemaFile(schemaManager.schema, schemaPath);
+                defindexes = getDefindexes(schemaManager.schema);
+            }, hours12 + mins2);
 
-                    defindexes = getDefindexes(schemaManager.schema);
-                }, hours12 + mins2);
+            const pricelist = new Pricelist.default(
+                schemaManager.schema,
+                pricestfPricer
+            );
 
-                const pricelist = new Pricelist.default(
-                    schemaManager.schema,
-                    pricestfPricer
+            log.default.debug('Initializing pricelist...');
+            pricelist.init().then((pricelist2) => {
+                log.default.debug('Connecting to pricestf websocket...');
+                pricestfPricer.connect();
+                log.default.debug('Connected!');
+
+                log.default.debug('Setting up server...');
+                const app = express();
+                // const router = express.Router();
+
+                const port = process.env.PORT;
+
+                // .set('views', path.join(__dirname, '../views/'))
+                app.use(express.static(path.join(__dirname, '../public'))).set(
+                    'view engine',
+                    'ejs'
                 );
+                // app.use(device.capture());
 
-                log.default.debug('Initializing pricelist...');
-                pricelist
-                    .init()
-                    .then((pricelist2) => {
-                        log.default.debug('Connecting to pricestf websocket...');
-                        pricestfPricer.connect();
-                        log.default.debug('Connected!');
+                // TODO: Error handling/landing page
+                // TODO: Refactor - use router, etc...
+                // TODO: Implement rate limiter with (should be done elsewhere)
 
-                        log.default.debug('Setting up server...');
-                        const app = express();
-                        // const router = express.Router();
+                app.get('/', (req, res) => {
+                    log.default.info(`Got GET / request (main page)`);
+                    res.sendFile(path.join(__dirname, '../views/index.html'));
+                });
+                app.get('/download/schema', (req, res) => {
+                    log.default.info(`Got GET /download/schema request`);
+                    res.download(schemaPath);
+                });
+                app.get('/json/schema', (req, res) => {
+                    log.default.info(`Got GET /json/schema request`);
+                    res.json(schemaManager.schema);
+                });
+                app.get('/json/pricelist', (req, res) => {
+                    log.default.info(`Got GET /json/pricelist request`);
+                    res.json({
+                        success: true,
+                        items: pricelist2.prices,
+                    });
+                });
+                app.get('/json/pricelist-array', (req, res) => {
+                    log.default.info(`Got GET /json/pricelist-array request`);
+                    res.json({
+                        success: true,
+                        items: pricelist2.getPricesArray,
+                    });
+                });
+                app.get('/items/:sku', async (req, res) => {
+                    const protocol =
+                        req.headers['x-forwarded-proto'] === undefined
+                            ? 'http'
+                            : req.headers['x-forwarded-proto'];
+                    const host = req.headers.host;
+                    const domain = `${protocol}://${host}`;
 
-                        const port = process.env.PORT;
+                    const sku = req.params.sku;
+                    const item = SKU.fromString(sku);
+                    const isExist = schemaManager.schema.checkExistance(item);
+                    // const deviceType = req.device.type.toLowerCase();
+                    // const isPhone = deviceType === 'phone';
 
-                        // .set('views', path.join(__dirname, '../views/'))
-                        app.use(
-                            express.static(path.join(__dirname, '../public'))
-                        ).set('view engine', 'ejs');
-                        // app.use(device.capture());
+                    if (
+                        testSKU(sku) &&
+                        defindexes[item.defindex] !== undefined &&
+                        isExist !== null
+                    ) {
+                        log.default.info(`Got GET /items/${sku} request`);
 
-                        // TODO: Error handling/landing page
-                        // TODO: Refactor - use router, etc...
-                        // TODO: Implement rate limiter with (should be done elsewhere)
+                        const baseItemData =
+                            schemaManager.schema.getItemBySKU(sku);
+                        const itemName = schemaManager.schema.getName(
+                            item,
+                            true
+                        );
+                        const image = await getImage(
+                            schemaManager.schema,
+                            item,
+                            itemName,
+                            baseItemData,
+                            domain
+                        );
 
-                        app.get('/', (req, res) => {
-                            log.default.info(`Got GET / request (main page)`);
-                            res.sendFile(
-                                path.join(__dirname, '../views/index.html')
-                            );
+                        res.render('items/index', {
+                            sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
+                            name: itemName,
+                            quality: getQualityColor(item.quality),
+                            image,
+                            description: baseItemData?.item_description,
+                            bptfUrl: generateBptfUrl(
+                                schemaManager.schema,
+                                item
+                            ),
                         });
-                        app.get('/download/schema', (req, res) => {
-                            log.default.info(
-                                `Got GET /download/schema request`
-                            );
-                            res.download(schemaPath);
-                        });
-                        app.get('/json/schema', (req, res) => {
-                            log.default.info(`Got GET /json/schema request`);
-                            res.json(schemaManager.schema);
-                        });
-                        app.get('/json/pricelist', (req, res) => {
-                            log.default.info(
-                                `Got GET /json/pricelist request`
-                            );
+                    } else {
+                        log.default.warn(`Failed on GET /items/${sku} request`);
+                        if (
+                            defindexes[item.defindex] === undefined ||
+                            isExist === null
+                        ) {
                             res.json({
-                                success: true,
-                                items: pricelist2.prices,
+                                success: false,
+                                message: `Item does not exist. Please try again. Your can download tf2 schema here: ${domain}/download/schema`,
                             });
-                        });
-                        app.get('/json/pricelist-array', (req, res) => {
-                            log.default.info(
-                                `Got GET /json/pricelist-array request`
-                            );
+                        } else {
                             res.json({
-                                success: true,
-                                items: pricelist2.getPricesArray,
+                                success: false,
+                                message:
+                                    'Invalid sku format. Please try again.',
                             });
-                        });
-                        app.get('/items/:sku', async (req, res) => {
-                            const protocol =
-                                req.headers['x-forwarded-proto'] === undefined
-                                    ? 'http'
-                                    : req.headers['x-forwarded-proto'];
-                            const host = req.headers.host;
-                            const domain = `${protocol}://${host}`;
+                        }
+                    }
+                });
 
-                            const sku = req.params.sku;
-                            const item = SKU.fromString(sku);
-                            const isExist = schemaManager.schema.checkExistance(item);
-                            // const deviceType = req.device.type.toLowerCase();
-                            // const isPhone = deviceType === 'phone';
-
-                            if (
-                                testSKU(sku) &&
-                                defindexes[item.defindex] !== undefined && isExist !== null
-                            ) {
-                                log.default.info(
-                                    `Got GET /items/${sku} request`
-                                );
-
-                                const baseItemData = schemaManager.schema.getItemBySKU(sku);
-                                const itemName = schemaManager.schema.getName(item, true);
-                                const image = await getImage(
-                                    schemaManager.schema,
-                                    item,
-                                    itemName,
-                                    baseItemData,
-                                    domain
-                                );
-
-                                res.render('items/index', {
-                                    sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
-                                    name: itemName,
-                                    quality: getQualityColor(item.quality),
-                                    image,
-                                    description: baseItemData?.item_description,
-                                    bptfUrl: generateBptfUrl(schemaManager.schema, item),
-                                });
-                            } else {
-                                log.default.warn(
-                                    `Failed on GET /items/${sku} request`
-                                );
-                                if (defindexes[item.defindex] === undefined || isExist === null) {
-                                    res.json({
-                                        success: false,
-                                        message:
-                                            `Item does not exist. Please try again. Your can download tf2 schema here: ${domain}/download/schema`,
-                                    });
-                                } else {
-                                    res.json({
-                                        success: false,
-                                        message:
-                                            'Invalid sku format. Please try again.',
-                                    });
-                                }
-                            }
-                        });
-
-                        app.listen(port, () => {
-                            log.default.info(
-                                `Server is now live at http://localhost:${port}`
-                            );
-                        });
-                    })
-            })
+                app.listen(port, () => {
+                    log.default.info(
+                        `Server is now live at http://localhost:${port}`
+                    );
+                });
+            });
+        });
     })
     .catch((err) => {
         log.default.error(err);
