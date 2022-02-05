@@ -125,22 +125,22 @@ pricestfPricer
 
                             const sku = req.params.sku;
                             const item = SKU.fromString(sku);
+                            const isExist = schemaManager.schema.checkExistance(item);
                             // const deviceType = req.device.type.toLowerCase();
                             // const isPhone = deviceType === 'phone';
 
                             if (
                                 testSKU(sku) &&
-                                defindexes[item.defindex] !== undefined
+                                defindexes[item.defindex] !== undefined && isExist !== null
                             ) {
                                 log.default.info(
                                     `Got GET /items/${sku} request`
                                 );
 
-                                const schema = schemaManager.schema;
-                                const baseItemData = schema.getItemBySKU(sku);
-                                const itemName = schema.getName(item, true);
+                                const baseItemData = schemaManager.schema.getItemBySKU(sku);
+                                const itemName = schemaManager.schema.getName(item, true);
                                 const image = await getImage(
-                                    schema,
+                                    schemaManager.schema,
                                     item,
                                     itemName,
                                     baseItemData,
@@ -153,13 +153,13 @@ pricestfPricer
                                     quality: getQualityColor(item.quality),
                                     image,
                                     description: baseItemData?.item_description,
-                                    bptfUrl: generateBptfUrl(schema, item),
+                                    bptfUrl: generateBptfUrl(schemaManager.schema, item),
                                 });
                             } else {
                                 log.default.warn(
                                     `Failed on GET /items/${sku} request`
                                 );
-                                if (defindexes[item.defindex] === undefined) {
+                                if (defindexes[item.defindex] === undefined || isExist === null) {
                                     res.json({
                                         success: false,
                                         message:
