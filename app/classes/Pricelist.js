@@ -144,26 +144,37 @@ class Pricelist {
                 sell: new Currencies(data.sell),
             };
 
-            // update data in pricelist (memory)
-            if (sku === '5021;6') {
-                this.keyPrices = {
-                    buy: new Currencies({
-                        keys: 0,
-                        metal: data.buy.metal,
-                    }),
-                    sell: new Currencies({
-                        keys: 0,
-                        metal: data.sell.metal,
-                    }),
-                    time: data.time ?? this.keyPrices.time,
-                };
-                this.prices[sku].buy = this.keyPrices.buy;
-                this.prices[sku].sell = this.keyPrices.sell;
+            if (this.prices[sku]) {
+                // update data in pricelist (memory)
+                if (sku === '5021;6') {
+                    this.keyPrices = {
+                        buy: new Currencies({
+                            keys: 0,
+                            metal: data.buy.metal,
+                        }),
+                        sell: new Currencies({
+                            keys: 0,
+                            metal: data.sell.metal,
+                        }),
+                        time: data.time ?? this.keyPrices.time,
+                    };
+                    this.prices[sku].buy = this.keyPrices.buy;
+                    this.prices[sku].sell = this.keyPrices.sell;
+                } else {
+                    this.prices[sku].buy = newPrices.buy;
+                    this.prices[sku].sell = newPrices.sell;
+                }
+                this.prices[sku].time = data.time ?? this.prices[sku].time;
             } else {
-                this.prices[sku].buy = newPrices.buy;
-                this.prices[sku].sell = newPrices.sell;
+                // Register new item
+                const newEntry = {
+                    sku: sku,
+                    buy: newPrices.buy,
+                    sell: newPrices.sell,
+                    time: data.time,
+                };
+                this.prices[sku] = this.prices[sku] = Entry.fromData(newEntry);
             }
-            this.prices[sku].time = data.time ?? this.prices[sku].time;
         }
     }
 
