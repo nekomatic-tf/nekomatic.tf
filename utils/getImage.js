@@ -1900,10 +1900,7 @@ async function getImage(schema, item, itemName, baseItemData, domain) {
 
                 // save to cloud database?
                 fs.writeFileSync(
-                    path.join(
-                        __dirname,
-                        `../public/images/items/${sku}.png`
-                    ),
+                    path.join(__dirname, `../public/images/items/${sku}.png`),
                     toSave,
                     'base64'
                 );
@@ -1947,27 +1944,30 @@ async function resizeImage(itemImage) {
 }
 
 async function mergeImage(itemImage, effectId) {
-    try {
-        const imageBase64 = await mergeImages(
-            [
-                path.join(
-                    __dirname,
-                    `../public/images/effects/${effectId}_380x380.png`
-                ),
-                itemImage,
-            ],
-            {
-                Canvas: Canvas,
-                Image: Image,
-            }
-        );
+    new Promise((resolve, reject) => {
+        try {
+            const imageBase64 = await mergeImages(
+                [
+                    path.join(
+                        __dirname,
+                        `../public/images/effects/${effectId}_380x380.png`
+                    ),
+                    itemImage,
+                ],
+                {
+                    Canvas: Canvas,
+                    Image: Image,
+                }
+            );
 
-        return imageBase64;
-    } catch (err) {
-        log.default.error(err);
-    }
-
-    return itemImage;
+            return resolve(imageBase64);
+        } catch (err) {
+            log.default.error(
+                'Error on mergeImage:\n' + JSON.stringify(err, null, 2)
+            );
+            reject(err);
+        }
+    });
 }
 
 module.exports = getImage;
