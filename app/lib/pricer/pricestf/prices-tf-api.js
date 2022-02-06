@@ -94,7 +94,9 @@ class PricesTfApi {
             log.default.debug('got new access token');
             this.token = r.accessToken;
         } catch (e) {
-            log.default.error(e);
+            log.default.error(
+                'Error on setupToken(): ' + JSON.stringify(e, null, 2)
+            );
         }
     }
 

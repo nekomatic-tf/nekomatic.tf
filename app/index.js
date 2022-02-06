@@ -180,7 +180,6 @@ pricestfPricer
         });
     })
     .catch((err) => {
-        log.default.error(err);
         throw new Error(err);
     });
 

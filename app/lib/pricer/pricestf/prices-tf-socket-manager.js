@@ -48,7 +48,9 @@ class PricesTfSocketManager {
                     log.default.debug('JWT expired');
                     void this.api.setupToken().then(() => this.ws.reconnect());
                 } else {
-                    log.default.error(err);
+                    log.default.error(
+                        'Websocket error event:' + JSON.stringify(err, null, 2)
+                    );
                 }
             });
 

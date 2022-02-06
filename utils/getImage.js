@@ -1907,8 +1907,7 @@ async function getImage(schema, item, itemName, baseItemData, domain) {
 
                 return `${domain}/images/items/${sku}.png`;
             } catch (err) {
-                // Caught an error, return default image
-                log.default.error(err);
+                // Caught an error, return default image, no need to save into file
                 return toReturn;
             }
         } else {
@@ -1932,12 +1931,18 @@ async function resizeImage(itemImage) {
                         return resolve(resizedBase64);
                     })
                     .catch((err) => {
-                        log.default.error(err);
+                        log.default.error(
+                            'Error on image.resize.getBase64Async (resizeImage): ' +
+                                JSON.stringify(err, null, 2)
+                        );
                         return reject(err);
                     });
             })
             .catch((err) => {
-                log.default.error(err);
+                log.default.error(
+                    'Error on Jimp.read (resizeImage): ' +
+                        JSON.stringify(err, null, 2)
+                );
                 return reject(err);
             });
     });
@@ -1963,7 +1968,7 @@ async function mergeImage(itemImage, effectId) {
             return resolve(imageBase64);
         } catch (err) {
             log.default.error(
-                'Error on mergeImage:\n' + JSON.stringify(err, null, 2)
+                'Error on mergeImage: ' + JSON.stringify(err, null, 2)
             );
             reject(err);
         }
