@@ -1885,31 +1885,48 @@ async function getImage(schema, item, itemName, baseItemData, domain) {
 
         if (!fileFound) {
             log.default.debug(`File not found, merging images...`);
-            try {
-                const mergedImage = await mergeImage(
-                    needResize
-                        ? await resizeImage(itemImageUrlPrint)
-                        : itemImageUrlPrint,
-                    item.effect
-                );
+            const itemImage = needResize
+                ? await resizeImage(itemImageUrlPrint)
+                : itemImageUrlPrint;
 
-                const toSave = mergedImage.replace(
-                    /^data:image\/png;base64,/,
-                    ''
-                );
+            mergeImages(
+                [
+                    path.join(
+                        __dirname,
+                        `../public/images/effects/${item.effect}_380x380.png`
+                    ),
+                    itemImage,
+                ],
+                {
+                    Canvas: Canvas,
+                    Image: Image,
+                }
+            )
+                .then((imageBase64) => {
+                    const toSave = imageBase64.replace(
+                        /^data:image\/png;base64,/,
+                        ''
+                    );
 
-                // save to cloud database?
-                fs.writeFileSync(
-                    path.join(__dirname, `../public/images/items/${sku}.png`),
-                    toSave,
-                    'base64'
-                );
+                    // save to cloud database?
+                    fs.writeFileSync(
+                        path.join(
+                            __dirname,
+                            `../public/images/items/${sku}.png`
+                        ),
+                        toSave,
+                        'base64'
+                    );
 
-                return `${domain}/images/items/${sku}.png`;
-            } catch (err) {
-                // Caught an error, return default image, no need to save into file
-                return toReturn;
-            }
+                    return `${domain}/images/items/${sku}.png`;
+                })
+                .catch((err) => {
+                    log.default.error(
+                        'Error on mergeImage: ' + JSON.stringify(err, null, 2)
+                    );
+                    // Caught an error, return default image, no need to save into file
+                    return toReturn;
+                });
         } else {
             // File found, should return image link #1880
             return toReturn;
@@ -1944,33 +1961,6 @@ async function resizeImage(itemImage) {
                         JSON.stringify(err, null, 2)
                 );
                 return reject(err);
-            });
-    });
-}
-
-async function mergeImage(itemImage, effectId) {
-    new Promise((resolve, reject) => {
-        mergeImages(
-            [
-                path.join(
-                    __dirname,
-                    `../public/images/effects/${effectId}_380x380.png`
-                ),
-                itemImage,
-            ],
-            {
-                Canvas: Canvas,
-                Image: Image,
-            }
-        )
-            .then((imageBase64) => {
-                return resolve(imageBase64);
-            })
-            .catch((err) => {
-                log.default.error(
-                    'Error on mergeImage: ' + JSON.stringify(err, null, 2)
-                );
-                reject(err);
             });
     });
 }
