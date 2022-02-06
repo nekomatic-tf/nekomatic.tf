@@ -1950,28 +1950,28 @@ async function resizeImage(itemImage) {
 
 async function mergeImage(itemImage, effectId) {
     new Promise((resolve, reject) => {
-        try {
-            const imageBase64 = await mergeImages(
-                [
-                    path.join(
-                        __dirname,
-                        `../public/images/effects/${effectId}_380x380.png`
-                    ),
-                    itemImage,
-                ],
-                {
-                    Canvas: Canvas,
-                    Image: Image,
-                }
-            );
-
-            return resolve(imageBase64);
-        } catch (err) {
-            log.default.error(
-                'Error on mergeImage: ' + JSON.stringify(err, null, 2)
-            );
-            reject(err);
-        }
+        mergeImages(
+            [
+                path.join(
+                    __dirname,
+                    `../public/images/effects/${effectId}_380x380.png`
+                ),
+                itemImage,
+            ],
+            {
+                Canvas: Canvas,
+                Image: Image,
+            }
+        )
+            .then((imageBase64) => {
+                return resolve(imageBase64);
+            })
+            .catch((err) => {
+                log.default.error(
+                    'Error on mergeImage: ' + JSON.stringify(err, null, 2)
+                );
+                reject(err);
+            });
     });
 }
 
