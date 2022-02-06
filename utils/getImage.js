@@ -1885,48 +1885,45 @@ async function getImage(schema, item, itemName, baseItemData, domain) {
 
         if (!fileFound) {
             log.default.debug(`File not found, merging images...`);
-            const itemImage = needResize
-                ? await resizeImage(itemImageUrlPrint)
-                : itemImageUrlPrint;
 
-            mergeImages(
-                [
-                    path.join(
-                        __dirname,
-                        `../public/images/effects/${item.effect}_380x380.png`
-                    ),
-                    itemImage,
-                ],
-                {
-                    Canvas: Canvas,
-                    Image: Image,
-                }
-            )
-                .then((imageBase64) => {
-                    const toSave = imageBase64.replace(
-                        /^data:image\/png;base64,/,
-                        ''
-                    );
+            try {
+                const itemImage = needResize
+                    ? await resizeImage(itemImageUrlPrint)
+                    : itemImageUrlPrint;
 
-                    // save to cloud database?
-                    fs.writeFileSync(
+                const imageBase64 = await mergeImages(
+                    [
                         path.join(
                             __dirname,
-                            `../public/images/items/${sku}.png`
+                            `../public/images/effects/${item.effect}_380x380.png`
                         ),
-                        toSave,
-                        'base64'
-                    );
+                        itemImage,
+                    ],
+                    {
+                        Canvas: Canvas,
+                        Image: Image,
+                    }
+                );
 
-                    return `${domain}/images/items/${sku}.png`;
-                })
-                .catch((err) => {
-                    log.default.error(
-                        'Error on mergeImage: ' + JSON.stringify(err, null, 2)
-                    );
-                    // Caught an error, return default image, no need to save into file
-                    return toReturn;
-                });
+                const toSave = imageBase64.replace(
+                    /^data:image\/png;base64,/,
+                    ''
+                );
+
+                fs.writeFileSync(
+                    path.join(__dirname, `../public/images/items/${sku}.png`),
+                    toSave,
+                    'base64'
+                );
+
+                return `${domain}/images/items/${sku}.png`;
+            } catch (err) {
+                log.default.error(
+                    'Error on merging images: ' + JSON.stringify(err, null, 2)
+                );
+                // Caught an error, return default image, no need to save into file
+                return toReturn;
+            }
         } else {
             // File found, should return image link #1880
             return toReturn;
