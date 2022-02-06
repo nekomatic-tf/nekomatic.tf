@@ -116,7 +116,6 @@ class PricesTfPricer {
                 if (data.type === 'AUTH_REQUIRED') {
                     // might be nicer to put this elsewhere
 
-                    log.default.debug('prices.tf re-authorization required');
                     void this.api.setupToken().then(() => {
                         this.socketManager.send(
                             JSON.stringify({

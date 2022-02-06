@@ -91,7 +91,6 @@ class PricesTfApi {
     async setupToken() {
         try {
             const r = await PricesTfApi.requestAuthAccess();
-            log.default.debug('got new access token');
             this.token = r.accessToken;
         } catch (e) {
             log.default.error(
