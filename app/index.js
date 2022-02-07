@@ -58,9 +58,11 @@ pricestfPricer
 
             log.default.debug('Initializing pricelist...');
             pricelist.init().then((pricelist2) => {
-                log.default.debug('Connecting to pricestf websocket...');
-                pricestfPricer.connect();
-                log.default.debug('Connected!');
+                if (process.env.DEV !== 'true') {
+                    log.default.debug('Connecting to pricestf websocket...');
+                    pricestfPricer.connect();
+                    log.default.debug('Connected!');
+                }
 
                 log.default.debug('Setting up server...');
                 const app = express();
@@ -105,6 +107,8 @@ pricestfPricer
                         items: pricelist2.getPricesArray,
                     });
                 });
+
+                let isRandom = false;
                 app.get('/items/:sku', async (req, res) => {
                     const protocol =
                         req.headers['x-forwarded-proto'] === undefined
@@ -113,7 +117,18 @@ pricestfPricer
                     const host = req.headers.host;
                     const domain = `${protocol}://${host}`;
 
-                    const sku = req.params.sku;
+                    let sku = req.params.sku;
+
+                    if (['random', 'lucky', 'iamfeelinglucky'].includes(sku)) {
+                        const randomSku = await pickRandomSku(
+                            Object.keys(pricelist2.prices),
+                            schemaManager.schema
+                        );
+                        isRandom = true;
+                        res.redirect(`${domain}/items/${randomSku}`);
+                        return;
+                    }
+
                     const item = SKU.fromString(sku);
                     const isExist = schemaManager.schema.checkExistence(item);
                     // const deviceType = req.device.type.toLowerCase();
@@ -124,7 +139,14 @@ pricestfPricer
                         defindexes[item.defindex] !== undefined &&
                         isExist !== null
                     ) {
-                        log.default.info(`Got GET /items/${sku} request`);
+                        log.default.info(
+                            `Got GET /items/${sku}${
+                                isRandom ? ' (Random) ' : ' '
+                            }request`
+                        );
+                        if (isRandom) {
+                            isRandom = false;
+                        }
 
                         const baseItemData =
                             schemaManager.schema.getItemBySKU(sku);
@@ -200,6 +222,29 @@ function getDefindexes(schema) {
     }
 
     return defindexes;
+}
+
+let pickedRandomIndex = 0;
+
+function pickRandomSku(skus, schema) {
+    return new Promise((resolve) => {
+        let pickedIndex = Math.floor(Math.random() * skus.length);
+        if (pickedRandomIndex === pickedIndex) {
+            // ensure not the same as previously picked
+            pickedIndex === 0 ? pickedIndex++ : pickedIndex--;
+        }
+
+        const isExist = () => {
+            return schema.checkExistence(SKU.fromString(skus[pickedIndex]));
+        };
+
+        while (!isExist()) {
+            pickedIndex === 0 ? pickedIndex++ : pickedIndex--;
+        }
+
+        pickedRandomIndex = pickedIndex;
+        return resolve(skus[pickedIndex]);
+    });
 }
 
 const ON_DEATH = require('death');

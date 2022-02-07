@@ -59,10 +59,10 @@ class PricesTfApi {
         }
     }
 
-    static async apiRequest(httpMethod, path, input, headers) {
+    static async apiRequest(httpMethod, path, input, headers, customURL) {
         const options = {
             method: httpMethod,
-            url: `${this.URL}${path}`,
+            url: `${customURL}${path}` ?? `${this.URL}${path}`,
             headers: {
                 'User-Agent': 'autobot.tf@' + process.env.BOT_VERSION,
                 ...headers,

@@ -1,5 +1,6 @@
 const Currencies = require('@tf2autobot/tf2-currencies');
 const PricesTfSocketManager = require('./prices-tf-socket-manager');
+const API = require('./prices-tf-api');
 // import PricesTfApi, { PricesTfItem, PricesTfItemMessageEvent } from './prices-tf-api';
 const log = require('../../logger');
 
@@ -19,6 +20,22 @@ class PricesTfPricer {
     }
 
     async getPricelist() {
+        if (process.env.DEV === 'true') {
+            try {
+                const pricelist = await API.default.apiRequest(
+                    'GET',
+                    '/json/pricelist-array',
+                    {},
+                    {},
+                    'https://autobot.tf'
+                );
+
+                return pricelist;
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
         let prices = [];
         let currentPage = 1;
         let totalPages = 0;
