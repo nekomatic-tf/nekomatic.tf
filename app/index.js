@@ -85,6 +85,23 @@ pricestfPricer
                     log.default.info(`Got GET / request (main page)`);
                     res.sendFile(path.join(__dirname, '../views/index.html'));
                 });
+                app.get('/discord', (req, res) => {
+                    log.default.info(`Got /discord redirect`);
+                    res.redirect(process.env.DISCORD);
+                });
+                app.get('/github', (req, res) => {
+                    log.default.info(`Got /github redirect`);
+                    res.redirect(process.env.GITHUB);
+                });
+                app.get('/steam', (req, res) => {
+                    log.default.info(`Got /steam redirect`);
+                    res.redirect(process.env.STEAM);
+                });
+                app.get('/youtube', (req, res) => {
+                    log.default.info(`Got /youtube redirect`);
+                    res.redirect(process.env.YOUTUBE);
+                });
+
                 app.get('/download/schema', (req, res) => {
                     log.default.info(`Got GET /download/schema request`);
                     res.download(schemaPath);
