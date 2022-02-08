@@ -142,8 +142,7 @@ pricestfPricer
                             schemaManager.schema
                         );
                         isRandom = true;
-                        res.redirect(`${domain}/items/${randomSku}`);
-                        return;
+                        return res.redirect(`/items/${randomSku}`);
                     }
 
                     const item = SKU.fromString(sku);
