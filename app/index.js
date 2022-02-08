@@ -137,7 +137,7 @@ pricestfPricer
                     let sku = req.params.sku;
 
                     if (['random', 'lucky', 'iamfeelinglucky'].includes(sku)) {
-                        const randomSku = await pickRandomSku(
+                        const randomSku = pickRandomSku(
                             Object.keys(pricelist2.prices),
                             schemaManager.schema
                         );
@@ -244,24 +244,22 @@ function getDefindexes(schema) {
 let pickedRandomIndex = 0;
 
 function pickRandomSku(skus, schema) {
-    return new Promise((resolve) => {
-        let pickedIndex = Math.floor(Math.random() * skus.length);
-        if (pickedRandomIndex === pickedIndex) {
-            // ensure not the same as previously picked
-            pickedIndex === 0 ? pickedIndex++ : pickedIndex--;
-        }
+    let pickedIndex = Math.floor(Math.random() * skus.length);
+    if (pickedRandomIndex === pickedIndex) {
+        // ensure not the same as previously picked
+        pickedIndex === 0 ? pickedIndex++ : pickedIndex--;
+    }
 
-        const isExist = () => {
-            return schema.checkExistence(SKU.fromString(skus[pickedIndex]));
-        };
+    const isExist = () => {
+        return schema.checkExistence(SKU.fromString(skus[pickedIndex]));
+    };
 
-        while (!isExist()) {
-            pickedIndex === 0 ? pickedIndex++ : pickedIndex--;
-        }
+    while (!isExist()) {
+        pickedIndex === 0 ? pickedIndex++ : pickedIndex--;
+    }
 
-        pickedRandomIndex = pickedIndex;
-        return resolve(skus[pickedIndex]);
-    });
+    pickedRandomIndex = pickedIndex;
+    return skus[pickedIndex];
 }
 
 const ON_DEATH = require('death');
