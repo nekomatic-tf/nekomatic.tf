@@ -93,9 +93,8 @@ class PricesTfApi {
             const r = await PricesTfApi.requestAuthAccess();
             this.token = r.accessToken;
         } catch (e) {
-            log.default.error(
-                'Error on setupToken(): ' + JSON.stringify(e, null, 2)
-            );
+            log.default.error('Error on setupToken()');
+            log.default.error(err);
         }
     }
 

@@ -1918,9 +1918,8 @@ async function getImage(schema, item, itemName, baseItemData, domain) {
 
                 return `${domain}/images/items/${sku}.png`;
             } catch (err) {
-                log.default.error(
-                    'Error on merging images: ' + JSON.stringify(err, null, 2)
-                );
+                log.default.error('Error on merging images');
+                log.default.error(err);
                 // Caught an error, return default image, no need to save into file
                 return toReturn;
             }
@@ -1946,17 +1945,15 @@ async function resizeImage(itemImage) {
                     })
                     .catch((err) => {
                         log.default.error(
-                            'Error on image.resize.getBase64Async (resizeImage): ' +
-                                JSON.stringify(err, null, 2)
+                            'Error on image.resize.getBase64Async (resizeImage)'
                         );
+                        log.default.error(err);
                         return reject(err);
                     });
             })
             .catch((err) => {
-                log.default.error(
-                    'Error on Jimp.read (resizeImage): ' +
-                        JSON.stringify(err, null, 2)
-                );
+                log.default.error('Error on Jimp.read (resizeImage)');
+                log.default.error(err);
                 return reject(err);
             });
     });
