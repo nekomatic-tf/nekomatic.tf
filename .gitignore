@@ -3,4 +3,5 @@ node_modules
 public/files/*.json
 public/images/items/*.png
 public/images/effects/*.png
+options
 logs

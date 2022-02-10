@@ -9,12 +9,35 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const fs = require('fs');
 
+const DEFAULT_OPTIONS = {
+    bptfDomain: 'https://backpack.tf',
+};
+let options = DEFAULT_OPTIONS;
+const optionsPath = path.join(__dirname, '../options');
+if (!fs.existsSync(optionsPath)) {
+    try {
+        fs.mkdirSync(optionsPath);
+        fs.writeFileSync(
+            optionsPath + '/options.json',
+            JSON.stringify(DEFAULT_OPTIONS, null, 2),
+            { encoding: 'utf-8' }
+        );
+    } catch (err) {
+        throw new Error(err);
+    }
+} else {
+    options = JSON.parse(
+        fs.readFileSync(optionsPath + '/options.json', { encoding: 'utf-8' })
+    );
+}
+
 const init = require('./schema');
 
 const log = require('./lib/logger');
 log.initLogger();
 const express = require('express');
 // const device = require('express-device');
+const bodyParser = require('body-parser');
 
 const SKU = require('@tf2autobot/tf2-sku');
 const generateBptfUrl = require('../utils/generateBptfUrl');
@@ -71,10 +94,14 @@ pricestfPricer
                 const port = process.env.PORT;
 
                 // .set('views', path.join(__dirname, '../views/'))
-                app.use(express.static(path.join(__dirname, '../public'))).set(
-                    'view engine',
-                    'ejs'
-                );
+                app.use(express.static(path.join(__dirname, '../public')))
+                    .set('view engine', 'ejs')
+                    .use(bodyParser.json())
+                    .use(
+                        bodyParser.urlencoded({
+                            extended: false,
+                        })
+                    );
                 // app.use(device.capture());
 
                 // TODO: Error handling/landing page
@@ -100,6 +127,10 @@ pricestfPricer
                 app.get('/youtube', (req, res) => {
                     log.default.info(`Got /youtube redirect`);
                     res.redirect(process.env.YOUTUBE);
+                });
+                app.get('/backpacktf', (req, res) => {
+                    log.default.info(`Got /backpacktf redirect`);
+                    res.redirect(options.bptfDomain);
                 });
 
                 app.get('/download/schema', (req, res) => {
@@ -185,6 +216,7 @@ pricestfPricer
                             image,
                             description: baseItemData?.item_description,
                             bptfUrl: generateBptfUrl(
+                                options.bptfDomain,
                                 schemaManager.schema,
                                 item
                             ),
@@ -206,6 +238,108 @@ pricestfPricer
                                     'Invalid sku format. Please try again.',
                             });
                         }
+                    }
+                });
+
+                app.get('/options', (req, res) => {
+                    // Track who's requesting this, so better don't try
+
+                    const IP = Array.isArray(req.ips)
+                        ? req.ips.length === 0
+                            ? req.ip
+                            : req.ips.join(', ')
+                        : req.ip;
+
+                    if (!checkAuthorization(req, res, IP)) {
+                        return;
+                    }
+
+                    log.default.info(`Got GET /options request from ${IP}`);
+                    res.json({ success: true, options: options });
+                });
+
+                app.patch('/options', (req, res) => {
+                    const IP = Array.isArray(req.ips)
+                        ? req.ips.length === 0
+                            ? req.ip
+                            : req.ips.join(', ')
+                        : req.ip;
+
+                    if (!checkAuthorization(req, res, IP)) {
+                        return;
+                    }
+
+                    if (req.headers['content-type'] !== 'application/json') {
+                        return res.status(403).json({
+                            message: 'Invalid request',
+                        });
+                    }
+
+                    if (req.body === undefined) {
+                        return res.status(403).json({
+                            message: 'Invalid request (body undefined)',
+                        });
+                    }
+
+                    const oldOptions = Object.assign({}, options);
+                    let changed = false;
+
+                    for (const key in req.body) {
+                        if (options[key] === undefined) {
+                            continue;
+                        } else if (
+                            key === 'bptfDomain' &&
+                            (typeof req.body[key] !== 'string' ||
+                                !req.body[key].includes('https://'))
+                        ) {
+                            continue;
+                        }
+                        changed = true;
+                        options[key] = req.body[key];
+                    }
+
+                    if (changed) {
+                        try {
+                            fs.writeFile(
+                                optionsPath + '/options.json',
+                                JSON.stringify(options, null, 2),
+                                { encoding: 'utf-8' },
+                                () => {
+                                    const toSend = {
+                                        success: true,
+                                        oldOptions,
+                                        newOptions: options,
+                                    };
+                                    log.default.warn(
+                                        `Got PATCH /options request from ${IP} with successful changes:\n${JSON.stringify(
+                                            toSend,
+                                            null,
+                                            2
+                                        )}`
+                                    );
+                                    return res.json(toSend);
+                                }
+                            );
+                        } catch (err) {
+                            log.default.warn(
+                                `Got PATCH /options request from ${IP} with error`
+                            );
+                            const msg = 'Error saving patched options';
+                            log.default.error(msg);
+                            log.default.error(err);
+                            return res.json({
+                                success: false,
+                                message: msg,
+                            });
+                        }
+                    } else {
+                        log.default.warn(
+                            `Got PATCH /options request from ${IP} with no changes`
+                        );
+                        return res.status(403).json({
+                            success: false,
+                            message: 'Nothing changed',
+                        });
                     }
                 });
 
@@ -259,6 +393,26 @@ function pickRandomSku(skus, schema) {
 
     pickedRandomIndex = pickedIndex;
     return skus[pickedIndex];
+}
+
+function checkAuthorization(req, res, IP) {
+    if (req.query.secret_key === undefined) {
+        log.default.warn(
+            `Failed on GET /options request from ${IP} (Unauthorized)`
+        );
+        res.status(401).json({ message: 'Not Authorized' });
+        return false;
+    } else if (req.query.secret_key !== process.env.SECRET_KEY_ADMIN) {
+        log.default.warn(
+            `Failed on GET /options request from ${IP} (Invalid Authorization)`
+        );
+        res.status(403).json({
+            message: 'Invalid authorization',
+        });
+        return false;
+    }
+
+    return true;
 }
 
 const ON_DEATH = require('death');

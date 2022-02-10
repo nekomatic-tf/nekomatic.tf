@@ -1,5 +1,5 @@
-function generateBptfUrl(schema, item) {
-    const base = 'https://backpack.tf/stats/';
+function generateBptfUrl(bptfDomain, schema, item) {
+    const base = `${bptfDomain}/stats/`;
 
     const name = schema.getName(
         {
