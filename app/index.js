@@ -243,39 +243,47 @@ pricestfPricer
 
                 app.get('/options', (req, res) => {
                     // Track who's requesting this, so better don't try
+                    const requestRawHeader = JSON.stringify(
+                        req.rawHeaders,
+                        null,
+                        2
+                    );
 
-                    const IP = Array.isArray(req.ips)
-                        ? req.ips.length === 0
-                            ? req.ip
-                            : req.ips.join(', ')
-                        : req.ip;
-
-                    if (!checkAuthorization(req, res, IP)) {
+                    if (!checkAuthorization(req, res, requestRawHeader)) {
                         return;
                     }
 
-                    log.default.info(`Got GET /options request from ${IP}`);
+                    log.default.info(
+                        `Got GET /options request, info:\n${requestRawHeader}`
+                    );
+                    log.default.info();
                     res.json({ success: true, options: options });
                 });
 
                 app.patch('/options', (req, res) => {
-                    const IP = Array.isArray(req.ips)
-                        ? req.ips.length === 0
-                            ? req.ip
-                            : req.ips.join(', ')
-                        : req.ip;
+                    const requestRawHeader = JSON.stringify(
+                        req.rawHeaders,
+                        null,
+                        2
+                    );
 
-                    if (!checkAuthorization(req, res, IP)) {
+                    if (!checkAuthorization(req, res, requestRawHeader)) {
                         return;
                     }
 
                     if (req.headers['content-type'] !== 'application/json') {
+                        log.default.warn(
+                            `Got PATCH /options request with wrong content-type, request info:\n${requestRawHeader}`
+                        );
                         return res.status(403).json({
                             message: 'Invalid request',
                         });
                     }
 
                     if (req.body === undefined) {
+                        log.default.warn(
+                            `Got PATCH /options request with undefined body, request info:\n${requestRawHeader}`
+                        );
                         return res.status(403).json({
                             message: 'Invalid request (body undefined)',
                         });
@@ -311,18 +319,18 @@ pricestfPricer
                                         newOptions: options,
                                     };
                                     log.default.warn(
-                                        `Got PATCH /options request from ${IP} with successful changes:\n${JSON.stringify(
+                                        `Got PATCH /options request from with successful changes:\n${JSON.stringify(
                                             toSend,
                                             null,
                                             2
-                                        )}`
+                                        )}, request info:\n${requestRawHeader}`
                                     );
                                     return res.json(toSend);
                                 }
                             );
                         } catch (err) {
                             log.default.warn(
-                                `Got PATCH /options request from ${IP} with error`
+                                `Got PATCH /options request with error, request info:\n${requestRawHeader}`
                             );
                             const msg = 'Error saving patched options';
                             log.default.error(msg);
@@ -334,7 +342,7 @@ pricestfPricer
                         }
                     } else {
                         log.default.warn(
-                            `Got PATCH /options request from ${IP} with no changes`
+                            `Got PATCH /options request with no changes, request info:\n${requestRawHeader}`
                         );
                         return res.status(403).json({
                             success: false,
@@ -395,16 +403,16 @@ function pickRandomSku(skus, schema) {
     return skus[pickedIndex];
 }
 
-function checkAuthorization(req, res, IP) {
+function checkAuthorization(req, res, requestRawHeader) {
     if (req.query.secret_key === undefined) {
         log.default.warn(
-            `Failed on GET /options request from ${IP} (Unauthorized)`
+            `Failed on GET /options request (Unauthorized), request info:\n${requestRawHeader}`
         );
         res.status(401).json({ message: 'Not Authorized' });
         return false;
     } else if (req.query.secret_key !== process.env.SECRET_KEY_ADMIN) {
         log.default.warn(
-            `Failed on GET /options request from ${IP} (Invalid Authorization)`
+            `Failed on GET /options request from (Invalid Authorization), request info:\n ${requestRawHeader} `
         );
         res.status(403).json({
             message: 'Invalid authorization',
