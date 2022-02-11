@@ -275,7 +275,7 @@ pricestfPricer
                         log.default.warn(
                             `Got PATCH /options request with wrong content-type, request info:\n${requestRawHeader}`
                         );
-                        return res.status(403).json({
+                        return res.status(400).json({
                             message: 'Invalid request',
                         });
                     }
@@ -284,7 +284,7 @@ pricestfPricer
                         log.default.warn(
                             `Got PATCH /options request with undefined body, request info:\n${requestRawHeader}`
                         );
-                        return res.status(403).json({
+                        return res.status(400).json({
                             message: 'Invalid request (body undefined)',
                         });
                     }
@@ -344,11 +344,236 @@ pricestfPricer
                         log.default.warn(
                             `Got PATCH /options request with no changes, request info:\n${requestRawHeader}`
                         );
-                        return res.status(403).json({
+                        return res.status(418).json({
                             success: false,
                             message: 'Nothing changed',
                         });
                     }
+                });
+
+                // Utilities
+
+                /**
+                 * Must have query "name", name must not in the sku format
+                 *
+                 * on success:
+                 * { success: true, sku: string }
+                 */
+                app.get('/utils/getSku', (req, res) => {
+                    if (
+                        req.query === undefined ||
+                        req.query?.name === undefined
+                    ) {
+                        log.default.warn(
+                            `Failed on GET /utils/getSku request with undefined query`
+                        );
+                        return res.status(400).json({
+                            success: false,
+                            message: 'Invalid request (missing query "name")',
+                        });
+                    }
+
+                    if (testSKU(req.query.name)) {
+                        log.default.warn(
+                            `Failed on GET /utils/getSku request with name as sku`
+                        );
+                        return res.status(400).json({
+                            success: false,
+                            message: '"name" must not be in sku format',
+                        });
+                    }
+
+                    const sku = schemaManager.schema.getSkuFromName(
+                        req.query.name
+                    );
+
+                    if (sku.includes(';null') || sku.includes(';undefined')) {
+                        log.default.warn(
+                            `Failed on GET /utils/getSku request with generated sku: ${sku}`
+                        );
+                        return res.status(404).json({
+                            success: false,
+                            message: `Generated sku: ${sku} - Please check the name you've sent`,
+                            sku,
+                        });
+                    }
+
+                    log.default.info(
+                        `Got GET /utils/getSku request with generated sku: ${sku}`
+                    );
+                    res.json({
+                        success: true,
+                        sku,
+                    });
+                });
+
+                /**
+                 * Must have query "sku", name must be in the sku format
+                 * Optional query: "proper" (default is false)
+                 *
+                 * on success:
+                 * { success: true, name: string, isExist: boolean }
+                 */
+                app.get('/utils/getName', (req, res) => {
+                    if (
+                        req.query === undefined ||
+                        req.query?.sku === undefined
+                    ) {
+                        log.default.warn(
+                            `Failed on GET /utils/getName request with undefined query`
+                        );
+                        return res.status(400).json({
+                            success: false,
+                            message: 'Invalid request (missing query "sku")',
+                        });
+                    }
+
+                    if (!testSKU(req.query.sku)) {
+                        log.default.warn(
+                            `Failed on GET /utils/getName request with sku as something else`
+                        );
+                        return res.status(400).json({
+                            success: false,
+                            message: '"sku" must be in sku format',
+                        });
+                    }
+
+                    const item = SKU.fromString(req.query.sku);
+                    const name = schemaManager.schema.getName(
+                        SKU.fromString(req.query.sku),
+                        req.query.proper === undefined
+                            ? false
+                            : Boolean(req.query.proper)
+                    );
+                    const isExist =
+                        schemaManager.schema.checkExistence(item) !== null
+                            ? true
+                            : false;
+
+                    log.default.info(
+                        `Got GET /utils/getName request with generated name: ${name} (${isExist})`
+                    );
+                    res.json({
+                        success: true,
+                        name,
+                        isExist,
+                    });
+                });
+
+                /**
+                 * Content-Type header must be application/json
+                 * body must be in array of item name
+                 *
+                 * on success:
+                 * { success: true, converted: { [name]: sku }}
+                 */
+                app.get('/utils/getSkuBulk', (req, res) => {
+                    if (req.headers['content-type'] !== 'application/json') {
+                        log.default.warn(
+                            `Got GET /utils/getSkuBulk request with wrong content-type`
+                        );
+                        return res.status(400).json({
+                            success: false,
+                            message:
+                                'Invalid request (Content-Type header must be application/json)',
+                        });
+                    }
+
+                    if (req.body === undefined) {
+                        log.default.warn(
+                            `Failed on GET /utils/getSkuBulk request with undefined body`
+                        );
+                        return res.status(400).json({
+                            success: false,
+                            message: 'Invalid request (missing body)',
+                        });
+                    }
+
+                    if (!Array.isArray(req.body)) {
+                        log.default.warn(
+                            `Failed on GET /utils/getSkuBulk request body is not type Array`
+                        );
+                        return res.status(400).json({
+                            success: false,
+                            message: 'body must be an array of item name',
+                        });
+                    }
+
+                    const toReturn = {};
+                    req.body.forEach((name) => {
+                        toReturn[name] =
+                            schemaManager.schema.getSkuFromName(name);
+                    });
+
+                    log.default.info(
+                        `Got GET /utils/getSkuBulk request with ${req.body.length} items`
+                    );
+                    res.json({
+                        success: true,
+                        converted: toReturn,
+                    });
+                });
+
+                /**
+                 * Content-Type header must be application/json
+                 * body must be in array of sku
+                 * Optional query: "proper" (default is false)
+                 *
+                 * on success:
+                 * { success: true, converted: { [sku]: name }}
+                 */
+                app.get('/utils/getNameBulk', (req, res) => {
+                    if (req.headers['content-type'] !== 'application/json') {
+                        log.default.warn(
+                            `Got GET /utils/getNameBulk request with wrong content-type`
+                        );
+                        return res.status(403).json({
+                            success: false,
+                            message:
+                                'Invalid request (Content-Type header must be application/json)',
+                        });
+                    }
+
+                    if (req.body === undefined) {
+                        log.default.warn(
+                            `Failed on GET /utils/getNameBulk request with undefined body`
+                        );
+                        return res.status(400).json({
+                            success: false,
+                            message: 'Invalid request (missing body)',
+                        });
+                    }
+
+                    if (!Array.isArray(req.body)) {
+                        log.default.warn(
+                            `Failed on GET /utils/getNameBulk request body is not type Array`
+                        );
+                        return res.status(400).json({
+                            success: false,
+                            message: 'body must be an array of item sku',
+                        });
+                    }
+
+                    const isProper =
+                        req.query?.proper === undefined
+                            ? false
+                            : Boolean(req.query.proper);
+
+                    const toReturn = {};
+                    req.body.forEach((sku) => {
+                        toReturn[sku] = schemaManager.schema.getName(
+                            SKU.fromString(sku),
+                            isProper
+                        );
+                    });
+
+                    log.default.info(
+                        `Got GET /utils/getNameBulk request with ${req.body.length} items`
+                    );
+                    res.json({
+                        success: true,
+                        converted: toReturn,
+                    });
                 });
 
                 app.listen(port, () => {
