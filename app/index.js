@@ -184,7 +184,7 @@ pricestfPricer
                     if (
                         testSKU(sku) &&
                         defindexes[item.defindex] !== undefined &&
-                        isExist !== null
+                        isExist
                     ) {
                         log.default.info(
                             `Got GET /items/${sku}${
@@ -225,7 +225,7 @@ pricestfPricer
                         log.default.warn(`Failed on GET /items/${sku} request`);
                         if (
                             defindexes[item.defindex] === undefined ||
-                            isExist === null
+                            !isExist
                         ) {
                             res.json({
                                 success: false,
@@ -445,10 +445,7 @@ pricestfPricer
                             ? false
                             : Boolean(req.query.proper)
                     );
-                    const isExist =
-                        schemaManager.schema.checkExistence(item) !== null
-                            ? true
-                            : false;
+                    const isExist = schemaManager.schema.checkExistence(item);
 
                     log.default.info(
                         `Got GET /utils/getName request with generated name: ${name} (${isExist})`
