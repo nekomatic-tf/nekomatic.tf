@@ -404,6 +404,7 @@ pricestfPricer
                     res.json({
                         success: true,
                         sku,
+                        item: SKU.fromString(sku)
                     });
                 });
 
@@ -454,6 +455,7 @@ pricestfPricer
                         success: true,
                         name,
                         isExist,
+                        item
                     });
                 });
 
