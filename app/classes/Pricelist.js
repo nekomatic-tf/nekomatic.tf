@@ -135,7 +135,7 @@ class Pricelist {
 
     handlePriceChange(data) {
         if (!data.sku) return;
-
+        log.default.debug(`${data.sku} price was updated`);
         if (data.buy !== null) {
             const sku = data.sku;
 
