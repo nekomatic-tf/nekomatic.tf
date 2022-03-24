@@ -1,6 +1,5 @@
 const request = require('request-retry-dayjs');
 const log = require('../../logger');
-
 // export interface PricesTfRequestCheckResponse {
 //     enqueued: boolean;
 // }
@@ -55,6 +54,13 @@ class PricesTfApi {
                 await this.setupToken();
                 return this.authedApiRequest(httpMethod, path, input, headers);
             }
+            // TODO: Possibly reload the pricelist to prevent desync
+            if (e && 503 === e['statusCode']) {
+                let mins = 5 * 1000 * 60;
+                log.default.warn(`Looks like the prices.tf api is down! Retrying in ${mins / 1000 / 60} minutes...`);
+                await new Promise(r => setTimeout(r, mins));
+                return this.authedApiRequest(httpMethod, path, input, headers);
+            }
             throw e;
         }
     }
@@ -94,7 +100,7 @@ class PricesTfApi {
             this.token = r.accessToken;
         } catch (e) {
             log.default.error('Error on setupToken()');
-            log.default.error(err);
+            log.default.error(e);
         }
     }
 
