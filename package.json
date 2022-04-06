@@ -5,22 +5,22 @@
   "main": "index.js",
   "dependencies": {
     "@tf2autobot/tf2-currencies": "^2.0.1",
-    "@tf2autobot/tf2-schema": "^2.4.1",
+    "@tf2autobot/tf2-schema": "^2.4.2",
     "@tf2autobot/tf2-sku": "^2.0.3",
-    "body-parser": "^1.19.1",
-    "canvas": "^2.8.0",
+    "body-parser": "^1.20.0",
+    "canvas": "^2.9.1",
     "death": "^1.1.0",
     "dotenv": "^10.0.0",
     "ejs": "^3.1.6",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-device": "^0.4.2",
     "jimp": "^0.16.1",
     "merge-images": "^2.0.0",
     "reconnecting-websocket": "^4.4.0",
-    "request-retry-dayjs": "^1.1.0",
-    "winston": "^3.4.0",
-    "winston-daily-rotate-file": "^4.5.5",
-    "ws": "^8.4.2"
+    "request-retry-dayjs": "^1.1.1",
+    "winston": "^3.7.2",
+    "winston-daily-rotate-file": "^4.6.1",
+    "ws": "^8.5.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
