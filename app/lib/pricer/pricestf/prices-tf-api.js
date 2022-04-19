@@ -50,6 +50,10 @@ class PricesTfApi {
                 ...headers,
             });
         } catch (e) {
+            if (e && 401 === e['statusCode']) {
+                await this.setupToken();
+                return this.authedApiRequest(httpMethod, path, input, headers);
+            }
             let time = 5 * 1000;
             log.default.warn(`Looks like the prices.tf api is down! Retrying in ${time / 1000} seconds...`);
             await new Promise(r => setTimeout(r, time));
