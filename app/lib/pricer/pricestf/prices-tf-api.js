@@ -54,10 +54,13 @@ class PricesTfApi {
                 await this.setupToken();
                 return this.authedApiRequest(httpMethod, path, input, headers);
             }
-            let time = 5 * 1000;
-            log.default.warn(`Looks like the prices.tf api is down! Retrying in ${time / 1000} seconds...`);
-            await new Promise(r => setTimeout(r, time));
-            throw e;
+            if (e && e['statusCode'] >= 500){
+                let time = 5 * 1000;
+                log.default.warn(`Looks like the prices.tf api is down! Retrying in ${time / 1000} seconds...`);
+                await new Promise(r => setTimeout(r, time));
+                throw e;
+            }
+            log.default.warn(e);
         }
     }
     static async apiRequest(httpMethod, path, input, headers, customURL) {
