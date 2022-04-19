@@ -52,13 +52,18 @@ class PricesTfPricer {
                     ' of ' +
                     totalPages.toString()
             );
+            let response;
             try {
-                const response = await this.api.getPricelistPage(currentPage);
+                response = await this.api.getPricelistPage(currentPage);
                 currentPage++;
                 totalPages = response.meta.totalPages;
                 prices = prices.concat(response.items);
             } catch (e){
-                return this.getPricelist();
+                if (currentPage > 1){
+                    continue;
+                } else {
+                    return this.getPricelist();
+                }
             }
             const time = new Date().getTime() - start;
 
