@@ -84,7 +84,7 @@ class PricesTfApi {
                 } else {
                     resolve(body);
                 }
-            });
+            }).end();
         });
     }
 
