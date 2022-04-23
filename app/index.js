@@ -142,6 +142,15 @@ pricestfPricer
                     res.json(schemaManager.schema);
                 });
                 app.get('/json/pricelist', (req, res) => {
+                    if (pricelist2.isResettingPricelist) {
+                        log.default.warn(
+                            `Got GET /json/pricelist-array request in the middle of pricelist reset`
+                        );
+                        return res.status(503).json({
+                            message: 'Service unavailabe for the time being.',
+                        });
+                    }
+
                     log.default.info(`Got GET /json/pricelist request`);
                     res.json({
                         success: true,
@@ -149,6 +158,15 @@ pricestfPricer
                     });
                 });
                 app.get('/json/pricelist-array', (req, res) => {
+                    if (pricelist2.isResettingPricelist) {
+                        log.default.warn(
+                            `Got GET /json/pricelist-array request in the middle of pricelist reset`
+                        );
+                        return res.status(503).json({
+                            message: 'Service unavailabe for the time being.',
+                        });
+                    }
+
                     log.default.info(`Got GET /json/pricelist-array request`);
                     res.json({
                         success: true,
@@ -404,7 +422,7 @@ pricestfPricer
                     res.json({
                         success: true,
                         sku,
-                        item: SKU.fromString(sku)
+                        item: SKU.fromString(sku),
                     });
                 });
 
@@ -455,7 +473,7 @@ pricestfPricer
                         success: true,
                         name,
                         isExist,
-                        item
+                        item,
                     });
                 });
 

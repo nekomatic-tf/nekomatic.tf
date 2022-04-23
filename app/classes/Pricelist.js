@@ -70,6 +70,11 @@ class Pricelist {
         this.keyPrices;
         this.schema = schema;
         this.pricer = pricer;
+        this.receivedCount = 0;
+        this.last1MinsReceivedCount = 0;
+        this.retryAttempted = 0;
+        this.isResettingPricelist = false;
+        this.hasAlreadyResetPricelist = false;
         this.boundHandlePriceChange = this.handlePriceChange.bind(this);
     }
 
@@ -133,9 +138,43 @@ class Pricelist {
         }
     }
 
+    setupPricerHealthCheck() {
+        this.autoPricerCheckInterval = setInterval(() => {
+            if (this.receivedCount - this.last1MinsReceivedCount === 0) {
+                this.retryAttempted++;
+                log.default.warn(
+                    `[${this.retryAttempted}] No price changes in the last 1 minutes, retrying to connect to pricer websocket server...`
+                );
+
+                if (this.hasAlreadyResetPricelist === false) {
+                    this.pricer.getPricelist().then((pricelist) => {
+                        // reset prices
+                        this.resetPricelist();
+                        this.setPricelist(pricelist.items);
+                        this.isResettingPricelist = false;
+                        this.hasAlreadyResetPricelist = true;
+
+                        this.pricer.connect();
+
+                        setTimeout(() => {
+                            this.hasAlreadyResetPricelist = false;
+                        }, 5 * 60 * 1000);
+                    });
+                } else {
+                    this.pricer.connect();
+                }
+            } else {
+                this.last1MinsReceivedCount = this.receivedCount;
+                this.retryAttempted = 0;
+            }
+        }, 1 * 60 * 1000);
+    }
+
     handlePriceChange(data) {
         if (!data.sku) return;
-        log.default.debug(`${data.sku} price was updated`);
+
+        this.receivedCount++;
+
         if (data.buy !== null) {
             const sku = data.sku;
 
@@ -200,6 +239,20 @@ class Pricelist {
         }
 
         return toArray;
+    }
+
+    resetPricelist() {
+        this.isResettingPricelist = true;
+        const skus = Object.keys(this.prices);
+
+        for (let i = 0; i < skus.length; i++) {
+            const sku = skus[i];
+            if (!Object.prototype.hasOwnProperty.call(this.prices, sku)) {
+                continue;
+            }
+
+            delete this.prices[sku];
+        }
     }
 }
 
