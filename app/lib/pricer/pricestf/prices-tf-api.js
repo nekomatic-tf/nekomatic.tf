@@ -68,7 +68,7 @@ class PricesTfApi {
             method: httpMethod,
             url: customURL ? `${customURL}${path}` : `${this.URL}${path}`,
             headers: {
-                'User-Agent': 'autobot.tf@' + process.env.BOT_VERSION,
+                'User-Agent': 'autobot.tf@' + process.env.SERVER_VERSION,
                 ...headers,
             },
             json: true,
