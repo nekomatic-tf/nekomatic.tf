@@ -148,19 +148,27 @@ class Pricelist {
                 );
 
                 if (this.hasAlreadyResetPricelist === false) {
-                    this.pricer.getPricelist().then((pricelist) => {
-                        // reset prices
-                        this.resetPricelist();
-                        this.setPricelist(pricelist.items);
-                        this.isResettingPricelist = false;
-                        this.hasAlreadyResetPricelist = true;
+                    this.pricer
+                        .getPricelist()
+                        .then((pricelist) => {
+                            // reset prices
+                            this.resetPricelist();
+                            this.setPricelist(pricelist.items);
+                            this.isResettingPricelist = false;
+                            this.hasAlreadyResetPricelist = true;
 
-                        this.pricer.connect();
+                            this.pricer.connect();
 
-                        setTimeout(() => {
-                            this.hasAlreadyResetPricelist = false;
-                        }, 5 * 60 * 1000);
-                    });
+                            setTimeout(() => {
+                                this.hasAlreadyResetPricelist = false;
+                            }, 5 * 60 * 1000);
+                        })
+                        .catch((err) => {
+                            log.default.error(
+                                'Error on getting pricelist (on reset pricelist):',
+                                err
+                            );
+                        });
                 } else {
                     this.pricer.connect();
                 }
