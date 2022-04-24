@@ -88,6 +88,7 @@ class Pricelist {
 
             this.pricer.getPricelist().then((pricelist) => {
                 this.setPricelist(pricelist.items);
+                this.setupPricerHealthCheck();
 
                 this.pricer.bindHandlePriceEvent(this.boundHandlePriceChange);
 
