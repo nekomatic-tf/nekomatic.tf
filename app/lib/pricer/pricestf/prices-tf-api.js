@@ -60,9 +60,10 @@ class PricesTfApi {
                 await new Promise(r => setTimeout(r, time));
                 throw e;
             }
-            log.default.warn(e);
+            log.default.error('Error on apiRequest: ', e);
         }
     }
+
     static async apiRequest(httpMethod, path, input, headers, customURL) {
         const options = {
             method: httpMethod,
@@ -97,8 +98,7 @@ class PricesTfApi {
             const r = await PricesTfApi.requestAuthAccess();
             this.token = r.accessToken;
         } catch (e) {
-            log.default.error('Error on setupToken()');
-            log.default.error(e);
+            log.default.error('Error on setupToken():', e);
         }
     }
 

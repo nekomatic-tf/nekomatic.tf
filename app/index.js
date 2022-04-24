@@ -351,8 +351,7 @@ pricestfPricer
                                 `Got PATCH /options request with error, request info:\n${requestRawHeader}`
                             );
                             const msg = 'Error saving patched options';
-                            log.default.error(msg);
-                            log.default.error(err);
+                            log.default.error(msg, err);
                             return res.json({
                                 success: false,
                                 message: msg,
