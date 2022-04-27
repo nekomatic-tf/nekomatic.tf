@@ -74,6 +74,7 @@ class Pricelist {
         this.last1MinsReceivedCount = 0;
         this.retryAttempted = 0;
         this.isResettingPricelist = false;
+        this.isGettingPricelist = false;
         this.hasAlreadyResetPricelist = false;
         this.boundHandlePriceChange = this.handlePriceChange.bind(this);
     }
@@ -147,7 +148,11 @@ class Pricelist {
                     `[${this.retryAttempted}] No price changes in the last 1 minutes, retrying to connect to pricer websocket server...`
                 );
 
-                if (this.hasAlreadyResetPricelist === false) {
+                if (
+                    this.hasAlreadyResetPricelist === false &&
+                    this.isGettingPricelist === false
+                ) {
+                    this.isGettingPricelist = true;
                     this.pricer
                         .getPricelist()
                         .then((pricelist) => {
@@ -155,6 +160,7 @@ class Pricelist {
                             this.resetPricelist();
                             this.setPricelist(pricelist.items);
                             this.isResettingPricelist = false;
+                            this.isGettingPricelist = false;
                             this.hasAlreadyResetPricelist = true;
 
                             this.pricer.connect();
