@@ -173,6 +173,53 @@ pricestfPricer
                         items: pricelist2.getPricesArray,
                     });
                 });
+                app.get('/json/items/:sku', (req, res) => {
+                    const sku = req.params.sku;
+
+                    if (pricelist2.isResettingPricelist) {
+                        log.default.warn(
+                            `Got GET /json/items/${sku} request in the middle of pricelist reset`
+                        );
+                        return res.status(503).json({
+                            message:
+                                'Service unavailabe for the time being, please try again later.',
+                        });
+                    }
+
+                    if (!testSKU(sku)) {
+                        log.default.warn(
+                            `Failed on GET /json/items/${sku} request`
+                        );
+                        return res.json({
+                            success: false,
+                            message: 'Invalid sku format. Please try again.',
+                        });
+                    }
+
+                    const item = pricelist2.prices[sku];
+                    if (!item) {
+                        log.default.warn(
+                            `Failed on GET /json/items/${sku} request - item does not exist`
+                        );
+                        return res.json({
+                            success: false,
+                            message: `Item does not exist in the pricelist. Please try again.`,
+                        });
+                    }
+
+                    log.default.info(`Got GET /json/items/${sku} request`);
+                    res.json({
+                        success: true,
+                        sku: item.sku,
+                        name: schemaManager.schema.getName(
+                            SKU.fromString(sku),
+                            false
+                        ),
+                        time: item.time,
+                        buy: item.buy,
+                        sell: item.sell,
+                    });
+                });
 
                 let isRandom = false;
                 app.get('/items/:sku', async (req, res) => {
