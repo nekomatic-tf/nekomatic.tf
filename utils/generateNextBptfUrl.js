@@ -1,4 +1,4 @@
-function generateNextBptfUrl(schema, item) {
+function generateNextBptfUrl(schema, qualities, item) {
     const base = `https://next.backpack.tf/stats`;
 
     // item<{
@@ -31,7 +31,7 @@ function generateNextBptfUrl(schema, item) {
 
     let query = '';
 
-    query = query + `?itemName=${encodeURIComponent(name)}`;
+    query = query + `?itemName=${encodeURIComponent(name)}&quality=${qualities[item.quality]}`;
 
     if (item.craftable === false) {
         query = query + `&craftable=0`;
@@ -46,7 +46,7 @@ function generateNextBptfUrl(schema, item) {
     }
 
     if (item.effect) {
-        query = query + `&particle=${item.effect}`;
+        query = query + `${(name.includes('Taunt: ') || name.includes('Shred Alert')) ? '&priceindex=' : '&particle='}${String(item.effect)}`;
     }
 
     if (item.festive) {

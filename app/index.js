@@ -65,6 +65,11 @@ pricestfPricer
                 '../public/files/schema.json'
             );
 
+            const qualities = Object.keys(schemaManager.schema.qualities).reduce((obj, q) => {
+                obj[schemaManager.schema.qualities[q]] = schemaManager.schema.qualityNames[q];
+                return obj;
+            }, {});
+
             let defindexes = getDefindexes(schemaManager.schema);
             generateSchemaFile(schemaManager.schema, schemaPath);
 
@@ -289,6 +294,7 @@ pricestfPricer
                             ),
                             bptfNextUrl: generateBptfNextUrl(
                                 schemaManager.schema,
+                                qualities,
                                 item
                             ),
                         });
