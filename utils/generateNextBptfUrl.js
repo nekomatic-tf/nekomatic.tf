@@ -34,43 +34,43 @@ function generateNextBptfUrl(schema, item) {
     query = query + `?itemName=${encodeURIComponent(name)}`;
 
     if (item.craftable === false) {
-        query = query + `?craftable=0`;
+        query = query + `&craftable=0`;
     }
 
     if (item.killstreak) {
-        query = query + `?killstreakTier=${String(item.killstreak)}`;
+        query = query + `&killstreakTier=${String(item.killstreak)}`;
     }
 
     if (item.australium) {
-        query = query + `?australium=1`;
+        query = query + `&australium=1`;
     }
 
     if (item.effect) {
-        query = query + `?particle=${item.effect}`;
+        query = query + `&particle=${item.effect}`;
     }
 
     if (item.festive) {
-        query = query + `?festivized=1`;
+        query = query + `&festivized=1`;
     }
 
     if (item.paintkit) {
-        query = query + `?texture=${item.paintkit}`;
+        query = query + `&texture=${item.paintkit}`;
     }
 
     if (item.wear) {
-        query = query + `?wearTier=${item.wear}`;
+        query = query + `&wearTier=${item.wear}`;
     }
 
     if (item.quality2) {
-        query = query + `?elevatedQuality=${item.quality2}`;
+        query = query + `&elevatedQuality=${item.quality2}`;
     }
 
     if (item.crateseries) {
-        query = query + `?crateSeries=${item.crateseries}`;
+        query = query + `&crateSeries=${item.crateseries}`;
     }
 
     if (item.target) {
-        query = query + `?targetItem=${schema.getName(
+        query = query + `&targetItem=${schema.getName(
             {
                 defindex: item.target,
                 quality: 6
@@ -80,7 +80,7 @@ function generateNextBptfUrl(schema, item) {
     }
 
     if (item.output) {
-        query = query + `?outputItem=${schema.getName(
+        query = query + `&outputItem=${schema.getName(
             {
                 defindex: item.output,
                 quality: 6
