@@ -41,6 +41,8 @@ const bodyParser = require('body-parser');
 
 const SKU = require('@tf2autobot/tf2-sku');
 const generateBptfUrl = require('../utils/generateBptfUrl');
+const generateBptfNextUrl = require('../utils/generateNextBptfUrl');
+
 const getImage = require('../utils/getImage');
 const getQualityColor = require('../utils/getQualityColor');
 const testSKU = require('../utils/validateSKU');
@@ -282,6 +284,10 @@ pricestfPricer
                             description: baseItemData?.item_description,
                             bptfUrl: generateBptfUrl(
                                 options.bptfDomain,
+                                schemaManager.schema,
+                                item
+                            ),
+                            bptfNextUrl: generateBptfNextUrl(
                                 schemaManager.schema,
                                 item
                             ),
