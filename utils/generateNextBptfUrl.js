@@ -21,75 +21,107 @@ function generateNextBptfUrl(schema, item) {
     //     paint?: number | null;
     // }>
 
+    const wears = {
+        1: '(Factory New)',
+        2: '(Minimal Wear)',
+        3: '(Field-Tested)',
+        4: '(Well-Worn)',
+        5: '(Battle Scarred)'
+    };
+
     const name = schema.getName(
         {
             defindex: item.defindex,
-            quality: 6
+            quality: 6,
+            festive: item.festive,
         },
         false
     );
 
     let query = '';
 
-    query = query + `?item=${encodeURIComponent(name)}&quality=${item.quality}`;
-
-    if (item.craftable === false) {
-        query = query + `&craftable=0`;
-    }
+    query = query + `?item=${encodeURIComponent(name)}&quality=${encodeURIComponent(schema.getQualityById(item.quality))}&craftable=${String(item.craftable)}`;
 
     if (item.killstreak) {
         query = query + `&killstreakTier=${String(item.killstreak)}`;
     }
 
     if (item.australium) {
-        query = query + `&australium=1`;
-    }
-
-    if (item.effect) {
-        query = query + `${(name.includes('Taunt: ') || name.includes('Shred Alert')) ? '&priceindex=' : '&particle='}${String(item.effect)}`;
-    }
-
-    if (item.festive) {
-        query = query + `&festivized=1`;
+        query = query + `&australium=${String(item.australium)}`;
     }
 
     if (item.paintkit) {
-        query = query + `&texture=${item.paintkit}`;
+        query = query + `&texture=${encodeURIComponent(schema.getSkinById(item.paintkit))}`;
     }
 
     if (item.wear) {
-        query = query + `&wearTier=${item.wear}`;
+        query = query + `&wearTier=${encodeURIComponent(wears[item.wear])}`;
     }
 
     if (item.quality2) {
-        query = query + `&elevatedQuality=${item.quality2}`;
+        query = query + `&elevatedQuality=${encodeURIComponent(schema.getQualityById(item.quality2))}`;
     }
 
-    if (item.crateseries) {
-        query = query + `&crateSeries=${item.crateseries}`;
-    }
+    if (item.effect !== null || item.crateseries !== null || item.target !== null || item.output !== null || item.outputQuality !== null) {
+        const nameLowered = name.toLowerCase();
 
-    if (item.target) {
-        query = query + `&targetItem=${schema.getName(
-            {
-                defindex: item.target,
-                quality: 6
-            },
-            false
-        )}`;
-    }
+        const isUnusualifier =
+            nameLowered.includes('unusualifier') && item.target !== null;
 
-    if (item.output) {
-        query = query + `&outputItem=${schema.getName(
-            {
-                defindex: item.output,
-                quality: 6
-            },
-            false
-        )}`;
-    }
+        const isStrangifierChemistrySet =
+            nameLowered.includes('chemistry set') &&
+            item.target !== null &&
+            item.output !== null &&
+            item.outputQuality !== null;
 
-    // OutputQuality can't
+        const isCollectorsChemistrySet =
+            nameLowered.includes('chemistry set') &&
+            item.target === null &&
+            item.output !== null &&
+            item.outputQuality !== null;
+
+        const isStrangifier =
+            nameLowered.includes('strangifier') && item.target !== null;
+
+        const isFabricator =
+            nameLowered.includes('fabricator') &&
+            item.target !== null &&
+            item.output !== null &&
+            item.outputQuality !== null;
+        const isGenericFabricator =
+            nameLowered.includes('fabricator') &&
+            item.target === null &&
+            item.output !== null &&
+            item.outputQuality !== null;
+
+        const isKillstreakKit =
+            nameLowered.includes('kit') &&
+            item.killstreak !== 0 &&
+            item.target !== null;
+
+        const priceindex =
+            item.effect !== null
+                ? item.effect
+                : item.crateseries !== null
+                ? item.crateseries
+                : isUnusualifier || isStrangifier
+                ? item.target
+                : isFabricator
+                ? `${item.output}-${item.outputQuality}-${item.target}`
+                : isKillstreakKit
+                ? `${item.killstreak}-${item.target}`
+                : isStrangifierChemistrySet
+                ? `${item.target}-${item.outputQuality}-${item.output}`
+                : isCollectorsChemistrySet
+                ? `${item.output}-${item.outputQuality}`
+                : isGenericFabricator
+                ? `${item.output}-${item.outputQuality}-0`
+                : undefined;
+
+        if (priceindex) {
+            query = query + `&priceindex=${encodeURIComponent(priceindex)}`;
+        }
+    }
 
     return (base + query);
 }
