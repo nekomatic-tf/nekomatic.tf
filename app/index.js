@@ -65,8 +65,8 @@ pricestfPricer
                 '../public/files/schema.json'
             );
 
-            const qualities = Object.keys(schemaManager.schema.qualities).reduce((obj, q) => {
-                obj[schemaManager.schema.qualities[q]] = schemaManager.schema.qualityNames[q];
+            const qualities = Object.keys(schemaManager.raw.schema.qualities).reduce((obj, q) => {
+                obj[schemaManager.raw.schema.qualities[q]] = schemaManager.raw.schema.qualityNames[q];
                 return obj;
             }, {});
 
