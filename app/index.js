@@ -289,7 +289,6 @@ pricestfPricer
                             ),
                             bptfNextUrl: generateBptfNextUrl(
                                 schemaManager.schema,
-                                qualities,
                                 item
                             ),
                         });

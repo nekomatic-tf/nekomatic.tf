@@ -1,4 +1,4 @@
-function generateNextBptfUrl(schema, qualities, item) {
+function generateNextBptfUrl(schema, item) {
     const base = `https://next.backpack.tf/stats`;
 
     // item<{
