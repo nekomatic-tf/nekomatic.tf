@@ -31,7 +31,7 @@ function generateNextBptfUrl(schema, qualities, item) {
 
     let query = '';
 
-    query = query + `?itemName=${encodeURIComponent(name)}&quality=${qualities[item.quality]}`;
+    query = query + `?itemName=${encodeURIComponent(name)}&quality=${item.quality}`;
 
     if (item.craftable === false) {
         query = query + `&craftable=0`;

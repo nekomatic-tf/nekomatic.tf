@@ -65,25 +65,6 @@ pricestfPricer
                 '../public/files/schema.json'
             );
 
-            const qualities = {
-                0: "Normal",
-                1: "Genuine",
-                2: "rarity2",
-                3: "Vintage",
-                4: "rarity3",
-                5: "Unusual",
-                6: "Unique",
-                7: "Community",
-                8: "Valve",
-                9: "Self-Made",
-                10: "Customized",
-                11: "Strange",
-                12: "Completed",
-                13: "Haunted",
-                14: "Collector's",
-                15: "Decorated Weapon"
-              }
-
             let defindexes = getDefindexes(schemaManager.schema);
             generateSchemaFile(schemaManager.schema, schemaPath);
 
