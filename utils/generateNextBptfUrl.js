@@ -48,7 +48,7 @@ function generateNextBptfUrl(schema, item) {
         query = query + `&australium=${String(item.australium)}`;
     }
 
-    if (item.paintkit) {
+    if (typeof item.paintkit === 'number') {
         query = query + `&texture=${encodeURIComponent(schema.getSkinById(item.paintkit))}`;
     }
 
