@@ -38,9 +38,7 @@ function generateNextBptfUrl(schema, item) {
         false
     );
 
-    let query = '';
-
-    query = query + `?item=${encodeURIComponent(name)}&quality=${encodeURIComponent(schema.getQualityById(item.quality))}&craftable=${String(item.craftable)}`;
+    let query = `?item=${encodeURIComponent(name)}&quality=${encodeURIComponent(schema.getQualityById(item.quality))}&craftable=${String(item.craftable)}`;
 
     if (item.killstreak) {
         query = query + `&killstreakTier=${String(item.killstreak)}`;
