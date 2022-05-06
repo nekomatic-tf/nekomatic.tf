@@ -22,11 +22,11 @@ function generateNextBptfUrl(schema, item) {
     // }>
 
     const wears = {
-        1: '(Factory New)',
-        2: '(Minimal Wear)',
-        3: '(Field-Tested)',
-        4: '(Well-Worn)',
-        5: '(Battle Scarred)'
+        1: 'Factory New',
+        2: 'Minimal Wear',
+        3: 'Field-Tested',
+        4: 'Well-Worn',
+        5: 'Battle Scarred'
     };
 
     const name = schema.getName(
