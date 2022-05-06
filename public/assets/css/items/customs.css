@@ -73,6 +73,10 @@ a:visited {
     text-align: center;
     text-decoration: none;
     display: inline-block;
+    width: 35%;
+    margin-bottom: 7px;
+    margin-right: 5px;
+    border-radius: 3px;
 }
 
 .jumbotron-content a:hover,

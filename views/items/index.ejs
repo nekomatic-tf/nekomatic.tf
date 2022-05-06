@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,14 +15,16 @@
       <div class="quality-box"></div>
       <div><h1><%= name %></h1></div>
     </div>
-    <div class="jumbotron-content">
+    <div class="jumbotron-content" align="center">
       <div>
         <img src="<%= image %>" alt="<%= name %>" width="500" height="500">
       </div>
       <div>
-        <a href="https://marketplace.tf/items/tf2/<%= sku %>">Marketplace.tf</a>
         <a href="<%= bptfUrl %>">Backpack.tf</a>
         <a href="<%= bptfNextUrl %>">Backpack.tf Next</a>
+      </div>
+      <div>
+        <a href="https://marketplace.tf/items/tf2/<%= sku %>">Marketplace.tf</a>
         <a href="https://prices.tf/items/<%= sku %>">Prices.tf</a>
       </div>
     </div>
