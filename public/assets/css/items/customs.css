@@ -18,6 +18,10 @@ h1 {
     h1 {
         font-size: 24px;
     }
+
+    .jumbotron-content a {
+        font-size: small;
+    }
 }
 
 /* If the screen size is in between 601px and 767px wide, set the font-size of h1 to 18px */
@@ -25,12 +29,20 @@ h1 {
     h1 {
         font-size: 18px;
     }
+
+    .jumbotron-content a {
+        font-size: x-small;
+    }
 }
 
 /* If the screen size is 600px wide or less, set the font-size of h1 to 16px */
 @media screen and (max-width: 600px) {
     h1 {
         font-size: 16px;
+    }
+
+    .jumbotron-content a {
+        font-size: xx-small;
     }
 }
 
