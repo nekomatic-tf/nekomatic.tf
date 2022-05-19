@@ -95,12 +95,11 @@ function generateBptfUrl(bptfDomain, schema, item) {
             ? `${item.output}-${item.outputQuality}-0`
             : undefined;
 
-    return (
-        base +
-        `${quality}/${encodeURIComponent(itemName)}/${tradable}/${craftable}${
-            priceindex ? '/' + priceindex : ''
-        }`
-    );
+    const query = `${quality}/${encodeURIComponent(
+        itemName
+    )}/${tradable}/${craftable}${priceindex ? '/' + priceindex : ''}`;
+
+    return [base + query, query];
 }
 
 module.exports = generateBptfUrl;

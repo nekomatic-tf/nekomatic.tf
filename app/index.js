@@ -46,6 +46,7 @@ const generateBptfNextUrl = require('../utils/generateNextBptfUrl');
 const getImage = require('../utils/getImage');
 const getQualityColor = require('../utils/getQualityColor');
 const testSKU = require('../utils/validateSKU');
+const getMptfPrice = require('../utils/getMptfPrice');
 
 const api = require('./lib/pricer/pricestf/prices-tf-api');
 const pricer = require('./lib/pricer/pricestf/prices-tf-pricer');
@@ -276,21 +277,31 @@ pricestfPricer
                             domain
                         );
 
+                        const [bptfUrl, bptfQuery] = generateBptfUrl(
+                            options.bptfDomain,
+                            schemaManager.schema,
+                            item
+                        );
+
+                        let mptfPrice;
+                        try {
+                            mptfPrice = await getMptfPrice(bptfQuery);
+                        } catch (err) {
+                            log.default.error('Error getting mptf prices', err);
+                        }
+
                         res.render('items/index', {
                             sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
                             name: itemName,
                             quality: getQualityColor(item.quality),
                             image,
                             description: baseItemData?.item_description,
-                            bptfUrl: generateBptfUrl(
-                                options.bptfDomain,
-                                schemaManager.schema,
-                                item
-                            ),
+                            bptfUrl: bptfUrl,
                             bptfNextUrl: generateBptfNextUrl(
                                 schemaManager.schema,
                                 item
                             ),
+                            mptfPrice: mptfPrice,
                         });
                     } else {
                         log.default.warn(`Failed on GET /items/${sku} request`);
