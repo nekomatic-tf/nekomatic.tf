@@ -40,6 +40,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const SKU = require('@tf2autobot/tf2-sku');
+const Currencies = require('@tf2autobot/tf2-currencies');
 const generateBptfUrl = require('../utils/generateBptfUrl');
 const generateBptfNextUrl = require('../utils/generateNextBptfUrl');
 
@@ -290,6 +291,20 @@ pricestfPricer
                             log.default.error('Error getting mptf prices', err);
                         }
 
+                        let currentPrice;
+                        if (pricelist2.prices[sku] !== undefined) {
+                            const prices = pricelist2.prices[sku];
+                            currentPrice = `${
+                                prices.buy.toValue(pricelist2.keyPrices) === 0
+                                    ? '0 ref'
+                                    : prices.buy.toString()
+                            } / ${
+                                prices.sell.toValue(pricelist2.keyPrices) === 0
+                                    ? '0 ref'
+                                    : prices.sell.toString()
+                            }`;
+                        }
+
                         res.render('items/index', {
                             sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
                             name: itemName,
@@ -302,6 +317,7 @@ pricestfPricer
                                 item
                             ),
                             mptfPrice: mptfPrice,
+                            currentPricestfPrice: currentPrice,
                         });
                     } else {
                         log.default.warn(`Failed on GET /items/${sku} request`);
