@@ -49,7 +49,7 @@ class PricesTfSocketManager {
                     void this.api.setupToken().then(() => this.ws.reconnect());
                 } else {
                     // Don't log this kind of err
-                    log.default.error('Websocket error.');
+                    log.default.error('Websocket error:', err?.error);
                 }
             });
 
