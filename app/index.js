@@ -171,10 +171,16 @@ pricestfPricer
                         });
                     }
 
-                    log.default.info(`Got GET /json/pricelist-array request`);
+                    log.default.info(
+                        `Got GET /json/pricelist-array${
+                            req.query?.onlyExist === 'true' ? ' (onlyExist)' : ''
+                        } request`
+                    );
                     res.json({
                         success: true,
-                        items: pricelist2.getPricesArray,
+                        items: pricelist2.getPricesArray(
+                            req.query?.onlyExist === 'true'
+                        ),
                     });
                 });
                 app.get('/json/items/:sku', (req, res) => {

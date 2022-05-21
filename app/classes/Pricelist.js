@@ -232,13 +232,17 @@ class Pricelist {
         }
     }
 
-    get getPricesArray() {
+    getPricesArray(onlyExist) {
         const toArray = [];
         const skus = Object.keys(this.prices);
 
         for (let i = 0; i < skus.length; i++) {
             const sku = skus[i];
             if (!Object.prototype.hasOwnProperty.call(this.prices, sku)) {
+                continue;
+            }
+
+            if (onlyExist && !this.schema.checkExistence(SKU.fromString(sku))) {
                 continue;
             }
 
