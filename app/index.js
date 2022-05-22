@@ -173,7 +173,9 @@ pricestfPricer
 
                     log.default.info(
                         `Got GET /json/pricelist-array${
-                            req.query?.onlyExist === 'true' ? ' (onlyExist)' : ''
+                            req.query?.onlyExist === 'true'
+                                ? ' (onlyExist)'
+                                : ''
                         } request`
                     );
                     res.json({

@@ -26,7 +26,7 @@ function generateNextBptfUrl(schema, item) {
         2: 'Minimal Wear',
         3: 'Field-Tested',
         4: 'Well-Worn',
-        5: 'Battle Scarred'
+        5: 'Battle Scarred',
     };
 
     const name = schema.getName(
@@ -38,7 +38,9 @@ function generateNextBptfUrl(schema, item) {
         false
     );
 
-    let query = `?item=${encodeURIComponent(name)}&quality=${encodeURIComponent(schema.getQualityById(item.quality))}&craftable=${String(item.craftable)}`;
+    let query = `?item=${encodeURIComponent(name)}&quality=${encodeURIComponent(
+        schema.getQualityById(item.quality)
+    )}&craftable=${String(item.craftable)}`;
 
     if (item.killstreak) {
         query = query + `&killstreakTier=${String(item.killstreak)}`;
@@ -49,7 +51,9 @@ function generateNextBptfUrl(schema, item) {
     }
 
     if (typeof item.paintkit === 'number') {
-        query = query + `&texture=${encodeURIComponent(schema.getSkinById(item.paintkit))}`;
+        query =
+            query +
+            `&texture=${encodeURIComponent(schema.getSkinById(item.paintkit))}`;
     }
 
     if (item.wear) {
@@ -57,10 +61,20 @@ function generateNextBptfUrl(schema, item) {
     }
 
     if (item.quality2) {
-        query = query + `&elevatedQuality=${encodeURIComponent(schema.getQualityById(item.quality2))}`;
+        query =
+            query +
+            `&elevatedQuality=${encodeURIComponent(
+                schema.getQualityById(item.quality2)
+            )}`;
     }
 
-    if (item.effect !== null || item.crateseries !== null || item.target !== null || item.output !== null || item.outputQuality !== null) {
+    if (
+        item.effect !== null ||
+        item.crateseries !== null ||
+        item.target !== null ||
+        item.output !== null ||
+        item.outputQuality !== null
+    ) {
         const nameLowered = name.toLowerCase();
 
         const isUnusualifier =
@@ -121,7 +135,7 @@ function generateNextBptfUrl(schema, item) {
         }
     }
 
-    return (base + query);
+    return base + query;
 }
 
 module.exports = generateNextBptfUrl;

@@ -1775,8 +1775,8 @@ const retiredKeys = {
     5717: 'https://steamcdn-a.akamaihd.net/apps/440/icons/winter2013_nice_key_large.11e8d9592dbba89926c3ad1a50fe7bec5347d0eb.png',
     5762: 'https://steamcdn-a.akamaihd.net/apps/440/icons/wading_key_large.34ef244f2d9ebc40d2fea3978e378465d5eb45d3.png',
     5791: 'http://media.steampowered.com/apps/440/icons/winter2013_naughty_key_large.d95b1d82021ab7bd993f815894b23dd1d246643d.png',
-    5792: 'http://media.steampowered.com/apps/440/icons/winter2014_nice_key_large.7246c86cea44b1aa0022e8017dac8d23dee64ea4.png'
-}
+    5792: 'http://media.steampowered.com/apps/440/icons/winter2014_nice_key_large.7246c86cea44b1aa0022e8017dac8d23dee64ea4.png',
+};
 
 const SKU = require('@tf2autobot/tf2-sku');
 const mergeImages = require('merge-images');

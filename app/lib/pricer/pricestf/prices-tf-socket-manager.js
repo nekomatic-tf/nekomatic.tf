@@ -50,7 +50,10 @@ class PricesTfSocketManager {
                         .setupToken()
                         .then(() => this.ws.reconnect())
                         .catch((err) => {
-                            log.default.error('Websocket error - setupToken():', err);
+                            log.default.error(
+                                'Websocket error - setupToken():',
+                                err
+                            );
                             // Don't attempt to reconnect
                         });
                 } else {

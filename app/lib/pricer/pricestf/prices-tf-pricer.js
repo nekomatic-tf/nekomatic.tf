@@ -58,8 +58,8 @@ class PricesTfPricer {
                 currentPage++;
                 totalPages = response.meta.totalPages;
                 prices = prices.concat(response.items);
-            } catch (e){
-                if (currentPage > 1){
+            } catch (e) {
+                if (currentPage > 1) {
                     continue;
                 } else {
                     return this.getPricelist();

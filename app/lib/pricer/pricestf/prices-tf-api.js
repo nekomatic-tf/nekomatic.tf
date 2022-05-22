@@ -54,10 +54,14 @@ class PricesTfApi {
                 await this.setupToken();
                 return this.authedApiRequest(httpMethod, path, input, headers);
             }
-            if (e && e['statusCode'] >= 500){
+            if (e && e['statusCode'] >= 500) {
                 let time = 5 * 1000;
-                log.default.warn(`Looks like the prices.tf api is down! Retrying in ${time / 1000} seconds...`);
-                await new Promise(r => setTimeout(r, time));
+                log.default.warn(
+                    `Looks like the prices.tf api is down! Retrying in ${
+                        time / 1000
+                    } seconds...`
+                );
+                await new Promise((r) => setTimeout(r, time));
                 throw e;
             }
             log.default.error('Error on apiRequest: ', e);
@@ -96,11 +100,11 @@ class PricesTfApi {
     async setupToken() {
         return new Promise((resolve, reject) => {
             void PricesTfApi.requestAuthAccess()
-                .then(response => {
+                .then((response) => {
                     this.token = response.accessToken;
                     resolve();
                 })
-                .catch(err => {
+                .catch((err) => {
                     reject(err);
                 });
         });
