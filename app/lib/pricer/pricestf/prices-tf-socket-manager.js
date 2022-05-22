@@ -46,9 +46,14 @@ class PricesTfSocketManager {
             this.ws.addEventListener('error', (err) => {
                 if (err.message === 'Unexpected server response: 401') {
                     log.default.warn('JWT expired');
-                    void this.api.setupToken().then(() => this.ws.reconnect());
+                    void this.api
+                        .setupToken()
+                        .then(() => this.ws.reconnect())
+                        .catch((err) => {
+                            log.default.error('Websocket error - setupToken():', err);
+                            // Don't attempt to reconnect
+                        });
                 } else {
-                    // Don't log this kind of err
                     log.default.error('Websocket error:', err?.error);
                 }
             });
