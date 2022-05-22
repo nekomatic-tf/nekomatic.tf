@@ -17,6 +17,8 @@ class PricesTfSocketManager {
                 });
             }
         };
+
+        this.retryAttempts = -1;
     }
 
     socketDisconnected() {
@@ -46,16 +48,7 @@ class PricesTfSocketManager {
             this.ws.addEventListener('error', (err) => {
                 if (err.message === 'Unexpected server response: 401') {
                     log.default.warn('JWT expired');
-                    void this.api
-                        .setupToken()
-                        .then(() => this.ws.reconnect())
-                        .catch((err) => {
-                            log.default.error(
-                                'Websocket error - setupToken():',
-                                err
-                            );
-                            // Don't attempt to reconnect
-                        });
+                    this.setupToken();
                 } else {
                     log.default.error('Websocket error:', err?.error);
                 }
@@ -65,6 +58,29 @@ class PricesTfSocketManager {
 
             return resolve();
         });
+    }
+
+    setupToken() {
+        void this.api
+            .setupToken()
+            .then(() => {
+                this.ws.reconnect();
+                this.retryAttempts = -1;
+            })
+            .catch((err) => {
+                log.default.error('Websocket error - setupToken():', err);
+                this.retrySetupToken();
+            });
+    }
+
+    retrySetupToken() {
+        this.retryAttempts++;
+        log.default.debug(`Retry reconnect attempt ${this.retryAttempts + 1}`);
+        clearTimeout(this.retrySetupTokenTimeout);
+        this.retrySetupTokenTimeout = setTimeout(
+            () => this.setupToken(),
+            exponentialBackoff(this.retryAttempts)
+        );
     }
 
     connect() {
