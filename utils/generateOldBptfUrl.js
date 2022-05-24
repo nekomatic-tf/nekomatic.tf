@@ -1,5 +1,5 @@
-function generateOldBptfUrl(schema, item) {
-    const base = `https://old.backpack.tf/stats/`;
+function generateOldBptfUrl(oldBptfDomain, schema, item) {
+    const base = `${oldBptfDomain}/stats/`;
 
     const name = schema.getName(
         {

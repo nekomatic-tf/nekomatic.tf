@@ -11,6 +11,7 @@ const fs = require('fs');
 
 const DEFAULT_OPTIONS = {
     bptfDomain: 'https://backpack.tf',
+    oldBptfDomain: 'https://old.backpack.tf'
 };
 let options = DEFAULT_OPTIONS;
 const optionsPath = path.join(__dirname, '../options');
@@ -286,6 +287,7 @@ pricestfPricer
                         );
 
                         const [oldBptfUrl, bptfQuery] = generateOldBptfUrl(
+                            options.oldBptfDomain,
                             schemaManager.schema,
                             item
                         );
