@@ -1,106 +1,141 @@
 function generateBptfUrl(bptfDomain, schema, item) {
-    const base = `${bptfDomain}/stats/`;
+    const base = `${bptfDomain}/stats`;
+
+    // item<{
+    //     defindex: number | 0;
+    //     quality: number | 0;
+    //     craftable?: boolean | true;
+    //     tradable?: boolean | true;
+    //     killstreak?: number | 0;
+    //     australium?: boolean | false;
+    //     effect?: number | null;
+    //     festive?: boolean;
+    //     paintkit?: number | null;
+    //     wear?: number | null;
+    //     quality2?: number | null;
+    //     craftnumber?: number | null;
+    //     crateseries?: number | null;
+    //     target?: number | null;
+    //     output?: number | null;
+    //     outputQuality?: number | null;
+    //     paint?: number | null;
+    // }>
+
+    const wears = {
+        1: 'Factory New',
+        2: 'Minimal Wear',
+        3: 'Field-Tested',
+        4: 'Well-Worn',
+        5: 'Battle Scarred',
+    };
 
     const name = schema.getName(
         {
             defindex: item.defindex,
             quality: 6,
             festive: item.festive,
-            killstreak: item.killstreak,
-            australium: item.australium,
-            target: item.target,
-            paintkit: item.paintkit,
-            wear: item.wear,
         },
-        false,
-        true
+        false
     );
 
-    const nameLowered = name.toLowerCase();
+    let query = `?item=${encodeURIComponent(name)}&quality=${encodeURIComponent(
+        schema.getQualityById(item.quality)
+    )}&craftable=${String(item.craftable)}`;
 
-    const isUnusualifier =
-        nameLowered.includes('unusualifier') && item.target !== null;
+    if (item.killstreak) {
+        query = query + `&killstreakTier=${String(item.killstreak)}`;
+    }
 
-    const isStrangifierChemistrySet =
-        nameLowered.includes('chemistry set') &&
-        item.target !== null &&
-        item.output !== null &&
-        item.outputQuality !== null;
+    if (item.australium) {
+        query = query + `&australium=${String(item.australium)}`;
+    }
 
-    const isCollectorsChemistrySet =
-        nameLowered.includes('chemistry set') &&
-        item.target === null &&
-        item.output !== null &&
-        item.outputQuality !== null;
+    if (typeof item.paintkit === 'number') {
+        query =
+            query +
+            `&texture=${encodeURIComponent(schema.getSkinById(item.paintkit))}`;
+    }
 
-    const isStrangifier =
-        nameLowered.includes('strangifier') && item.target !== null;
+    if (item.wear) {
+        query = query + `&wearTier=${encodeURIComponent(wears[item.wear])}`;
+    }
 
-    const isFabricator =
-        nameLowered.includes('fabricator') &&
-        item.target !== null &&
-        item.output !== null &&
-        item.outputQuality !== null;
-    const isGenericFabricator =
-        nameLowered.includes('fabricator') &&
-        item.target === null &&
-        item.output !== null &&
-        item.outputQuality !== null;
+    if (item.quality2) {
+        query =
+            query +
+            `&elevatedQuality=${encodeURIComponent(
+                schema.getQualityById(item.quality2)
+            )}`;
+    }
 
-    const isKillstreakKit =
-        nameLowered.includes('kit') &&
-        item.killstreak !== 0 &&
-        item.target !== null;
+    if (
+        item.effect !== null ||
+        item.crateseries !== null ||
+        item.target !== null ||
+        item.output !== null ||
+        item.outputQuality !== null
+    ) {
+        const nameLowered = name.toLowerCase();
 
-    const itemName = isStrangifier
-        ? 'Strangifier'
-        : isFabricator
-        ? item.killstreak === 2
-            ? 'Specialized Killstreak Fabricator'
-            : 'Professional Killstreak Fabricator'
-        : isKillstreakKit
-        ? item.killstreak === 1
-            ? 'Killstreak Kit'
-            : item.killstreak === 2
-            ? 'Specialized Killstreak Kit'
-            : 'Professional Killstreak Kit'
-        : name.includes('Haunted Metal Scrap') ||
-          name.includes("Horseless Headless Horsemann's Headtaker")
-        ? name.replace('Unique ', '')
-        : name;
+        const isUnusualifier =
+            nameLowered.includes('unusualifier') && item.target !== null;
 
-    const quality =
-        (item.quality2 !== null
-            ? schema.getQualityById(item.quality2) + ' '
-            : '') + schema.getQualityById(item.quality);
+        const isStrangifierChemistrySet =
+            nameLowered.includes('chemistry set') &&
+            item.target !== null &&
+            item.output !== null &&
+            item.outputQuality !== null;
 
-    const tradable = `${!item.tradable ? 'Non-' : ''}Tradable`;
-    const craftable = `${!item.craftable ? 'Non-' : ''}Craftable`;
+        const isCollectorsChemistrySet =
+            nameLowered.includes('chemistry set') &&
+            item.target === null &&
+            item.output !== null &&
+            item.outputQuality !== null;
 
-    const priceindex =
-        item.effect !== null
-            ? item.effect
-            : item.crateseries !== null
-            ? item.crateseries
-            : isUnusualifier || isStrangifier
-            ? item.target
-            : isFabricator
-            ? `${item.output}-${item.outputQuality}-${item.target}`
-            : isKillstreakKit
-            ? `${item.killstreak}-${item.target}`
-            : isStrangifierChemistrySet
-            ? `${item.target}-${item.outputQuality}-${item.output}`
-            : isCollectorsChemistrySet
-            ? `${item.output}-${item.outputQuality}`
-            : isGenericFabricator
-            ? `${item.output}-${item.outputQuality}-0`
-            : undefined;
+        const isStrangifier =
+            nameLowered.includes('strangifier') && item.target !== null;
 
-    const query = `${quality}/${encodeURIComponent(
-        itemName
-    )}/${tradable}/${craftable}${priceindex ? '/' + priceindex : ''}`;
+        const isFabricator =
+            nameLowered.includes('fabricator') &&
+            item.target !== null &&
+            item.output !== null &&
+            item.outputQuality !== null;
+        const isGenericFabricator =
+            nameLowered.includes('fabricator') &&
+            item.target === null &&
+            item.output !== null &&
+            item.outputQuality !== null;
 
-    return [base + query, query];
+        const isKillstreakKit =
+            nameLowered.includes('kit') &&
+            item.killstreak !== 0 &&
+            item.target !== null;
+
+        const priceindex =
+            item.effect !== null
+                ? item.effect
+                : item.crateseries !== null
+                ? item.crateseries
+                : isUnusualifier || isStrangifier
+                ? item.target
+                : isFabricator
+                ? `${item.output}-${item.outputQuality}-${item.target}`
+                : isKillstreakKit
+                ? `${item.killstreak}-${item.target}`
+                : isStrangifierChemistrySet
+                ? `${item.target}-${item.outputQuality}-${item.output}`
+                : isCollectorsChemistrySet
+                ? `${item.output}-${item.outputQuality}`
+                : isGenericFabricator
+                ? `${item.output}-${item.outputQuality}-0`
+                : undefined;
+
+        if (priceindex) {
+            query = query + `&priceindex=${encodeURIComponent(priceindex)}`;
+        }
+    }
+
+    return base + query;
 }
 
 module.exports = generateBptfUrl;

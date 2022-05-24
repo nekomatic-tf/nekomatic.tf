@@ -41,8 +41,8 @@ const bodyParser = require('body-parser');
 
 const SKU = require('@tf2autobot/tf2-sku');
 const Currencies = require('@tf2autobot/tf2-currencies');
+const generateOldBptfUrl = require('../utils/generateOldBptfUrl');
 const generateBptfUrl = require('../utils/generateBptfUrl');
-const generateBptfNextUrl = require('../utils/generateNextBptfUrl');
 
 const getImage = require('../utils/getImage');
 const getQualityColor = require('../utils/getQualityColor');
@@ -286,8 +286,7 @@ pricestfPricer
                             domain
                         );
 
-                        const [bptfUrl, bptfQuery] = generateBptfUrl(
-                            options.bptfDomain,
+                        const [oldBptfUrl, bptfQuery] = generateOldBptfUrl(
                             schemaManager.schema,
                             item
                         );
@@ -319,8 +318,9 @@ pricestfPricer
                             quality: getQualityColor(item.quality),
                             image,
                             description: baseItemData?.item_description,
-                            bptfUrl: bptfUrl,
-                            bptfNextUrl: generateBptfNextUrl(
+                            oldBptfUrl: oldBptfUrl,
+                            bptfUrl: generateBptfUrl(
+                                options.bptfDomain,
                                 schemaManager.schema,
                                 item
                             ),
