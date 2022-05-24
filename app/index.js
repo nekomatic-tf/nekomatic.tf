@@ -11,7 +11,11 @@ const fs = require('fs');
 
 const DEFAULT_OPTIONS = {
     bptfDomain: 'https://backpack.tf',
-    oldBptfDomain: 'https://old.backpack.tf'
+    oldBptfDomain: 'https://old.backpack.tf',
+    discordUserIdsToMention: [],
+    discordRoleIdToMention: '',
+    discordNotificationEnabled: true,
+    discordNotificationUrl: '',
 };
 let options = DEFAULT_OPTIONS;
 const optionsPath = path.join(__dirname, '../options');
@@ -37,6 +41,7 @@ const init = require('./schema');
 const log = require('./lib/logger');
 log.initLogger();
 const express = require('express');
+const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 // const device = require('express-device');
 const bodyParser = require('body-parser');
 
@@ -685,6 +690,22 @@ pricestfPricer
                     log.default.info(
                         `Server is now live at http://localhost:${port}`
                     );
+
+                    void sendDiscordWebhook(
+                        `<@&${options.discordRoleIdToMention}>`,
+                        [
+                            {
+                                title: '🎉 Server is now live!',
+                                description: `[Main page](https://autobot.tf) | [Random item](https://autobot.tf/random)`,
+                                color: '3329330', // Green
+                                footer: {
+                                    text: `${String(new Date(Date.now()))} • v${
+                                        process.env.SERVER_VERSION
+                                    }`,
+                                },
+                            },
+                        ]
+                    );
                 });
             });
         });
@@ -753,13 +774,54 @@ function checkAuthorization(req, res, requestRawHeader) {
     return true;
 }
 
+function sendDiscordWebhook(content, embeds) {
+    return new Promise((resolve, reject) => {
+        if (options.discordNotificationEnabled) {
+            const webhook = {
+                username: 'Autobot.tf',
+                avatar_url: 'https://autobot.tf/images/tf2autobot.png',
+                content: content,
+                embeds: embeds,
+            };
+
+            const request = new XMLHttpRequest();
+
+            request.onreadystatechange = () => {
+                if (request.readyState === 4) {
+                    if (request.status === 204) {
+                        resolve();
+                    } else {
+                        log.default.error('Error sending webhook:', {
+                            text: request.responseText,
+                            webhook,
+                        });
+                        reject();
+                    }
+                }
+            };
+
+            request.open('POST', options.discordNotificationUrl);
+            request.setRequestHeader('Content-Type', 'application/json');
+            request.send(JSON.stringify(webhook));
+        }
+    });
+}
+
 const ON_DEATH = require('death');
 const inspect = require('util');
 
 ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
     const crashed = signalOrErr !== 'SIGINT';
 
+    const ending = () => {
+        log.default.info('Server uptime:' + process.uptime());
+        pricestfPricer?.shutdown();
+        process.exit(1);
+    };
+
     if (crashed) {
+        const crashLogs = ['Stack trace:', inspect.inspect(origin)];
+
         log.default.error(
             [
                 'Server' +
@@ -769,15 +831,59 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
                 }; node: ${process.version} ${process.platform} ${
                     process.arch
                 }}`,
-                'Stack trace:',
-                inspect.inspect(origin),
-            ].join('\r\n')
+            ]
+                .concat(crashLogs)
+                .join('\r\n')
         );
+
+        // On crash, we can't use the sendDiscordWebhook function
+        const webhook = {
+            username: 'Autobot.tf',
+            avatar_url: 'https://autobot.tf/images/tf2autobot.png',
+            content: `${options.discordUserIdsToMention
+                .map((id) => `<@!${id}>`)
+                .join(', ')}, <@&${options.discordRoleIdToMention}>`,
+            embeds: [
+                {
+                    title: '💥 Server crashed!',
+                    description: crashLogs.join('\r\n'),
+                    color: '16711680', // Red
+                    footer: {
+                        text: `${String(new Date(Date.now()))} • v${
+                            process.env.SERVER_VERSION
+                        }`,
+                    },
+                },
+            ],
+        };
+
+        const request = new XMLHttpRequest();
+
+        request.onreadystatechange = () => {
+            if (request.readyState === 4) {
+                ending();
+            }
+        };
+
+        request.open('POST', options.discordNotificationUrl);
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.send(JSON.stringify(webhook));
     } else {
         log.default.warn('Received kill signal `' + signalOrErr + '`');
-    }
 
-    log.default.info('Server uptime:' + process.uptime());
-    pricestfPricer?.shutdown();
-    process.exit(1);
+        sendDiscordWebhook(`<@&${options.discordRoleIdToMention}>`, [
+            {
+                title: '⚠️ Server is restarting/shutting down...',
+                description: 'We will be back shortly!',
+                color: '16776960', // Yellow
+                footer: {
+                    text: `${String(new Date(Date.now()))} • v${
+                        process.env.SERVER_VERSION
+                    }`,
+                },
+            },
+        ]).finally(() => {
+            ending();
+        });
+    }
 });
