@@ -40,7 +40,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const SKU = require('@tf2autobot/tf2-sku');
-const Currencies = require('@tf2autobot/tf2-currencies');
 const generateOldBptfUrl = require('../utils/generateOldBptfUrl');
 const generateBptfUrl = require('../utils/generateBptfUrl');
 
