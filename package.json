@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@tf2autobot/tf2-currencies": "^2.0.1",
-    "@tf2autobot/tf2-schema": "^2.6.8",
+    "@tf2autobot/tf2-schema": "^2.6.9",
     "@tf2autobot/tf2-sku": "^2.0.3",
     "body-parser": "^1.20.0",
     "canvas": "^2.9.1",

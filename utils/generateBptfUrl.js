@@ -12,7 +12,8 @@ function generateBptfUrl(bptfDomain, schema, item) {
             paintkit: item.paintkit,
             wear: item.wear,
         },
-        false
+        false,
+        true
     );
 
     const nameLowered = name.toLowerCase();
