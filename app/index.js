@@ -696,7 +696,7 @@ pricestfPricer
                         [
                             {
                                 title: '🎉 Server is now live!',
-                                description: `[Main page](https://autobot.tf) | [Random item](https://autobot.tf/random)`,
+                                description: `[Main page](https://autobot.tf) | [Random item](https://autobot.tf/items/random)`,
                                 color: '3329330', // Green
                                 footer: {
                                     text: `${String(new Date(Date.now()))} • v${
