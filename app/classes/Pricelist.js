@@ -175,8 +175,6 @@ class Pricelist {
                                 err
                             );
                         });
-                } else {
-                    this.pricer.connect();
                 }
             } else {
                 this.last1MinsReceivedCount = this.receivedCount;
