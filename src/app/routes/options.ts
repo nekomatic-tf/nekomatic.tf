@@ -12,7 +12,7 @@ export default class Options {
     init(): Router {
         const router = express.Router();
 
-        router.get('/options', (req, res) => {
+        router.get('/', (req, res) => {
             // Track who's requesting this, so better don't try
             const requestRawHeader = JSON.stringify(req.rawHeaders, null, 2);
 
@@ -24,7 +24,7 @@ export default class Options {
             res.json({ success: true, options: this.server.options });
         });
 
-        router.patch('/options', (req, res) => {
+        router.patch('/', (req, res) => {
             const requestRawHeader = JSON.stringify(req.rawHeaders, null, 2);
 
             if (!checkAuthorization(req, res, requestRawHeader)) {
