@@ -1,5 +1,7 @@
 node_modules
+dist
 .env
+files/*.json
 public/files/*.json
 public/images/items/*.png
 public/images/effects/*.png
