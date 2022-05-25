@@ -26,7 +26,7 @@ export default class ExpressManager {
             const options = new Options(this.server);
 
             this.app
-                .use(express.static(path.join(__dirname, '../../../public')))
+                .use(express.static(path.join(__dirname, '../../../../public')))
                 .set('view engine', 'ejs')
                 .use(bodyParser.json())
                 .use(
