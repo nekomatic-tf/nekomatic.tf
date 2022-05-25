@@ -72,7 +72,7 @@ export class Items {
                         sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
                         name: itemName,
                         quality: qualityColor[item.quality],
-                        imageUrl,
+                        image: imageUrl,
                         description: baseItemData?.item_description,
                         oldBptfUrl: oldBptfUrl,
                         bptfUrl: generateBptfUrl(this.server.options.redirects.backpacktf, this.schema, item),
