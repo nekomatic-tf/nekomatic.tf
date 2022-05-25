@@ -33,5 +33,3 @@ export default function getMptfPrice(bptfQuery: string): Promise<string> {
         });
     });
 }
-
-module.exports = getMptfPrice;

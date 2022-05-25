@@ -187,5 +187,3 @@ async function resizeImage(itemImage: string) {
             });
     });
 }
-
-module.exports = getImage;
