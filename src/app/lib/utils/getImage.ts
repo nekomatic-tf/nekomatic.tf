@@ -99,8 +99,6 @@ export default async function getImage(
 
     // TODO: Later just get the effect image and make it overlays instead of merge thingy (hmmm...)
     if (item.effect !== null) {
-        const isDevMode = JSON.parse(process.env.DEV) as boolean | undefined;
-
         const folderContents = fs.readdirSync(path.join(__dirname, '../../../../public/images/items/'));
 
         let fileFound = false;
@@ -136,15 +134,7 @@ export default async function getImage(
 
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 const imageBase64 = (await mergeImages(
-                    [
-                        path.join(
-                            __dirname,
-                            `${isDevMode ? '../' : ''}../../../../${
-                                isDevMode ? 'autobot.tf' : ''
-                            }public/images/effects/${item.effect}_380x380.png`
-                        ),
-                        itemImage
-                    ],
+                    [path.join(__dirname, `../../../../public/images/effects/${item.effect}_380x380.png`), itemImage],
                     {
                         Canvas: Canvas,
                         Image: Image
@@ -153,23 +143,7 @@ export default async function getImage(
 
                 const toSave = imageBase64.replace(/^data:image\/png;base64,/, '');
 
-                if (isDevMode) {
-                    fs.writeFileSync(
-                        path.join(__dirname, `../../../../public/images/items/${sku}.png`),
-                        toSave,
-                        'base64'
-                    );
-                }
-                fs.writeFileSync(
-                    path.join(
-                        __dirname,
-                        `${isDevMode ? '../' : ''}../../../../${
-                            isDevMode ? 'autobot.tf/' : ''
-                        }public/images/items/${sku}.png`
-                    ),
-                    toSave,
-                    'base64'
-                );
+                fs.writeFileSync(path.join(__dirname, `../../../../public/images/items/${sku}.png`), toSave, 'base64');
 
                 return `${domain}/images/items/${sku}.png`;
             } catch (err) {
