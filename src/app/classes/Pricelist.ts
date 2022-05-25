@@ -4,7 +4,7 @@ import SchemaTF2 from './SchemaManager';
 import { Schema } from '@tf2autobot/tf2-schema';
 import IPricer, { Item, GetItemPriceResponse } from '../types/interfaces/IPricer';
 import log from '../lib/logger';
-import Options from './Options';
+import IOptions from './IOptions';
 import Server from './Server';
 import { setWebhook, sendWebhook } from './DiscordWebhook';
 import { Webhook } from '../types/interfaces/DiscordWebhook';
@@ -101,7 +101,7 @@ export default class Pricelist {
 
     private autoPricerCheckInterval: NodeJS.Timeout;
 
-    constructor(private server: Server, tf2schema: SchemaTF2, private pricer: IPricer, private options: Options) {
+    constructor(private server: Server, tf2schema: SchemaTF2, private pricer: IPricer, private options: IOptions) {
         this.boundHandlePriceChange = this.handlePriceChange.bind(this);
         this.schema = tf2schema.schema;
     }

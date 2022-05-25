@@ -1,5 +1,5 @@
 import log from '../lib/logger';
-import Options from './Options';
+import IOptions from './IOptions';
 import IPricer from '../types/interfaces/IPricer';
 import Pricelist from './Pricelist';
 import SchemaManagerTF2 from './SchemaManager';
@@ -20,7 +20,7 @@ export default class Server {
         private readonly serverManager: ServerManager,
         public readonly pricer: IPricer,
         public readonly schemaManagerTF2: SchemaManagerTF2,
-        public options: Options
+        public options: IOptions
     ) {
         this.expressManager = new ExpressManager(this);
         this.discordWebhook = new DiscordWebhook(this, this.schemaManagerTF2.schema);

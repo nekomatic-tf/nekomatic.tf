@@ -84,14 +84,14 @@ export interface JsonOptions {
     discord: Discord;
 }
 
-export default interface Options extends JsonOptions {
+export default interface IOptions extends JsonOptions {
     steamApiKey: string;
     port: number;
     secretKeyAdmin: string;
     dev: boolean;
 }
 
-function getOption<T>(option: string, def: T, parseFn: (target: string) => T, options?: Options): T {
+function getOption<T>(option: string, def: T, parseFn: (target: string) => T, options?: IOptions): T {
     try {
         if (options && options[option]) {
             return options[option] as T;
@@ -129,7 +129,7 @@ function lintAllTheThings(directory: string): void {
     }
 }
 
-function loadJsonOptions(optionsPath: string, options?: Options): JsonOptions {
+function loadJsonOptions(optionsPath: string, options?: IOptions): JsonOptions {
     let fileOptions;
     const workingDefault = deepMerge({}, DEFAULTS);
     const incomingOptions = options ? deepMerge({}, options) : deepMerge({}, DEFAULTS);
@@ -171,7 +171,7 @@ function loadJsonOptions(optionsPath: string, options?: Options): JsonOptions {
     }
 }
 
-export function removeCliOptions(incomingOptions: Options): void {
+export function removeCliOptions(incomingOptions: IOptions): void {
     const findNonEnv = validator(incomingOptions, 'options');
     if (findNonEnv) {
         findNonEnv
@@ -181,8 +181,8 @@ export function removeCliOptions(incomingOptions: Options): void {
     }
 }
 
-export function loadOptions(options?: Options): Options {
-    const incomingOptions = (options ? deepMerge({}, options) : {}) as Options;
+export function loadOptions(options?: IOptions): IOptions {
+    const incomingOptions = (options ? deepMerge({}, options) : {}) as IOptions;
     lintAllTheThings(getFilesPath()); // you shall not pass
 
     // const jsonParseArray = (jsonString: string): string[] => JSON.parse(jsonString) as unknown as string[];
@@ -199,12 +199,12 @@ export function loadOptions(options?: Options): Options {
     removeCliOptions(incomingOptions);
     const jsonOptions = loadJsonOptions(getOptionsPath(), incomingOptions);
 
-    const errors = validator(jsonOptions as Options, 'options');
+    const errors = validator(jsonOptions as IOptions, 'options');
     if (errors !== null) {
         throw new Error(errors.join(', '));
     }
 
-    return deepMerge(jsonOptions, envOptions, incomingOptions) as Options;
+    return deepMerge(jsonOptions, envOptions, incomingOptions) as IOptions;
 }
 
 export function getFilesPath(): string {

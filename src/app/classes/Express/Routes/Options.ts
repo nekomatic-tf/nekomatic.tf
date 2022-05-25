@@ -2,7 +2,10 @@ import log from '../../../lib/logger';
 import fs from 'fs';
 import express, { Router, Request, Response } from 'express';
 import Server from '../../Server';
-import { getOptionsPath } from '../../Options';
+import IOptions, { getOptionsPath, JsonOptions } from '../../IOptions';
+import { removeCliOptions } from '../../IOptions';
+import { deepMerge } from 'src/app/lib/utils/deep-merge';
+import validator from 'src/app/lib/validator';
 
 export default class Options {
     constructor(private server: Server) {
@@ -21,7 +24,8 @@ export default class Options {
             }
 
             log.info(`Got GET /options request, info:\n${requestRawHeader}`);
-            res.json({ success: true, options: this.server.options });
+            const options = deepMerge({}, this.server.options) as IOptions;
+            res.json({ success: true, options: removeCliOptions(options) });
         });
 
         router.patch('/', (req, res) => {
@@ -45,60 +49,53 @@ export default class Options {
                 });
             }
 
-            const oldOptions = Object.assign({}, this.server.options);
-            let changed = false;
+            const oldOptions = deepMerge({}, this.server.options) as IOptions;
+            // remove any CLI stuff
+            removeCliOptions(oldOptions);
 
-            /*eslint-disable */
-            for (const key in req.body) {
-                if (this.server.options[key] === undefined) {
-                    continue;
-                } else if (
-                    key === 'bptfDomain' &&
-                    (typeof req.body[key] !== 'string' || !req.body[key].includes('https://'))
-                ) {
-                    continue;
-                }
-                changed = true;
-                this.server.options[key] = req.body[key];
-            }
-            /*eslint-enable */
+            const knownParams = req.body as JsonOptions;
+            const result = deepMerge(oldOptions, knownParams) as JsonOptions;
 
-            if (changed) {
-                try {
-                    fs.writeFile(
-                        getOptionsPath(),
-                        JSON.stringify(this.server.options, null, 2),
-                        { encoding: 'utf-8' },
-                        () => {
-                            const toSend = {
-                                success: true,
-                                oldOptions,
-                                newOptions: this.server.options
-                            };
-                            log.warn(
-                                `Got PATCH /options request from with successful changes:\n${JSON.stringify(
-                                    toSend,
-                                    null,
-                                    2
-                                )}, request info:\n${requestRawHeader}`
-                            );
-                            return res.json(toSend);
-                        }
-                    );
-                } catch (err) {
-                    log.warn(`Got PATCH /options request with error, request info:\n${requestRawHeader}`);
-                    const msg = 'Error saving patched options';
-                    log.error(msg, err);
-                    return res.json({
-                        success: false,
-                        message: msg
-                    });
-                }
-            } else {
-                log.warn(`Got PATCH /options request with no changes, request info:\n${requestRawHeader}`);
-                return res.status(418).json({
+            const errors = validator(result, 'options');
+            if (errors !== null) {
+                const msg = '❌ Error updating options: ' + errors.join(', ');
+                log.warn(`Got PATCH /options request with error, request info:\n${requestRawHeader}`);
+                log.error(msg);
+
+                return res.json({
                     success: false,
-                    message: 'Nothing changed'
+                    message: msg
+                });
+            }
+
+            try {
+                fs.writeFile(
+                    getOptionsPath(),
+                    JSON.stringify(this.server.options, null, 2),
+                    { encoding: 'utf-8' },
+                    () => {
+                        const toSend = {
+                            success: true,
+                            oldOptions,
+                            newOptions: removeCliOptions(this.server.options)
+                        };
+                        log.warn(
+                            `Got PATCH /options request from with successful changes:\n${JSON.stringify(
+                                toSend,
+                                null,
+                                2
+                            )}, request info:\n${requestRawHeader}`
+                        );
+                        return res.json(toSend);
+                    }
+                );
+            } catch (err) {
+                log.warn(`Got PATCH /options request with error, request info:\n${requestRawHeader}`);
+                const msg = 'Error saving patched options';
+                log.error(msg, err);
+                return res.json({
+                    success: false,
+                    message: msg
                 });
             }
         });

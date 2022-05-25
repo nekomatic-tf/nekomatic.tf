@@ -1,7 +1,7 @@
 import { Schema } from '@tf2autobot/tf2-schema';
 import { UnknownDictionary } from '../types/common';
 import { Embeds, Webhook } from '../types/interfaces/DiscordWebhook';
-import Options from './Options';
+import IOptions from './IOptions';
 import { Prices } from './Pricelist';
 import Server from './Server';
 import SKU from '@tf2autobot/tf2-sku';
@@ -247,7 +247,7 @@ export default class DiscordWebhook {
     }
 }
 
-export function setWebhook(type: Type, options: Options, content: string, embeds: Embeds[]): Webhook {
+export function setWebhook(type: Type, options: IOptions, content: string, embeds: Embeds[]): Webhook {
     const opt = options.discord[type];
     return {
         username: opt.displayName,

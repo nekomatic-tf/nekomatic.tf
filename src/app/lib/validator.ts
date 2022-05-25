@@ -7,9 +7,9 @@ import { optionsSchema } from '../schemas/options-json/options';
 v.addSchema(optionsSchema);
 
 import { EntryData } from '../classes/Pricelist';
-import Options from '../classes/Options';
+import { JsonOptions } from '../classes/IOptions';
 
-export = function (data: EntryData | Options, schema: string): string[] | null {
+export = function (data: EntryData | JsonOptions, schema: string): string[] | null {
     const putSchema = schema === 'options' ? optionsSchema : {};
 
     const validated = v.validate(data, putSchema);

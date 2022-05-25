@@ -3,7 +3,7 @@ import pm2 from 'pm2';
 import log from '../lib/logger';
 import { waitForWriting } from '../lib/files';
 import IPricer from '../types/interfaces/IPricer';
-import Options from './Options';
+import IOptions from './IOptions';
 import Server from './Server';
 
 export default class ServerManager {
@@ -31,7 +31,7 @@ export default class ServerManager {
         return this.server !== null && this.server.isReady;
     }
 
-    start(options: Options): Promise<void> {
+    start(options: IOptions): Promise<void> {
         return new Promise((resolve, reject) => {
             log.debug('Connecting to PM2...');
             void this.connectToPM2()

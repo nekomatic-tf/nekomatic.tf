@@ -3,7 +3,7 @@ import 'module-alias/register';
 const { version: SERVER_VERSION } = require('../../package.json');
 import PricesTfApi from './lib/pricer/pricestf/prices-tf-api';
 import PricesTfPricer from './lib/pricer/pricestf/prices-tf-pricer';
-import { loadOptions } from './classes/Options';
+import { loadOptions } from './classes/IOptions';
 
 process.env.SERVER_VERSION = SERVER_VERSION as string;
 
