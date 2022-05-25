@@ -1,13 +1,13 @@
-import Server from './Server';
+import Server from '../Server';
 import express, { Express } from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
-import Index from '../routes';
-import { Items } from '../routes/items';
-import Json from '../routes/json';
-import Download from '../routes/download';
-import { Redirect } from '../routes/redirect';
-import Options from '../routes/options';
+import Index from './Routes/Index';
+import { Items } from './Routes/Items';
+import Json from './Routes/Json';
+import Download from './Routes/Download';
+import { Redirect } from './Routes/Redirect';
+import Options from './Routes/Options';
 
 export default class ExpressManager {
     public app: Express;

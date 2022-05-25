@@ -1,6 +1,6 @@
-import log from '../lib/logger';
+import log from '../../../lib/logger';
 import express, { Router } from 'express';
-import Server from '../classes/Server';
+import Server from '../../Server';
 
 export class Redirect {
     constructor(private readonly server: Server) {

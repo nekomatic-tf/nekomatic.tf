@@ -1,8 +1,8 @@
-import log from '../lib/logger';
+import log from '../../../lib/logger';
 import fs from 'fs';
 import express, { Router, Request, Response } from 'express';
-import Server from '../classes/Server';
-import { getOptionsPath } from '../classes/Options';
+import Server from '../../Server';
+import { getOptionsPath } from '../../Options';
 
 export default class Options {
     constructor(private server: Server) {

@@ -1,4 +1,4 @@
-import log from '../lib/logger';
+import log from '../../../lib/logger';
 import express, { Router } from 'express';
 import path from 'path';
 

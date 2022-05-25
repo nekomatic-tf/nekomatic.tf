@@ -4,7 +4,7 @@ import IPricer from '../types/interfaces/IPricer';
 import Pricelist from './Pricelist';
 import SchemaManagerTF2 from './SchemaManager';
 import ServerManager from './ServerManager';
-import ExpressManager from './ExpressManager';
+import ExpressManager from './Express/ExpressManager';
 import DiscordWebhook from './DiscordWebhook';
 
 export default class Server {

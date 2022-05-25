@@ -1,14 +1,14 @@
-import log from '../lib/logger';
+import log from '../../../lib/logger';
 import express, { Router } from 'express';
-import Server from '../classes/Server';
+import Server from '../../Server';
 import { Schema } from '@tf2autobot/tf2-schema';
 import SKU from '@tf2autobot/tf2-sku';
-import testSKU from '../lib/utils/testSKU';
-import getImage from '../lib/utils/getImage';
-import generateOldBptfUrl from '../lib/utils/generateOldBptfUrl';
-import generateBptfUrl from '../lib/utils/generateBptfUrl';
-import getMptfPrice from '../lib/utils/getMptfPrice';
-import { qualityColor } from '../lib/data';
+import testSKU from '../../../lib/utils/testSKU';
+import getImage from '../../../lib/utils/getImage';
+import generateOldBptfUrl from '../../../lib/utils/generateOldBptfUrl';
+import generateBptfUrl from '../../../lib/utils/generateBptfUrl';
+import getMptfPrice from '../../../lib/utils/getMptfPrice';
+import { qualityColor } from '../../../lib/data';
 
 export class Items {
     private isRandom = false;
