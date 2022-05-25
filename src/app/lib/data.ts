@@ -1761,8 +1761,23 @@ export const qualityColor: { [quality: string]: string } = {
     7: '7385162', // Community - #70B04A
     8: '10817401', // Valve - #A50F79
     9: '7385162', //Self-Made - #70B04A
-    '11': '13593138', //Strange - #CF6A32
-    '13': '3732395', //Haunted - #38F3AB
-    '14': '11141120', //Collector's - #AA0000
-    '15': '16711422' // Decorated Weapon
+    11: '13593138', //Strange - #CF6A32
+    13: '3732395', //Haunted - #38F3AB
+    14: '11141120', //Collector's - #AA0000
+    15: '16711422' // Decorated Weapon
+};
+
+export const qualityColorHex: { [quality: string]: string } = {
+    0: '#B2B2B2', // Normal
+    1: '#4D7455', // Genuine
+    3: '#476291', // Vintage
+    5: '#8650AC', // Unusual
+    6: '#FFD700', // Unique
+    7: '#70B04A', // Community
+    8: '#A50F79', // Valve
+    9: '#70B04A', //Self-Made
+    11: '#CF6A32', //Strange
+    13: '#38F3AB', //Haunted
+    14: '#AA0000', //Collector's
+    15: '#FAFAFA' // Decorated Weapon
 };

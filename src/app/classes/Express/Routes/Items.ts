@@ -8,7 +8,7 @@ import getImage from '../../../lib/utils/getImage';
 import generateOldBptfUrl from '../../../lib/utils/generateOldBptfUrl';
 import generateBptfUrl from '../../../lib/utils/generateBptfUrl';
 import getMptfPrice from '../../../lib/utils/getMptfPrice';
-import { qualityColor } from '../../../lib/data';
+import { qualityColorHex } from '../../../lib/data';
 
 export class Items {
     private isRandom = false;
@@ -71,7 +71,7 @@ export class Items {
                     res.render('items/index', {
                         sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
                         name: itemName,
-                        quality: qualityColor[item.quality],
+                        quality: qualityColorHex[item.quality],
                         image: imageUrl,
                         description: baseItemData?.item_description,
                         oldBptfUrl: oldBptfUrl,
