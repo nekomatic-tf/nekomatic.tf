@@ -21,6 +21,8 @@ export default interface IPricer {
 
     getPricelist(): Promise<GetPricelistResponse>;
 
+    isPricerConnecting(): boolean;
+
     connect(): void;
 
     shutdown(): void;

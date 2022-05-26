@@ -344,6 +344,10 @@ export default class Pricelist {
                             this.isGettingPricelist = false;
                             this.hasAlreadyResetPricelist = true;
 
+                            if (!this.pricer.isPricerConnecting()) {
+                                this.pricer.connect();
+                            }
+
                             setTimeout(() => {
                                 this.hasAlreadyResetPricelist = false;
                             }, 5 * 60 * 1000);
