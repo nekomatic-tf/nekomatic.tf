@@ -27,13 +27,13 @@ export default class PricesTfSocketManager {
 
     private ws: ReconnectingWebSocket;
 
-    private socketDisconnected() {
+    private socketDisconnected(): () => void {
         return () => {
             log.debug('Disconnected from socket server');
         };
     }
 
-    private socketConnect() {
+    private socketConnect(): () => void {
         return () => {
             log.debug('Connected to socket server');
         };
