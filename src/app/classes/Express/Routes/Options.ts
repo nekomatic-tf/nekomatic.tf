@@ -4,8 +4,8 @@ import express, { Router, Request, Response } from 'express';
 import Server from '../../Server';
 import IOptions, { getOptionsPath, JsonOptions } from '../../IOptions';
 import { removeCliOptions } from '../../IOptions';
-import { deepMerge } from 'src/app/lib/utils/deep-merge';
-import validator from 'src/app/lib/validator';
+import { deepMerge } from '../../../lib/utils/deep-merge';
+import validator from '../../../lib/validator';
 
 export default class Options {
     constructor(private server: Server) {
