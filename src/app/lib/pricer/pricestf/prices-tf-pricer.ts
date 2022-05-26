@@ -7,7 +7,7 @@ import IPricer, {
     PricerOptions,
     RequestCheckResponse
 } from '../../../types/interfaces/IPricer';
-import PricesTfApi, { PricesTfItem, PricesTfItemMessageEvent, PricesTfGetPricesResponse } from './prices-tf-api';
+import PricesTfApi, { PricesTfItem, PricesTfItemMessageEvent } from './prices-tf-api';
 import log from '../../logger';
 
 export default class PricesTfPricer implements IPricer {

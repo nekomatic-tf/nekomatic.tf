@@ -12,7 +12,7 @@ export default class Index {
 
         return router.get('/', (req, res) => {
             log.info(`Got GET / request (main page)`);
-            res.sendFile(path.join(__dirname, '../../../views/index.html'));
+            res.sendFile(path.join(__dirname, '../../../../../views/index.html'));
         });
     }
 }
