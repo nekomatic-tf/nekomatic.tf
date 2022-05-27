@@ -159,6 +159,9 @@ export default class ServerManager {
         if (this.server !== null) {
             // Stop updating schema
             this.schemaManager.shutdown();
+
+            // Close all server connections
+            this.server.expressManager.shutdown();
         }
 
         // Disconnect from socket server to stop price updates

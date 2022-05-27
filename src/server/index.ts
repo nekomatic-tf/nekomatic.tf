@@ -57,6 +57,8 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
     const crashed = !['SIGINT', 'SIGTERM'].includes(signalOrErr as 'SIGINT' | 'SIGTERM' | 'SIGQUIT');
 
     const ending = () => {
+        serverManager.stop(crashed ? (signalOrErr as Error) : null, true, false);
+        log.info('Server uptime:' + String(uptime()));
         process.exit(1);
     };
 
@@ -133,17 +135,15 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
 
             sendWebhook(optDW.url, webhook)
                 .catch(err => {
-                    log.error('Failed to send webhook on crash', err);
+                    log.error('Failed to send webhook on shutdown', err);
                 })
                 .finally(() => {
                     ending();
                 });
+        } else {
+            ending();
         }
     }
-
-    serverManager.stop(crashed ? (signalOrErr as Error) : null, true, false);
-    log.info('Server uptime:' + String(uptime()));
-    pricer?.shutdown();
 });
 
 process.on('message', message => {
