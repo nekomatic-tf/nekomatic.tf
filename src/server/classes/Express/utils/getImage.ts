@@ -2,11 +2,13 @@ import SKU from '@tf2autobot/tf2-sku';
 import mergeImages from 'merge-images';
 import { Canvas, Image } from 'canvas';
 import Jimp from 'jimp';
-import log from '../logger';
+import log from '../../../lib/logger';
 import fs from 'fs';
 import path from 'path';
 import { Item, Schema, SchemaItem } from '@tf2autobot/tf2-schema';
-import * as images from '../data';
+import * as images from '../../../lib/data';
+
+const publicImagesDirectory = path.join(__dirname, '../../../../../public/images');
 
 export default async function getImage(
     schema: Schema,
@@ -99,7 +101,7 @@ export default async function getImage(
 
     // TODO: Later just get the effect image and make it overlays instead of merge thingy (hmmm...)
     if (item.effect !== null) {
-        const folderContents = fs.readdirSync(path.join(__dirname, '../../../../public/images/items/'));
+        const folderContents = fs.readdirSync(path.join(publicImagesDirectory, '/items/'));
 
         let fileFound = false;
         const adjustedItem = Object.assign({}, item);
@@ -134,7 +136,7 @@ export default async function getImage(
 
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 const imageBase64 = (await mergeImages(
-                    [path.join(__dirname, `../../../../public/images/effects/${item.effect}_380x380.png`), itemImage],
+                    [path.join(publicImagesDirectory, `/effects/${item.effect}_380x380.png`), itemImage],
                     {
                         Canvas: Canvas,
                         Image: Image
@@ -143,7 +145,7 @@ export default async function getImage(
 
                 const toSave = imageBase64.replace(/^data:image\/png;base64,/, '');
 
-                fs.writeFileSync(path.join(__dirname, `../../../../public/images/items/${sku}.png`), toSave, 'base64');
+                fs.writeFileSync(path.join(publicImagesDirectory, `/items/${sku}.png`), toSave, 'base64');
 
                 return `${domain}/images/items/${sku}.png`;
             } catch (err) {

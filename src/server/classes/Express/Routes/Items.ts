@@ -3,11 +3,11 @@ import express, { Router } from 'express';
 import Server from '../../Server';
 import { Schema } from '@tf2autobot/tf2-schema';
 import SKU from '@tf2autobot/tf2-sku';
-import testSKU from '../../../lib/utils/testSKU';
-import getImage from '../../../lib/utils/getImage';
-import generateOldBptfUrl from '../../../lib/utils/generateOldBptfUrl';
-import generateBptfUrl from '../../../lib/utils/generateBptfUrl';
-import getMptfPrice from '../../../lib/utils/getMptfPrice';
+import testSKU from '../utils/testSKU';
+import getImage from '../utils/getImage';
+import generateOldBptfUrl from '../utils/generateOldBptfUrl';
+import generateBptfUrl from '../utils/generateBptfUrl';
+import getMptfPrice from '../utils/getMptfPrice';
 import { qualityColorHex } from '../../../lib/data';
 
 export class Items {

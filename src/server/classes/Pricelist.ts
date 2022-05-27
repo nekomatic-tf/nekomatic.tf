@@ -277,16 +277,18 @@ export default class Pricelist {
                 return;
             }
 
-            if (sku === '5021;6') {
-                this.server.discordWebhook.sendWebhookKeyUpdate(sku, newPrices, data.time);
-            } else {
-                this.server.discordWebhook.sendWebhookPriceUpdate(
-                    sku,
-                    newPrices,
-                    data.time,
-                    buyChangesValue,
-                    sellChangesValue
-                );
+            if (!this.options.dev) {
+                if (sku === '5021;6') {
+                    this.server.discordWebhook.sendWebhookKeyUpdate(sku, newPrices, data.time);
+                } else {
+                    this.server.discordWebhook.sendWebhookPriceUpdate(
+                        sku,
+                        newPrices,
+                        data.time,
+                        buyChangesValue,
+                        sellChangesValue
+                    );
+                }
             }
 
             this.dailyUpdatedCount++;

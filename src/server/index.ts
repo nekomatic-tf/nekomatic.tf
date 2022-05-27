@@ -47,9 +47,11 @@ const serverManager = new ServerManager(pricer);
 import ON_DEATH from 'death';
 import * as inspect from 'util';
 import { setWebhook, sendWebhook } from './classes/DiscordWebhook';
-import { uptime } from './lib/utils/time';
+import { uptime } from './lib/tools/time';
 import { Webhook } from './types/interfaces/DiscordWebhook';
 import { XMLHttpRequest } from 'xmlhttprequest-ts';
+
+const optDW = options.discord.server;
 
 ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
     const crashed = !['SIGINT', 'SIGTERM'].includes(signalOrErr as 'SIGINT' | 'SIGTERM' | 'SIGQUIT');
@@ -57,8 +59,6 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
     const ending = () => {
         process.exit(1);
     };
-
-    const opt = options.discord.server;
 
     if (crashed) {
         const serverReady = serverManager.isServerReady;
@@ -83,12 +83,12 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
         log.error(errorMessage);
 
         // On crash, we can't use the sendWebhook function
-        if (opt.enabled && opt.url !== '') {
+        if (optDW.enabled && optDW.url !== '') {
             const webhook: Webhook = {
-                username: opt.displayName || 'Autobot.tf',
+                username: optDW.displayName || 'Autobot.tf',
                 avatar_url:
                     'https://user-images.githubusercontent.com/47635037/100915844-e05e7380-350f-11eb-96f1-6d61141c4a44.png',
-                content: `${opt.mentions.userIds.map(id => `<@!${id}>`).join(', ')}, <@&${opt.mentions.roleId}>`,
+                content: `${optDW.mentions.userIds.map(id => `<@!${id}>`).join(', ')}, <@&${optDW.mentions.roleId}>`,
                 embeds: [
                     {
                         title: '💥 Server crashed!',
@@ -110,7 +110,7 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
                     ending();
                 }
             };
-            request.open('POST', opt.url);
+            request.open('POST', optDW.url);
             request.setRequestHeader('Content-Type', 'application/json');
             request.send(JSON.stringify(webhook));
         } else {
@@ -119,8 +119,8 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
     } else {
         log.warn('Received kill signal `' + (signalOrErr as string) + '`');
 
-        if (opt.enabled && opt.url !== '') {
-            const webhook = setWebhook('server', options, `<@&${opt.mentions.roleId}>`, [
+        if (options.dev !== true && optDW.enabled && optDW.url !== '') {
+            const webhook = setWebhook('server', options, `<@&${optDW.mentions.roleId}>`, [
                 {
                     title: '⚠️ Server is restarting/shutting down...',
                     description: 'We will be back shortly!',
@@ -131,7 +131,7 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
                 }
             ]);
 
-            sendWebhook(opt.url, webhook)
+            sendWebhook(optDW.url, webhook)
                 .catch(err => {
                     log.error('Failed to send webhook on crash', err);
                 })
@@ -153,13 +153,13 @@ process.on('message', message => {
         log.warn('Process received unknown message `' + (message as string) + '`');
     }
 
-    if (options.discord.server.enabled && options.discord.server.url !== '') {
+    if (options.dev !== true && optDW.enabled && optDW.url !== '') {
         const webhook = setWebhook(
             'server',
             options,
             message === 'shutdown'
-                ? `<@&${options.discord.server.mentions.roleId}>`
-                : `${options.discord.server.mentions.userIds.map(id => `<@!${id}>`).join(', ')}`,
+                ? `<@&${optDW.mentions.roleId}>`
+                : `${optDW.mentions.userIds.map(id => `<@!${id}>`).join(', ')}`,
             [
                 {
                     title:
@@ -176,7 +176,7 @@ process.on('message', message => {
         );
 
         if (message === 'shutdown') {
-            sendWebhook(options.discord.server.url, webhook)
+            sendWebhook(optDW.url, webhook)
                 .catch(err => {
                     log.error('Failed to send webhook on shutdown', err);
                 })
@@ -184,7 +184,7 @@ process.on('message', message => {
                     serverManager.stop(null, true, false);
                 });
         } else {
-            void sendWebhook(options.discord.server.url, webhook).catch(err => {
+            void sendWebhook(optDW.url, webhook).catch(err => {
                 log.error('Failed to send webhook on receive unknown message', err);
             });
         }
@@ -196,20 +196,22 @@ void serverManager
     .then(() => {
         log.info(`Server is now live at http://localhost:${options.port}`);
 
-        const webhook = setWebhook('server', options, `<@&${options.discord.server.mentions.roleId}>`, [
-            {
-                title: '🎉 Server is now live!',
-                description: `[Main page](https://autobot.tf) | [Random item](https://autobot.tf/items/random)`,
-                color: '3329330', // Green
-                footer: {
-                    text: `${String(new Date(Date.now()))} • v${process.env.SERVER_VERSION}`
+        if (options.dev !== true && optDW.enabled && optDW.url !== '') {
+            const webhook = setWebhook('server', options, `<@&${optDW.mentions.roleId}>`, [
+                {
+                    title: '🎉 Server is now live!',
+                    description: `[Main page](https://autobot.tf) | [Random item](https://autobot.tf/items/random)`,
+                    color: '3329330', // Green
+                    footer: {
+                        text: `${String(new Date(Date.now()))} • v${process.env.SERVER_VERSION}`
+                    }
                 }
-            }
-        ]);
+            ]);
 
-        void sendWebhook(options.discord.server.url, webhook).catch(err => {
-            log.error('Failed to send webhook on live', err);
-        });
+            void sendWebhook(optDW.url, webhook).catch(err => {
+                log.error('Failed to send webhook on live', err);
+            });
+        }
     })
     .catch(err => {
         if (err) {

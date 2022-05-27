@@ -1,5 +1,5 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import log from '../../../lib/logger';
+import log from '../../logger';
 import WS from 'ws';
 import * as Events from 'reconnecting-websocket/events';
 import PricesTfApi from './prices-tf-api';

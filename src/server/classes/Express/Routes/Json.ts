@@ -1,7 +1,7 @@
 import log from '../../../lib/logger';
 import express, { Router } from 'express';
 import SKU from '@tf2autobot/tf2-sku';
-import testSKU from '../../../lib/utils/testSKU';
+import testSKU from '../utils/testSKU';
 import Server from '../../Server';
 import { Schema } from '@tf2autobot/tf2-schema';
 
