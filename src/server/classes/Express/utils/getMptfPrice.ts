@@ -21,7 +21,8 @@ export default function getMptfPrice(bptfQuery: string): Promise<string> {
                 'User-Agent': 'autobot.tf@' + process.env.SERVER_VERSION
             },
             json: true,
-            gzip: true
+            gzip: true,
+            maxAttempts: 1
         };
 
         void request(options, (err, response, body) => {
