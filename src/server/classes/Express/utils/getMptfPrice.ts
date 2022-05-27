@@ -22,7 +22,8 @@ export default function getMptfPrice(bptfQuery: string): Promise<string> {
             },
             json: true,
             gzip: true,
-            maxAttempts: 1
+            maxAttempts: 1,
+            timeout: 2500 // set timeout to only 2.5 seconds, default was 10 seconds
         };
 
         void request(options, (err, response, body) => {
