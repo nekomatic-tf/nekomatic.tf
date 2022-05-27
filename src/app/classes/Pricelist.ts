@@ -21,27 +21,40 @@ export interface Prices {
 
 export interface EntryData {
     sku: string;
-    buy?: Currency | null;
-    sell?: Currency | null;
-    time?: number | null;
-    name?: string | undefined;
+    name?: string;
     source?: string;
+    buy: Currency | null;
+    sell: Currency | null;
+    time: number | null;
 }
 
 class Entry implements EntryData {
     sku: string;
 
+    name?: string;
+
+    source?: string;
+
+    time: number | null;
+
     buy: Currencies | null;
 
     sell: Currencies | null;
 
-    time: number | null;
-
     constructor(entry: EntryData) {
         this.sku = entry.sku;
+
+        if (entry.name) {
+            this.name = entry.name;
+        }
+
+        if (entry.source) {
+            this.source = entry.source;
+        }
+
+        this.time = entry.time;
         this.buy = new Currencies(entry.buy);
         this.sell = new Currencies(entry.sell);
-        this.time = entry.time;
     }
 
     static fromData(data: EntryData): Entry {
