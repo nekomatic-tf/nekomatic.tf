@@ -257,7 +257,7 @@ export function sendWebhook(url: string, webhook: Webhook): Promise<void> {
                 resolve();
             })
             .catch((err: AxiosError) => {
-                reject({ error: err.response.statusText, webhook });
+                reject({ error: err, webhook });
             });
     });
 }
