@@ -118,6 +118,9 @@ export default class DiscordWebhook {
         const qualityItem = parts[1];
         const qualityColorPrint = images.qualityColor[qualityItem];
 
+        const keyPrice = this.server.pricelist.keyPrice;
+        const conversion = sku === '5021;6' ? undefined : keyPrice;
+
         const webhook = setWebhook('priceUpdate', this.server.options, '', [
             {
                 author: {
@@ -145,10 +148,10 @@ export default class DiscordWebhook {
                             ? `${newPrices.buy.toString()}`
                             : `${oldPrices.buy.toString()} → ${newPrices.buy.toString()} (${
                                   buyChangesValue > 0
-                                      ? `+${Currencies.toCurrencies(buyChangesValue).toString()}`
+                                      ? `+${Currencies.toCurrencies(buyChangesValue, conversion).toString()}`
                                       : buyChangesValue === 0
                                       ? `0 ref`
-                                      : Currencies.toCurrencies(buyChangesValue).toString()
+                                      : Currencies.toCurrencies(buyChangesValue, conversion).toString()
                               })`
                     },
                     {
@@ -157,10 +160,10 @@ export default class DiscordWebhook {
                             ? `${newPrices.sell.toString()}`
                             : `${oldPrices.sell.toString()} → ${newPrices.sell.toString()} (${
                                   sellChangesValue > 0
-                                      ? `+${Currencies.toCurrencies(sellChangesValue).toString()}`
+                                      ? `+${Currencies.toCurrencies(sellChangesValue, conversion).toString()}`
                                       : sellChangesValue === 0
                                       ? `0 ref`
-                                      : Currencies.toCurrencies(sellChangesValue).toString()
+                                      : Currencies.toCurrencies(sellChangesValue, conversion).toString()
                               })`
                     }
                 ],
