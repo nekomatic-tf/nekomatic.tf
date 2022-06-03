@@ -9,6 +9,7 @@ import * as images from '../lib/data';
 import Currencies from '@tf2autobot/tf2-currencies';
 import log from '../lib/logger';
 import axios, { AxiosError } from 'axios';
+import { getTimeUTC } from '../lib/tools/time';
 
 type Type = 'server' | 'priceUpdate';
 
@@ -120,6 +121,7 @@ export default class DiscordWebhook {
 
         const keyPrice = this.server.pricelist.keyPrice;
         const conversion = sku === '5021;6' ? undefined : keyPrice;
+        const timeStr = getTimeUTC(time);
 
         const webhook = setWebhook('priceUpdate', this.server.options, '', [
             {
@@ -130,9 +132,7 @@ export default class DiscordWebhook {
                         'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/3d/3dba19679c4a689b9d24fa300856cbf3d948d631_full.jpg'
                 },
                 footer: {
-                    text: `${sku} • ${String(new Date(time * 1000)).replace('Coordinated Universal Time', 'UTC')} • v${
-                        process.env.SERVER_VERSION
-                    }`
+                    text: `${sku} • ${timeStr} • v${process.env.SERVER_VERSION}`
                 },
                 thumbnail: {
                     url: itemImageUrlPrint
@@ -185,6 +185,7 @@ export default class DiscordWebhook {
 
     sendWebhookKeyUpdate(sku: string, prices: Prices, time: number): void {
         const itemImageUrl = this.schema.getItemByItemName('Mann Co. Supply Crate Key');
+        const timeStr = getTimeUTC(time);
 
         const webhook = setWebhook('priceUpdate', this.server.options, '', [
             {
@@ -195,9 +196,7 @@ export default class DiscordWebhook {
                         'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/3d/3dba19679c4a689b9d24fa300856cbf3d948d631_full.jpg'
                 },
                 footer: {
-                    text: `${sku} • ${String(new Date(time * 1000)).replace('Coordinated Universal Time', 'UTC')} • v${
-                        process.env.SERVER_VERSION
-                    }`
+                    text: `${sku} • ${timeStr} • v${process.env.SERVER_VERSION}`
                 },
                 thumbnail: {
                     url: itemImageUrl.image_url_large
