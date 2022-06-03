@@ -49,7 +49,7 @@ import * as inspect from 'util';
 import { setWebhook, sendWebhook } from './classes/DiscordWebhook';
 import { uptime } from './lib/tools/time';
 import { Webhook } from './types/interfaces/DiscordWebhook';
-import { XMLHttpRequest } from 'xmlhttprequest-ts';
+import axios from 'axios';
 
 const optDW = options.discord.server;
 
@@ -103,18 +103,17 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
                 ]
             };
 
-            const request = new XMLHttpRequest();
-            request.onreadystatechange = () => {
-                if (request.readyState === 4) {
-                    if (request.status !== 204) {
-                        log.error({ responseText: request.responseText, webhook });
-                    }
+            void axios({
+                method: 'POST',
+                url: optDW.url,
+                data: webhook
+            })
+                .catch(err => {
+                    log.error('Error sending webhook on crash', err);
+                })
+                .finally(() => {
                     ending();
-                }
-            };
-            request.open('POST', optDW.url);
-            request.setRequestHeader('Content-Type', 'application/json');
-            request.send(JSON.stringify(webhook));
+                });
         } else {
             ending();
         }

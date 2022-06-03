@@ -8,7 +8,7 @@ import SKU from '@tf2autobot/tf2-sku';
 import * as images from '../lib/data';
 import Currencies from '@tf2autobot/tf2-currencies';
 import log from '../lib/logger';
-import { XMLHttpRequest } from 'xmlhttprequest-ts';
+import axios, { AxiosError } from 'axios';
 
 type Type = 'server' | 'priceUpdate';
 
@@ -248,21 +248,17 @@ export function setWebhook(type: Type, options: IOptions, content: string, embed
 
 export function sendWebhook(url: string, webhook: Webhook): Promise<void> {
     return new Promise((resolve, reject) => {
-        const request = new XMLHttpRequest();
-
-        request.onreadystatechange = (): void => {
-            if (request.readyState === 4) {
-                if (request.status === 204) {
-                    return resolve();
-                } else {
-                    return reject({ text: request.responseText, webhook });
-                }
-            }
-        };
-
-        request.open('POST', url);
-        request.setRequestHeader('Content-type', 'application/json');
-        request.send(JSON.stringify(webhook));
+        void axios({
+            method: 'POST',
+            url: url,
+            data: webhook
+        })
+            .then(() => {
+                resolve();
+            })
+            .catch((err: AxiosError) => {
+                reject({ error: err.response.statusText, webhook });
+            });
     });
 }
 
