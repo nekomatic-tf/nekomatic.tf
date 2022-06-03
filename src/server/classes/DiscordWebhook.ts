@@ -221,7 +221,7 @@ export default class DiscordWebhook {
         // send key price update to only key price update webhook.
         opt.urls.forEach((url, i) => {
             if (this.isMentionedKeyPrices === false) {
-                webhook.content = opt.roleId[i] === 'no role' ? '' : `<@&${opt.roleId[i]}>`;
+                webhook.content = `<@&${opt.roleId}>`;
 
                 if (opt.urls.length - i === 1) {
                     this.isMentionedKeyPrices = true;
