@@ -155,7 +155,7 @@ export default class DiscordWebhook {
                               })`
                     },
                     {
-                        name: `Selling for${sellChangesValue === 0 ? ' 🔄' : buyChangesValue > 0 ? ' 📈' : ' 📉'}`,
+                        name: `Selling for${sellChangesValue === 0 ? ' 🔄' : sellChangesValue > 0 ? ' 📈' : ' 📉'}`,
                         value: isNew
                             ? `${newPrices.sell.toString()}`
                             : `${oldPrices.sell.toString()} → ${newPrices.sell.toString()} (${
