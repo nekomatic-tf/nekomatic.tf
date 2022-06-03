@@ -26,7 +26,7 @@
     "winston": "^3.7.2",
     "winston-daily-rotate-file": "^4.7.1",
     "write-file-atomic": "^4.0.1",
-    "ws": "^8.6.0"
+    "ws": "^8.7.0"
   },
   "scripts": {
     "release": "np --no-cleanup --no-publish",
