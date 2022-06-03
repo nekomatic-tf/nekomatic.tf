@@ -150,7 +150,7 @@ export default class DiscordWebhook {
                                   buyChangesValue > 0
                                       ? `+${Currencies.toCurrencies(buyChangesValue, conversion).toString()}`
                                       : buyChangesValue === 0
-                                      ? `0 ref`
+                                      ? `=`
                                       : Currencies.toCurrencies(buyChangesValue, conversion).toString()
                               })`
                     },
@@ -162,7 +162,7 @@ export default class DiscordWebhook {
                                   sellChangesValue > 0
                                       ? `+${Currencies.toCurrencies(sellChangesValue, conversion).toString()}`
                                       : sellChangesValue === 0
-                                      ? `0 ref`
+                                      ? `=`
                                       : Currencies.toCurrencies(sellChangesValue, conversion).toString()
                               })`
                     }
