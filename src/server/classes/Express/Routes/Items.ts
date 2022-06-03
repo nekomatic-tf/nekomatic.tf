@@ -70,6 +70,7 @@ export class Items {
                 const render = (imageUrl: string, mptfPrice: string) => {
                     res.render('items/index', {
                         sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
+                        skuForDisplay: sku,
                         name: itemName,
                         quality: qualityColorHex[item.quality],
                         image: imageUrl,

@@ -11,10 +11,14 @@
 </header>
 <main>
   <div class="jumbotron">
-    <div class="row">
-      <div class="quality-box"></div>
-      <div><h1><%= name %></h1></div>
-    </div>
+      <div class="column">
+        <div class="row">
+            <div class="quality-box"></div>
+            <div><h1><%= name %></h1></div>
+          </div>
+          <div><h3><%= skuForDisplay %></h3></div>
+      </div>
+    
     <div class="jumbotron-content" align="center">
       <div>
         <img src="<%= image %>" alt="<%= name %>" width="500" height="500">
