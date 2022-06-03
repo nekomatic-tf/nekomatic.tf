@@ -143,7 +143,7 @@ export default class DiscordWebhook {
                 title: '',
                 fields: [
                     {
-                        name: 'Buying for',
+                        name: `Buying for${buyChangesValue === 0 ? ' 🔄' : buyChangesValue > 0 ? ' 📈' : ' 📉'}`,
                         value: isNew
                             ? `${newPrices.buy.toString()}`
                             : `${oldPrices.buy.toString()} → ${newPrices.buy.toString()} (${
@@ -155,7 +155,7 @@ export default class DiscordWebhook {
                               })`
                     },
                     {
-                        name: 'Selling for',
+                        name: `Selling for${sellChangesValue === 0 ? ' 🔄' : buyChangesValue > 0 ? ' 📈' : ' 📉'}`,
                         value: isNew
                             ? `${newPrices.sell.toString()}`
                             : `${oldPrices.sell.toString()} → ${newPrices.sell.toString()} (${
