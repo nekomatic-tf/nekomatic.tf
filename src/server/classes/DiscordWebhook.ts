@@ -92,10 +92,9 @@ export default class DiscordWebhook {
                   }520fx520f`
                 : itemImageUrlPrint;
         } else if (item.paintkit !== null) {
-            const newItem = SKU.fromString(`${item.defindex};6`);
-            itemImageUrlPrint = `https://scrap.tf/img/items/warpaint/${encodeURIComponent(
-                this.schema.getName(newItem, false)
-            )}_${item.paintkit}_${item.wear}_${item.festive === true ? 1 : 0}.png`;
+            itemImageUrlPrint = `https://scrap.tf/img/items/warpaint/${item.defindex}_${item.paintkit}_${item.wear}_${
+                item.festive === true ? 1 : 0
+            }.png`;
         } else if (item.festive) {
             const front =
                 'https://community.cloudflare.steamstatic.com/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgEMaQkUTxr2vTx8';
