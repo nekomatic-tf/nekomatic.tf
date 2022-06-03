@@ -143,28 +143,30 @@ export default class DiscordWebhook {
                 title: '',
                 fields: [
                     {
-                        name: `Buying for${buyChangesValue === 0 ? ' 🔄' : buyChangesValue > 0 ? ' 📈' : ' 📉'}`,
-                        value: isNew
-                            ? `${newPrices.buy.toString()}`
-                            : `${oldPrices.buy.toString()} → ${newPrices.buy.toString()} (${
-                                  buyChangesValue > 0
-                                      ? `+${Currencies.toCurrencies(buyChangesValue, conversion).toString()}`
-                                      : buyChangesValue === 0
-                                      ? `=`
-                                      : Currencies.toCurrencies(buyChangesValue, conversion).toString()
-                              })`
+                        name: `Buying for${
+                            isNew ? '✨' : buyChangesValue === 0 ? ' 🔄' : buyChangesValue > 0 ? ' 📈' : ' 📉'
+                        }`,
+                        value:
+                            isNew || buyChangesValue === 0
+                                ? newPrices.buy.toString()
+                                : `${oldPrices.buy.toString()} → ${newPrices.buy.toString()} (${
+                                      buyChangesValue > 0
+                                          ? `+${Currencies.toCurrencies(buyChangesValue, conversion).toString()}`
+                                          : Currencies.toCurrencies(buyChangesValue, conversion).toString()
+                                  })`
                     },
                     {
-                        name: `Selling for${sellChangesValue === 0 ? ' 🔄' : sellChangesValue > 0 ? ' 📈' : ' 📉'}`,
-                        value: isNew
-                            ? `${newPrices.sell.toString()}`
-                            : `${oldPrices.sell.toString()} → ${newPrices.sell.toString()} (${
-                                  sellChangesValue > 0
-                                      ? `+${Currencies.toCurrencies(sellChangesValue, conversion).toString()}`
-                                      : sellChangesValue === 0
-                                      ? `=`
-                                      : Currencies.toCurrencies(sellChangesValue, conversion).toString()
-                              })`
+                        name: `Selling for${
+                            isNew ? '✨' : sellChangesValue === 0 ? ' 🔄' : sellChangesValue > 0 ? ' 📈' : ' 📉'
+                        }`,
+                        value:
+                            isNew || sellChangesValue === 0
+                                ? newPrices.sell.toString()
+                                : `${oldPrices.sell.toString()} → ${newPrices.sell.toString()} (${
+                                      sellChangesValue > 0
+                                          ? `+${Currencies.toCurrencies(sellChangesValue, conversion).toString()}`
+                                          : Currencies.toCurrencies(sellChangesValue, conversion).toString()
+                                  })`
                     }
                 ],
                 color: qualityColorPrint
