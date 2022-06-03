@@ -21,8 +21,10 @@ export default class DiscordWebhook {
 
     sendWebhookPriceUpdate(
         sku: string,
-        prices: Prices,
         time: number,
+        newPrices: Prices,
+        oldPrices: Prices | null,
+        isNew: boolean,
         buyChangesValue: number | null,
         sellChangesValue: number | null
     ): void {
@@ -116,34 +118,6 @@ export default class DiscordWebhook {
         const qualityItem = parts[1];
         const qualityColorPrint = images.qualityColor[qualityItem];
 
-        const keyPrice = this.server.pricelist.keyPrice;
-
-        const entry = this.server.pricelist.prices[sku];
-
-        const oldPrices = {
-            buy: entry.buy,
-            sell: entry.sell
-        };
-
-        const newPrices = {
-            buy: new Currencies(prices.buy),
-            sell: new Currencies(prices.sell)
-        };
-
-        if (buyChangesValue === null || sellChangesValue === null) {
-            const oldBuyValue = oldPrices.buy.toValue(keyPrice);
-            const oldSellValue = oldPrices.sell.toValue(keyPrice);
-
-            const newBuyValue = newPrices.buy.toValue(keyPrice);
-            const newSellValue = newPrices.sell.toValue(keyPrice);
-
-            buyChangesValue = Math.round(newBuyValue - oldBuyValue);
-            sellChangesValue = Math.round(newSellValue - oldSellValue);
-        }
-
-        const buyChanges = Currencies.toCurrencies(buyChangesValue).toString();
-        const sellChanges = Currencies.toCurrencies(sellChangesValue).toString();
-
         const webhook = setWebhook('priceUpdate', this.server.options, '', [
             {
                 author: {
@@ -167,15 +141,27 @@ export default class DiscordWebhook {
                 fields: [
                     {
                         name: 'Buying for',
-                        value: `${oldPrices.buy.toString()} → ${newPrices.buy.toString()} (${
-                            buyChangesValue > 0 ? `+${buyChanges}` : buyChangesValue === 0 ? `0 ref` : buyChanges
-                        })`
+                        value: isNew
+                            ? `${newPrices.buy.toString()}`
+                            : `${oldPrices.buy.toString()} → ${newPrices.buy.toString()} (${
+                                  buyChangesValue > 0
+                                      ? `+${Currencies.toCurrencies(buyChangesValue).toString()}`
+                                      : buyChangesValue === 0
+                                      ? `0 ref`
+                                      : Currencies.toCurrencies(buyChangesValue).toString()
+                              })`
                     },
                     {
                         name: 'Selling for',
-                        value: `${oldPrices.sell.toString()} → ${newPrices.sell.toString()} (${
-                            sellChangesValue > 0 ? `+${sellChanges}` : sellChangesValue === 0 ? `0 ref` : sellChanges
-                        })`
+                        value: isNew
+                            ? `${newPrices.sell.toString()}`
+                            : `${oldPrices.sell.toString()} → ${newPrices.sell.toString()} (${
+                                  sellChangesValue > 0
+                                      ? `+${Currencies.toCurrencies(sellChangesValue).toString()}`
+                                      : sellChangesValue === 0
+                                      ? `0 ref`
+                                      : Currencies.toCurrencies(sellChangesValue).toString()
+                              })`
                     }
                 ],
                 color: qualityColorPrint
