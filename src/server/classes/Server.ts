@@ -10,7 +10,7 @@ import DiscordWebhook from './DiscordWebhook';
 export default class Server {
     public pricelist: Pricelist;
 
-    private expressManager: ExpressManager;
+    public expressManager: ExpressManager;
 
     public discordWebhook: DiscordWebhook;
 

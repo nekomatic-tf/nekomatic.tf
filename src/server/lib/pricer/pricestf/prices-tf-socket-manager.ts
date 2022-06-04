@@ -1,5 +1,5 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import log from '../../../lib/logger';
+import log from '../../logger';
 import WS from 'ws';
 import * as Events from 'reconnecting-websocket/events';
 import PricesTfApi from './prices-tf-api';
@@ -27,13 +27,13 @@ export default class PricesTfSocketManager {
 
     private ws: ReconnectingWebSocket;
 
-    private socketDisconnected() {
+    private socketDisconnected(): () => void {
         return () => {
             log.debug('Disconnected from socket server');
         };
     }
 
-    private socketConnect() {
+    private socketConnect(): () => void {
         return () => {
             log.debug('Connected to socket server');
         };
@@ -67,6 +67,7 @@ export default class PricesTfSocketManager {
             .setupToken()
             .then(() => {
                 if (!this.isConnecting()) {
+                    log.debug('Wesocket not connecting, reconnecting...');
                     this.ws.reconnect();
                 }
                 this.retryAttempts = -1;
@@ -85,7 +86,7 @@ export default class PricesTfSocketManager {
     }
 
     isConnecting(): boolean {
-        return this.ws.readyState === this.ws.CONNECTING;
+        return this.ws.readyState === WS.CONNECTING;
     }
 
     connect(): void {

@@ -1,5 +1,6 @@
 import Server from '../Server';
 import express, { Express } from 'express';
+import http from 'http';
 import path from 'path';
 import bodyParser from 'body-parser';
 import Index from './Routes/Index';
@@ -11,6 +12,8 @@ import Options from './Routes/Options';
 
 export default class ExpressManager {
     public app: Express;
+
+    private serverApp: http.Server;
 
     constructor(private server: Server) {
         this.app = express();
@@ -42,9 +45,13 @@ export default class ExpressManager {
             this.app.use('/redirect', redirect.init());
             this.app.use('/options', options.init());
 
-            this.app.listen(this.server.options.port, () => {
+            this.serverApp = this.app.listen(this.server.options.port, () => {
                 resolve();
             });
         });
+    }
+
+    shutdown(): void {
+        this.serverApp.close();
     }
 }
