@@ -24,20 +24,40 @@ export class Items {
     init(): Router {
         const router = express.Router();
 
-        return router.get('/:sku', (req, res) => {
+        return router.get('/:skuOrName', (req, res) => {
             const protocol = req.headers['x-forwarded-proto'] === undefined ? 'http' : req.headers['x-forwarded-proto'];
             const host = req.headers.host;
             const domain = `${protocol as string}://${host}`;
 
-            const sku = req.params.sku;
+            const skuOrName = req.params.skuOrName;
 
             const pricelist = this.server.pricelist;
             const defindexes = this.server.schemaManagerTF2.defindexes;
 
-            if (['random', 'lucky', 'iamfeelinglucky'].includes(sku)) {
+            if (['random', 'lucky', 'iamfeelinglucky'].includes(skuOrName)) {
                 const randomSku = this.pickRandomSku(Object.keys(pricelist.prices));
                 this.isRandom = true;
                 return res.redirect(`/items/${randomSku}`);
+            }
+
+            let sku: string;
+
+            if (!testSKU(skuOrName)) {
+                // received not in sku format, check if can generate sku from it
+                sku = this.schema.getSkuFromName(decodeURIComponent(skuOrName));
+
+                if (sku.includes('null') || sku.includes('undefined')) {
+                    log.warn(`Failed on GET /items/${skuOrName} request`);
+                    return res.json({
+                        success: false,
+                        message:
+                            `Invalid sku format, or the item name returned with null or undefined.` +
+                            ` Generated sku: ${sku}. If you're inputting an item name and it contains some special character(s),` +
+                            ` replace it with URL Escape Codes instead - see: https://docs.microfocus.com/OMi/10.62/Content/OMi/ExtGuide/ExtApps/URL_encoding.htm#:~:text=URL%20escape%20codes%20for%20characters,'%3CMy%20title%3E'%20.`
+                    });
+                }
+            } else {
+                sku = skuOrName;
             }
 
             const item = SKU.fromString(sku);
@@ -45,7 +65,7 @@ export class Items {
             // const deviceType = req.device.type.toLowerCase();
             // const isPhone = deviceType === 'phone';
 
-            if (testSKU(sku) && defindexes[item.defindex] !== undefined && isExist) {
+            if (defindexes[item.defindex] !== undefined && isExist) {
                 log.info(`Got GET /items/${sku}${this.isRandom ? ' (Random) ' : ' '}request`);
                 if (this.isRandom) {
                     this.isRandom = false;
