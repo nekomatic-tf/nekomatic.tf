@@ -8,7 +8,9 @@ import SKU from '@tf2autobot/tf2-sku';
 import * as images from '../lib/data';
 import Currencies from '@tf2autobot/tf2-currencies';
 import log from '../lib/logger';
-import { XMLHttpRequest } from 'xmlhttprequest-ts';
+import axios, { AxiosError } from 'axios';
+import { getTimeUTC } from '../lib/tools/time';
+import getBaseItemImage from '../lib/tools/getBaseItemImage';
 
 type Type = 'server' | 'priceUpdate';
 
@@ -21,8 +23,10 @@ export default class DiscordWebhook {
 
     sendWebhookPriceUpdate(
         sku: string,
-        prices: Prices,
         time: number,
+        newPrices: Prices,
+        oldPrices: Prices | null,
+        isNew: boolean,
         buyChangesValue: number | null,
         sellChangesValue: number | null
     ): void {
@@ -31,77 +35,7 @@ export default class DiscordWebhook {
         const itemName = this.schema.getName(item, false);
         const parts = sku.split(';');
 
-        let itemImageUrlPrint: string;
-
-        if (!baseItemData || !item) {
-            itemImageUrlPrint = 'https://jberlife.com/wp-content/uploads/2019/07/sorry-image-not-available.jpg';
-        } else if (images.retiredKeys[item.defindex] !== undefined) {
-            itemImageUrlPrint = images.retiredKeys[item.defindex];
-        } else if (
-            itemName.includes('Non-Craftable') &&
-            itemName.includes('Killstreak') &&
-            itemName.includes('Kit') &&
-            !itemName.includes('Fabricator')
-        ) {
-            // Get image for Non-Craftable Killstreak/Specialized Killstreak/Professional Killstreak [Weapon] Kit
-            const front =
-                'https://community.cloudflare.steamstatic.com/economy/image/IzMF03bi9WpSBq-S-ekoE33L-iLqGFHVaU25ZzQNQcXdEH9myp0du1AHE66AL6lNU5Fw_2yIWtaMjIpQmjAT';
-
-            const url = itemName.includes('Specialized')
-                ? images.ks2Images[item.target]
-                : itemName.includes('Professional')
-                ? images.ks3Images[item.target]
-                : images.ks1Images[item.target];
-
-            if (url) {
-                itemImageUrlPrint = `${front}${url}/520fx520f`;
-            }
-
-            if (!itemImageUrlPrint) {
-                itemImageUrlPrint = baseItemData.image_url_large;
-            }
-        } else if (
-            (itemName.includes('Strangifier') && !itemName.includes('Chemistry Set')) ||
-            itemName.includes('Unusualifier')
-        ) {
-            const front =
-                'https://community.cloudflare.steamstatic.com/economy/image/IzMF03bi9WpSBq-S-ekoE33L-iLqGFHVaU25ZzQNQcXdEH9myp0du1AHE66AL6lNU5Fw_2yIWtaMjIpQmjAT';
-            const url = itemName.includes('Unusualifier')
-                ? images.unusualifierImages[item.target]
-                : images.strangifierImages[item.target];
-
-            if (url) {
-                itemImageUrlPrint = `${front}${url}/520fx520f`;
-            }
-
-            if (!itemImageUrlPrint) {
-                itemImageUrlPrint = baseItemData.image_url_large;
-            }
-        } else if (images.paintCans.includes(`${item.defindex}`)) {
-            itemImageUrlPrint = `https://steamcommunity-a.akamaihd.net/economy/image/IzMF03bi9WpSBq-S-ekoE33L-iLqGFHVaU25ZzQNQcXdEH9myp0erksICf${
-                images.paintCan[item.defindex]
-            }520fx520f`;
-        } else if (item.australium === true) {
-            // No festivized image available for Australium
-            itemImageUrlPrint = images.australiumImageURL[item.defindex]
-                ? `https://steamcommunity-a.akamaihd.net/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgE${
-                      images.australiumImageURL[item.defindex]
-                  }520fx520f`
-                : itemImageUrlPrint;
-        } else if (item.paintkit !== null) {
-            const newItem = SKU.fromString(`${item.defindex};6`);
-            itemImageUrlPrint = `https://scrap.tf/img/items/warpaint/${encodeURIComponent(
-                this.schema.getName(newItem, false)
-            )}_${item.paintkit}_${item.wear}_${item.festive === true ? 1 : 0}.png`;
-        } else if (item.festive) {
-            const front =
-                'https://community.cloudflare.steamstatic.com/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgEMaQkUTxr2vTx8';
-            itemImageUrlPrint = images.festivizedImages[item.defindex]
-                ? `${front}${images.festivizedImages[item.defindex]}/520fx520f`
-                : baseItemData.image_url_large;
-        } else {
-            itemImageUrlPrint = baseItemData.image_url_large;
-        }
+        const [itemImageUrlPrint] = getBaseItemImage(baseItemData, item, itemName);
 
         let effectsId: string;
         if (parts[2]) {
@@ -117,32 +51,8 @@ export default class DiscordWebhook {
         const qualityColorPrint = images.qualityColor[qualityItem];
 
         const keyPrice = this.server.pricelist.keyPrice;
-
-        const entry = this.server.pricelist.prices[sku];
-
-        const oldPrices = {
-            buy: entry.buy,
-            sell: entry.sell
-        };
-
-        const newPrices = {
-            buy: new Currencies(prices.buy),
-            sell: new Currencies(prices.sell)
-        };
-
-        if (buyChangesValue === null || sellChangesValue === null) {
-            const oldBuyValue = oldPrices.buy.toValue(keyPrice);
-            const oldSellValue = oldPrices.sell.toValue(keyPrice);
-
-            const newBuyValue = newPrices.buy.toValue(keyPrice);
-            const newSellValue = newPrices.sell.toValue(keyPrice);
-
-            buyChangesValue = Math.round(newBuyValue - oldBuyValue);
-            sellChangesValue = Math.round(newSellValue - oldSellValue);
-        }
-
-        const buyChanges = Currencies.toCurrencies(buyChangesValue).toString();
-        const sellChanges = Currencies.toCurrencies(sellChangesValue).toString();
+        const conversion = sku === '5021;6' ? undefined : keyPrice;
+        const timeStr = getTimeUTC(time);
 
         const webhook = setWebhook('priceUpdate', this.server.options, '', [
             {
@@ -153,9 +63,7 @@ export default class DiscordWebhook {
                         'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/3d/3dba19679c4a689b9d24fa300856cbf3d948d631_full.jpg'
                 },
                 footer: {
-                    text: `${sku} • ${String(new Date(time * 1000)).replace('Coordinated Universal Time', 'UTC')} • v${
-                        process.env.SERVER_VERSION
-                    }`
+                    text: `${sku} • ${timeStr} • v${process.env.SERVER_VERSION}`
                 },
                 thumbnail: {
                     url: itemImageUrlPrint
@@ -166,16 +74,30 @@ export default class DiscordWebhook {
                 title: '',
                 fields: [
                     {
-                        name: 'Buying for',
-                        value: `${oldPrices.buy.toString()} → ${newPrices.buy.toString()} (${
-                            buyChangesValue > 0 ? `+${buyChanges}` : buyChangesValue === 0 ? `0 ref` : buyChanges
-                        })`
+                        name: `Buying for${
+                            isNew ? '✨' : buyChangesValue === 0 ? ' 🔄' : buyChangesValue > 0 ? ' 📈' : ' 📉'
+                        }`,
+                        value:
+                            isNew || buyChangesValue === 0
+                                ? newPrices.buy.toString()
+                                : `${oldPrices.buy.toString()} → ${newPrices.buy.toString()} (${
+                                      buyChangesValue > 0
+                                          ? `+${Currencies.toCurrencies(buyChangesValue, conversion).toString()}`
+                                          : Currencies.toCurrencies(buyChangesValue, conversion).toString()
+                                  })`
                     },
                     {
-                        name: 'Selling for',
-                        value: `${oldPrices.sell.toString()} → ${newPrices.sell.toString()} (${
-                            sellChangesValue > 0 ? `+${sellChanges}` : sellChangesValue === 0 ? `0 ref` : sellChanges
-                        })`
+                        name: `Selling for${
+                            isNew ? '✨' : sellChangesValue === 0 ? ' 🔄' : sellChangesValue > 0 ? ' 📈' : ' 📉'
+                        }`,
+                        value:
+                            isNew || sellChangesValue === 0
+                                ? newPrices.sell.toString()
+                                : `${oldPrices.sell.toString()} → ${newPrices.sell.toString()} (${
+                                      sellChangesValue > 0
+                                          ? `+${Currencies.toCurrencies(sellChangesValue, conversion).toString()}`
+                                          : Currencies.toCurrencies(sellChangesValue, conversion).toString()
+                                  })`
                     }
                 ],
                 color: qualityColorPrint
@@ -194,6 +116,7 @@ export default class DiscordWebhook {
 
     sendWebhookKeyUpdate(sku: string, prices: Prices, time: number): void {
         const itemImageUrl = this.schema.getItemByItemName('Mann Co. Supply Crate Key');
+        const timeStr = getTimeUTC(time);
 
         const webhook = setWebhook('priceUpdate', this.server.options, '', [
             {
@@ -204,9 +127,7 @@ export default class DiscordWebhook {
                         'https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/3d/3dba19679c4a689b9d24fa300856cbf3d948d631_full.jpg'
                 },
                 footer: {
-                    text: `${sku} • ${String(new Date(time * 1000)).replace('Coordinated Universal Time', 'UTC')} • v${
-                        process.env.SERVER_VERSION
-                    }`
+                    text: `${sku} • ${timeStr} • v${process.env.SERVER_VERSION}`
                 },
                 thumbnail: {
                     url: itemImageUrl.image_url_large
@@ -232,7 +153,7 @@ export default class DiscordWebhook {
         // send key price update to only key price update webhook.
         opt.urls.forEach((url, i) => {
             if (this.isMentionedKeyPrices === false) {
-                webhook.content = opt.roleId[i] === 'no role' ? '' : `<@&${opt.roleId[i]}>`;
+                webhook.content = `<@&${opt.roleId}>`;
 
                 if (opt.urls.length - i === 1) {
                     this.isMentionedKeyPrices = true;
@@ -259,21 +180,17 @@ export function setWebhook(type: Type, options: IOptions, content: string, embed
 
 export function sendWebhook(url: string, webhook: Webhook): Promise<void> {
     return new Promise((resolve, reject) => {
-        const request = new XMLHttpRequest();
-
-        request.onreadystatechange = (): void => {
-            if (request.readyState === 4) {
-                if (request.status === 204) {
-                    return resolve();
-                } else {
-                    return reject({ text: request.responseText, webhook });
-                }
-            }
-        };
-
-        request.open('POST', url);
-        request.setRequestHeader('Content-type', 'application/json');
-        request.send(JSON.stringify(webhook));
+        void axios({
+            method: 'POST',
+            url: url,
+            data: webhook
+        })
+            .then(() => {
+                resolve();
+            })
+            .catch((err: AxiosError) => {
+                reject({ error: err, webhook });
+            });
     });
 }
 

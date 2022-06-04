@@ -1,6 +1,6 @@
-import { OptionsWithUrl, ResponseAsJSON } from 'request';
-import request from 'request-retry-dayjs';
+import axios, { AxiosRequestConfig, Method, AxiosError } from 'axios';
 import { PricerOptions } from '../../../types/interfaces/IPricer';
+import log from '../../logger';
 
 export interface PricesTfRequestCheckResponse {
     enqueued: boolean;
@@ -45,59 +45,86 @@ export default class PricesTfApi {
 
     public token = '';
 
-    private async authedApiRequest<I, B>(
+    private async authedApiRequest<B>(
         httpMethod: string,
         path: string,
-        input: I,
+        params?: Record<string, any>,
+        data?: Record<string, any>,
         headers?: Record<string, unknown>
     ): Promise<B> {
         try {
-            return await PricesTfApi.apiRequest(httpMethod, path, input, {
-                Authorization: 'Bearer ' + this.token,
-                ...headers
-            });
-        } catch (e) {
-            if (e && 401 === e['statusCode']) {
+            if (this.token === '') {
                 await this.setupToken();
-                return this.authedApiRequest(httpMethod, path, input, headers);
             }
-            throw e;
+
+            return await PricesTfApi.apiRequest(
+                httpMethod,
+                path,
+                params,
+                {},
+                {
+                    Authorization: 'Bearer ' + this.token,
+                    ...headers
+                }
+            );
+        } catch (e) {
+            const err = e as AxiosError;
+            if (err.response && err.response.status === 401) {
+                log.debug('Requesting new token from prices.tf due to 401');
+                await this.setupToken();
+                return this.authedApiRequest(httpMethod, path, params, data, headers);
+            }
+            throw err;
         }
     }
 
-    public static async apiRequest<I, B>(
+    public static async apiRequest<B>(
         httpMethod: string,
         path: string,
-        input: I,
+        params?: Record<string, any>,
+        data?: Record<string, any>,
         headers?: Record<string, unknown>,
         customURL?: string
     ): Promise<B> {
-        const options: OptionsWithUrl & { headers: Record<string, unknown> } = {
-            method: httpMethod,
-            url: customURL ? `${customURL}${path}` : `${this.URL}${path}`,
+        if (!headers) {
+            headers = {};
+        }
+
+        const options: AxiosRequestConfig = {
+            method: httpMethod as Method,
+            url: path,
+            baseURL: customURL ? customURL : this.URL,
             headers: {
                 'User-Agent': 'TF2Autobot@' + process.env.BOT_VERSION,
                 ...headers
             },
-            json: true,
             timeout: 30000
         };
 
-        options[httpMethod === 'GET' ? 'qs' : 'body'] = input;
+        if (params) {
+            options.params = params;
+        }
+
+        if (data) {
+            options.data = data;
+        }
 
         return new Promise((resolve, reject) => {
-            void request(options, (err: Error, response: ResponseAsJSON, body: B) => {
-                if (err) {
-                    reject(err);
-                } else {
+            void axios(options)
+                .then(response => {
+                    const body = response.data as B;
                     resolve(body);
-                }
-            }).end();
+                })
+                .catch(err => {
+                    if (err) {
+                        reject(err);
+                    }
+                });
         });
     }
 
     static async requestAuthAccess(): Promise<PricesTfAuthAccessResponse> {
-        return PricesTfApi.apiRequest('POST', '/auth/access', {});
+        return PricesTfApi.apiRequest('POST', '/auth/access');
     }
 
     async setupToken(): Promise<void> {
@@ -114,11 +141,11 @@ export default class PricesTfApi {
     }
 
     async requestCheck(sku: string): Promise<PricesTfRequestCheckResponse> {
-        return this.authedApiRequest('POST', `/prices/${sku}/refresh`, {});
+        return this.authedApiRequest('POST', `/prices/${sku}/refresh`);
     }
 
     async getPrice(sku: string): Promise<PricesTfItem> {
-        return this.authedApiRequest('GET', `/prices/${sku}`, {});
+        return this.authedApiRequest('GET', `/prices/${sku}`);
     }
 
     async getPricelistPage(page: number): Promise<PricesTfGetPricesResponse> {

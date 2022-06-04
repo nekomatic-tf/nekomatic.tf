@@ -2,7 +2,7 @@ import { snakeCase } from 'change-case';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync } from 'fs';
 import jsonlint from '@tf2autobot/jsonlint';
 import * as path from 'path';
-import { deepMerge } from '../lib/utils/deep-merge';
+import { deepMerge } from '../lib/tools/deep-merge';
 import validator from '../lib/validator';
 
 const DEFAULTS: JsonOptions = {

@@ -198,22 +198,21 @@ export default class Pricelist {
             this.dailyReceivedCount++;
             const sku = data.sku;
 
-            let oldPrices: {
-                buy: Currencies;
-                sell: Currencies;
-            } = null;
-
-            const newPrices = {
+            const newPrices = Object.freeze({
                 buy: new Currencies(data.buy),
                 sell: new Currencies(data.sell)
-            };
+            });
+
+            const oldPrices = this.prices[sku]
+                ? Object.freeze({
+                      buy: this.prices[sku].buy,
+                      sell: this.prices[sku].sell
+                  })
+                : null;
+
+            let isNew = false;
 
             if (this.prices[sku]) {
-                oldPrices = {
-                    buy: this.prices[sku].buy,
-                    sell: this.prices[sku].sell
-                };
-
                 // update data in pricelist (memory)
                 if (sku === '5021;6') {
                     this.keyPrices = {
@@ -243,10 +242,7 @@ export default class Pricelist {
                     time: data.time
                 };
                 this.prices[sku] = this.prices[sku] = Entry.fromData(newEntry);
-                oldPrices = {
-                    buy: this.prices[sku].buy,
-                    sell: this.prices[sku].sell
-                };
+                isNew = true;
             }
 
             let buyChangesValue = null;
@@ -257,36 +253,42 @@ export default class Pricelist {
             let oldSellValue = 0;
             let newSellValue = 0;
 
-            if (data.sku === '5021;6') {
-                oldBuyValue = oldPrices.buy.toValue();
-                newBuyValue = newPrices.buy.toValue();
-                oldSellValue = oldPrices.sell.toValue();
-                newSellValue = newPrices.sell.toValue();
-            } else {
-                oldBuyValue = oldPrices.buy.toValue(this.keyPrice);
-                newBuyValue = newPrices.buy.toValue(this.keyPrice);
-                oldSellValue = oldPrices.sell.toValue(this.keyPrice);
-                newSellValue = newPrices.sell.toValue(this.keyPrice);
+            if (!isNew) {
+                if (data.sku === '5021;6') {
+                    oldBuyValue = oldPrices.buy.toValue();
+                    newBuyValue = newPrices.buy.toValue();
+                    oldSellValue = oldPrices.sell.toValue();
+                    newSellValue = newPrices.sell.toValue();
+                } else {
+                    oldBuyValue = oldPrices.buy.toValue(this.keyPrice);
+                    newBuyValue = newPrices.buy.toValue(this.keyPrice);
+                    oldSellValue = oldPrices.sell.toValue(this.keyPrice);
+                    newSellValue = newPrices.sell.toValue(this.keyPrice);
+                }
+
+                buyChangesValue = Math.round(newBuyValue - oldBuyValue);
+                sellChangesValue = Math.round(newSellValue - oldSellValue);
+
+                if (buyChangesValue === 0 && sellChangesValue === 0) {
+                    // Ignore
+                    return;
+                }
             }
 
-            buyChangesValue = Math.round(newBuyValue - oldBuyValue);
-            sellChangesValue = Math.round(newSellValue - oldSellValue);
-
-            if (buyChangesValue === 0 && sellChangesValue === 0) {
-                // Ignore
-                return;
-            }
-
-            if (sku === '5021;6') {
-                this.server.discordWebhook.sendWebhookKeyUpdate(sku, newPrices, data.time);
-            } else {
-                this.server.discordWebhook.sendWebhookPriceUpdate(
-                    sku,
-                    newPrices,
-                    data.time,
-                    buyChangesValue,
-                    sellChangesValue
-                );
+            if (!this.options.dev) {
+                if (sku === '5021;6') {
+                    this.server.discordWebhook.sendWebhookKeyUpdate(sku, newPrices, data.time);
+                } else {
+                    this.server.discordWebhook.sendWebhookPriceUpdate(
+                        sku,
+                        data.time,
+                        newPrices,
+                        oldPrices,
+                        isNew,
+                        buyChangesValue,
+                        sellChangesValue
+                    );
+                }
             }
 
             this.dailyUpdatedCount++;
