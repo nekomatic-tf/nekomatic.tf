@@ -10,6 +10,7 @@ import Currencies from '@tf2autobot/tf2-currencies';
 import log from '../lib/logger';
 import axios, { AxiosError } from 'axios';
 import { getTimeUTC } from '../lib/tools/time';
+import getBaseItemImage from '../lib/tools/getBaseItemImage';
 
 type Type = 'server' | 'priceUpdate';
 
@@ -34,76 +35,7 @@ export default class DiscordWebhook {
         const itemName = this.schema.getName(item, false);
         const parts = sku.split(';');
 
-        let itemImageUrlPrint: string;
-
-        if (!baseItemData || !item) {
-            itemImageUrlPrint = 'https://jberlife.com/wp-content/uploads/2019/07/sorry-image-not-available.jpg';
-        } else if (images.retiredKeys[item.defindex] !== undefined) {
-            itemImageUrlPrint = images.retiredKeys[item.defindex];
-        } else if (
-            itemName.includes('Non-Craftable') &&
-            itemName.includes('Killstreak') &&
-            itemName.includes('Kit') &&
-            !itemName.includes('Fabricator')
-        ) {
-            // Get image for Non-Craftable Killstreak/Specialized Killstreak/Professional Killstreak [Weapon] Kit
-            const front =
-                'https://community.cloudflare.steamstatic.com/economy/image/IzMF03bi9WpSBq-S-ekoE33L-iLqGFHVaU25ZzQNQcXdEH9myp0du1AHE66AL6lNU5Fw_2yIWtaMjIpQmjAT';
-
-            const url = itemName.includes('Specialized')
-                ? images.ks2Images[item.target]
-                : itemName.includes('Professional')
-                ? images.ks3Images[item.target]
-                : images.ks1Images[item.target];
-
-            if (url) {
-                itemImageUrlPrint = `${front}${url}/520fx520f`;
-            }
-
-            if (!itemImageUrlPrint) {
-                itemImageUrlPrint = baseItemData.image_url_large;
-            }
-        } else if (
-            (itemName.includes('Strangifier') && !itemName.includes('Chemistry Set')) ||
-            itemName.includes('Unusualifier')
-        ) {
-            const front =
-                'https://community.cloudflare.steamstatic.com/economy/image/IzMF03bi9WpSBq-S-ekoE33L-iLqGFHVaU25ZzQNQcXdEH9myp0du1AHE66AL6lNU5Fw_2yIWtaMjIpQmjAT';
-            const url = itemName.includes('Unusualifier')
-                ? images.unusualifierImages[item.target]
-                : images.strangifierImages[item.target];
-
-            if (url) {
-                itemImageUrlPrint = `${front}${url}/520fx520f`;
-            }
-
-            if (!itemImageUrlPrint) {
-                itemImageUrlPrint = baseItemData.image_url_large;
-            }
-        } else if (images.paintCans.includes(`${item.defindex}`)) {
-            itemImageUrlPrint = `https://steamcommunity-a.akamaihd.net/economy/image/IzMF03bi9WpSBq-S-ekoE33L-iLqGFHVaU25ZzQNQcXdEH9myp0erksICf${
-                images.paintCan[item.defindex]
-            }520fx520f`;
-        } else if (item.australium === true) {
-            // No festivized image available for Australium
-            itemImageUrlPrint = images.australiumImageURL[item.defindex]
-                ? `https://steamcommunity-a.akamaihd.net/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgE${
-                      images.australiumImageURL[item.defindex]
-                  }520fx520f`
-                : itemImageUrlPrint;
-        } else if (item.paintkit !== null) {
-            itemImageUrlPrint = `https://scrap.tf/img/items/warpaint/${item.defindex}_${item.paintkit}_${item.wear}_${
-                item.festive === true ? 1 : 0
-            }.png`;
-        } else if (item.festive) {
-            const front =
-                'https://community.cloudflare.steamstatic.com/economy/image/fWFc82js0fmoRAP-qOIPu5THSWqfSmTELLqcUywGkijVjZULUrsm1j-9xgEMaQkUTxr2vTx8';
-            itemImageUrlPrint = images.festivizedImages[item.defindex]
-                ? `${front}${images.festivizedImages[item.defindex]}/520fx520f`
-                : baseItemData.image_url_large;
-        } else {
-            itemImageUrlPrint = baseItemData.image_url_large;
-        }
+        const [itemImageUrlPrint] = getBaseItemImage(baseItemData, item, itemName);
 
         let effectsId: string;
         if (parts[2]) {
