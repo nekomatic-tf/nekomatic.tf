@@ -58,8 +58,8 @@
     "eslint-plugin-jest": "^25.7.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-tsdoc": "^0.2.14",
-    "prettier": "^2.6.2",
-    "typescript": "^4.6.4"
+    "prettier": "^2.7.1",
+    "typescript": "^4.7.4"
   },
   "private": true,
   "_moduleAliases": {
