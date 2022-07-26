@@ -30,6 +30,9 @@ export default class SchemaManagerTF2 {
 
                 this.schema = this.schemaManager.schema;
 
+                this.defindexes = this.getDefindexes();
+                generateSchemaFile(this.schema, this.schemaPath);
+
                 this.schemaManager.on('schema', () => {
                     this.defindexes = this.getDefindexes();
                     generateSchemaFile(this.schema, this.schemaPath);
