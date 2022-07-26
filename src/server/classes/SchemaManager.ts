@@ -18,7 +18,7 @@ export default class SchemaManagerTF2 {
     public generateSchemaInterval: NodeJS.Timeout;
 
     constructor(private steamApiKey: string) {
-        this.schemaManager = new SchemaManager({ apiKey: this.steamApiKey, updateTime: 3_600_000 });
+        this.schemaManager = new SchemaManager({ apiKey: this.steamApiKey, updateTime: 3_600_000, lite: true });
     }
 
     initializeSchema(): Promise<void> {
@@ -29,10 +29,11 @@ export default class SchemaManagerTF2 {
                 }
 
                 this.schema = this.schemaManager.schema;
-                this.defindexes = this.getDefindexes();
 
-                generateSchemaFile(this.schema, this.schemaPath);
-                this.setGenerateSchema();
+                this.schemaManager.on('schema', () => {
+                    this.defindexes = this.getDefindexes();
+                    generateSchemaFile(this.schema, this.schemaPath);
+                });
 
                 return resolve();
             });
@@ -40,26 +41,15 @@ export default class SchemaManagerTF2 {
     }
 
     getDefindexes(): Defindexes {
-        const schemaItems = this.schema.raw.schema.items;
-        const schemaItemsSize = schemaItems.length;
+        const schemaItemsSize = this.schema.raw.schema.items.length;
         const defindexes = {};
 
         for (let i = 0; i < schemaItemsSize; i++) {
-            const schemaItem = schemaItems[i];
+            const schemaItem = this.schema.raw.schema.items[i];
             defindexes[schemaItem.defindex] = schemaItem.item_name;
         }
 
         return defindexes;
-    }
-
-    setGenerateSchema(): void {
-        const hours1 = 3_600_000;
-        const mins1 = 60_000;
-        this.generateSchemaInterval = setInterval(() => {
-            generateSchemaFile(this.schema, this.schemaPath);
-
-            this.defindexes = this.getDefindexes();
-        }, hours1 + mins1);
     }
 
     shutdown(): void {
