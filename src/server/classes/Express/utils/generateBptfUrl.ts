@@ -23,7 +23,7 @@ export default function generateBptfUrl(bptfDomain: string, schema: Schema, item
     //     paint?: number | null;
     // }>
 
-    const wears = {
+    const wears: { [n: string]: string } = {
         1: 'Factory New',
         2: 'Minimal Wear',
         3: 'Field-Tested',
