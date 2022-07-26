@@ -51,6 +51,8 @@ export default function generateOldBptfUrl(oldBptfDomain: string, schema: Schema
 
     const itemName = isStrangifier
         ? 'Strangifier'
+        : isUnusualifier
+        ? 'Unusualifier'
         : isFabricator
         ? item.killstreak === 2
             ? 'Specialized Killstreak Fabricator'
