@@ -87,6 +87,8 @@ export class Items {
                     } / ${prices.sell.toValue(pricelist.keyPrice) === 0 ? '0 ref' : prices.sell.toString()}`;
                 }
 
+                const itemDescription = baseItemData?.item_description;
+
                 const render = (imageUrl: string, mptfPrice: string) => {
                     res.render('items/index', {
                         sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
@@ -94,7 +96,12 @@ export class Items {
                         name: itemName,
                         quality: qualityColorHex[item.quality],
                         image: imageUrl,
-                        description: baseItemData?.item_description,
+                        description:
+                            currentPrice || mptfPrice
+                                ? `${currentPrice ? `Prices.tf: ${currentPrice}` : ''}${
+                                      mptfPrice ? `${currentPrice ? '\n' : ''}Marketplace.tf: ${mptfPrice}` : ''
+                                  }${itemDescription ? `\n-----\n${itemDescription}` : ''}`
+                                : '',
                         oldBptfUrl: oldBptfUrl,
                         bptfUrl: generateBptfUrl(this.server.options.redirects.backpacktf, this.schema, item),
                         mptfPrice,
