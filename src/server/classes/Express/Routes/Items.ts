@@ -10,6 +10,7 @@ import generateBptfUrl from '../utils/generateBptfUrl';
 import getMptfPrice from '../utils/getMptfPrice';
 import { qualityColorHex } from '../../../lib/data';
 import generateScmUrl from '../utils/generateScmUrl';
+import generateStnTradingUrl from '../utils/generateStnTradingUrl';
 
 export class Items {
     private isRandom = false;
@@ -106,6 +107,7 @@ export class Items {
                         oldBptfUrl: oldBptfUrl,
                         bptfUrl: generateBptfUrl(this.server.options.redirects.backpacktf, this.schema, item),
                         scmUrl: generateScmUrl(this.schema, item),
+                        stnUrl: generateStnTradingUrl(this.schema, item),
                         mptfPrice,
                         currentPricestfPrice: currentPrice
                     });
