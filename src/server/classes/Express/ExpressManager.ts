@@ -31,6 +31,7 @@ export default class ExpressManager {
             this.app
                 .use(express.static(path.join(__dirname, '../../../../public')))
                 .set('view engine', 'ejs')
+                .set('trust proxy', 1)
                 .use(bodyParser.json())
                 .use(
                     bodyParser.urlencoded({
