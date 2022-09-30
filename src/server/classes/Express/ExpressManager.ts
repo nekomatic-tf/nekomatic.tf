@@ -9,6 +9,7 @@ import Json from './Routes/Json';
 import Download from './Routes/Download';
 import { Redirect } from './Routes/Redirect';
 import Options from './Routes/Options';
+import { rateLimiterUsingThirdParty } from './Middlewares/rateLimiter';
 
 export default class ExpressManager {
     public app: Express;
@@ -36,7 +37,8 @@ export default class ExpressManager {
                     bodyParser.urlencoded({
                         extended: false
                     })
-                );
+                )
+                .use(rateLimiterUsingThirdParty);
 
             this.app.use('/', index.init());
             this.app.use('/items', items.init());
