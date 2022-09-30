@@ -92,7 +92,7 @@ export default class Pricelist {
 
     private schema: Schema;
 
-    private readonly boundHandlePriceChange;
+    private readonly boundHandlePriceChange: (item: GetItemPriceResponse) => void;
 
     private receivedCount = 0;
 
@@ -144,7 +144,7 @@ export default class Pricelist {
     }
 
     shutdown(): void {
-        clearInterval();
+        clearInterval(this.resetInterval);
     }
 
     setPricelist(prices: Item[]): void {
@@ -245,8 +245,8 @@ export default class Pricelist {
                 isNew = true;
             }
 
-            let buyChangesValue = null;
-            let sellChangesValue = null;
+            let buyChangesValue: number = null;
+            let sellChangesValue: number = null;
 
             let oldBuyValue = 0;
             let newBuyValue = 0;
