@@ -11,6 +11,7 @@ import getMptfPrice from '../utils/getMptfPrice';
 import { qualityColorHex } from '../../../lib/data';
 import generateScmUrl from '../utils/generateScmUrl';
 import generateStnTradingUrl from '../utils/generateStnTradingUrl';
+import { rateLimiterUsingThirdParty } from '../Middlewares/rateLimiter';
 
 export class Items {
     private isRandom = false;
@@ -26,7 +27,7 @@ export class Items {
     init(): Router {
         const router = express.Router();
 
-        return router.get('/:skuOrName', (req, res) => {
+        return router.get('/:skuOrName', rateLimiterUsingThirdParty, (req, res) => {
             const protocol = req.headers['x-forwarded-proto'] === undefined ? 'http' : req.headers['x-forwarded-proto'];
             const host = req.headers.host;
             const domain = `${protocol as string}://${host}`;
