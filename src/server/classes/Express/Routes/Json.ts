@@ -4,6 +4,7 @@ import SKU from '@tf2autobot/tf2-sku';
 import testSKU from '../utils/testSKU';
 import Server from '../../Server';
 import { Schema } from '@tf2autobot/tf2-schema';
+import { rateLimiterUsingThirdParty } from '../Middlewares/rateLimiter';
 
 export default class Json {
     private schema: Schema;
@@ -57,7 +58,7 @@ export default class Json {
          * on success, return:
          * { success: true, items: Entry[] }
          */
-        router.get('/pricelist-array', (req, res) => {
+        router.get('/pricelist-array', rateLimiterUsingThirdParty, (req, res) => {
             if (this.server.pricelist.isResettingPricelist) {
                 log.warn(`Got GET /json/pricelist-array request in the middle of pricelist reset`);
                 return res.status(503).json({
