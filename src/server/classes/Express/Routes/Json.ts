@@ -118,199 +118,33 @@ export default class Json {
             });
         });
 
-        // Utilities
+        // Utilities (No longer available)
 
-        /*
-         * Must have query "name", name must not in the sku format
-         * Example: https://autobot.tf/json/utils/getSku?name=Mann Co. Supply Crate Key
-         *
-         * on success:
-         * { success: true, sku: string }
-         */
         router.get('/utils/getSku', (req, res) => {
-            if (req.query === undefined || req.query?.name === undefined) {
-                log.warn(`Failed on GET /utils/getSku request with undefined query`);
-                return res.status(400).json({
-                    success: false,
-                    message: 'Invalid request (missing query "name")'
-                });
-            }
-
-            const name = req.query.name as string;
-
-            if (testSKU(name)) {
-                log.warn(`Failed on GET /utils/getSku request with name as sku`);
-                return res.status(400).json({
-                    success: false,
-                    message: '"name" must not be in sku format'
-                });
-            }
-
-            const sku = this.schema.getSkuFromName(name);
-
-            if (sku.includes(';null') || sku.includes(';undefined')) {
-                log.warn(`Failed on GET /utils/getSku request with generated sku: ${sku}`);
-                return res.status(404).json({
-                    success: false,
-                    message: `Generated sku: ${sku} - Please check the name you've sent`,
-                    sku
-                });
-            }
-
-            log.info(`Got GET /utils/getSku request with generated sku: ${sku}`);
-            res.json({
-                success: true,
-                sku,
-                item: SKU.fromString(sku)
+            return res.status(404).json({
+                message:
+                    'This endpoint is no longer available. Instead, please use https://schema.autobot.tf/getSku/fromName/{name}. Visit https://schema.autobot.tf for more.'
             });
         });
 
-        /*
-         * Must have query "sku", name must be in the sku format
-         * Optional query: "proper" (default is false)
-         * Example: https://autobot.tf/json/utils/getName?sku=5021;6?proper=true
-         *
-         * on success:
-         * { success: true, name: string, isExist: boolean }
-         */
         router.get('/utils/getName', (req, res) => {
-            if (req.query === undefined || req.query?.sku === undefined) {
-                log.warn(`Failed on GET /utils/getName request with undefined query`);
-                return res.status(400).json({
-                    success: false,
-                    message: 'Invalid request (missing query "sku")'
-                });
-            }
-
-            const sku = req.query.sku as string;
-
-            if (!testSKU(sku)) {
-                log.warn(`Failed on GET /utils/getName request with sku as something else`);
-                return res.status(400).json({
-                    success: false,
-                    message: '"sku" must be in sku format'
-                });
-            }
-
-            const item = SKU.fromString(sku);
-            const name = this.schema.getName(
-                SKU.fromString(sku),
-                req.query.proper === undefined ? false : Boolean(req.query.proper)
-            );
-            const isExist = this.schema.checkExistence(item);
-
-            log.info(`Got GET /utils/getName request with generated name: ${name} (${String(isExist)})`);
-            res.json({
-                success: true,
-                name,
-                isExist,
-                item
+            return res.status(404).json({
+                message:
+                    'This endpoint is no longer available. Instead, please use https://schema.autobot.tf/getName/fromSku/{sku}. Visit https://schema.autobot.tf for more.'
             });
         });
 
-        /*
-         * Must have query "sku", name must be in the sku format
-         * Optional query: "proper" (default is false)
-         * Example: https://autobot.tf/json/utils/getName?sku=5021;6?proper=true
-         *
-         * on success:
-         * { success: true, name: string, isExist: boolean }
-         */
-
-        /*
-         * Content-Type header must be application/json
-         * body must be in array of item name
-         *
-         * url: https://autobot.tf/json//utils/getSkuBulk
-         * body: string[]
-         *
-         * on success:
-         * { success: true, converted: { [name]: sku }}
-         */
         router.get('/utils/getSkuBulk', (req, res) => {
-            if (req.headers['content-type'] !== 'application/json') {
-                log.warn(`Got GET /utils/getSkuBulk request with wrong content-type`);
-                return res.status(400).json({
-                    success: false,
-                    message: 'Invalid request (Content-Type header must be application/json)'
-                });
-            }
-
-            if (req.body === undefined) {
-                log.warn(`Failed on GET /utils/getSkuBulk request with undefined body`);
-                return res.status(400).json({
-                    success: false,
-                    message: 'Invalid request (missing body)'
-                });
-            }
-
-            if (!Array.isArray(req.body)) {
-                log.warn(`Failed on GET /utils/getSkuBulk request body is not type Array`);
-                return res.status(400).json({
-                    success: false,
-                    message: 'body must be an array of item name'
-                });
-            }
-
-            const toReturn = {};
-            req.body.forEach(name => {
-                toReturn[name as string] = this.schema.getSkuFromName(name);
-            });
-
-            log.info(`Got GET /utils/getSkuBulk request with ${req.body.length} items`);
-            res.json({
-                success: true,
-                converted: toReturn
+            return res.status(404).json({
+                message:
+                    'This endpoint is no longer available. Instead, please use https://schema.autobot.tf/getSku/fromNameBulk. Visit https://schema.autobot.tf for more.'
             });
         });
 
-        /*
-         * Content-Type header must be application/json
-         * body must be in array of sku
-         * Optional query: "proper" (default is false)
-         *
-         * url: https://autobot.tf/json//utils/getNameBulk
-         * body: string[]
-         *
-         * on success:
-         * { success: true, converted: { [sku]: name }}
-         */
         router.get('/utils/getNameBulk', (req, res) => {
-            if (req.headers['content-type'] !== 'application/json') {
-                log.warn(`Got GET /utils/getNameBulk request with wrong content-type`);
-                return res.status(403).json({
-                    success: false,
-                    message: 'Invalid request (Content-Type header must be application/json)'
-                });
-            }
-
-            if (req.body === undefined) {
-                log.warn(`Failed on GET /utils/getNameBulk request with undefined body`);
-                return res.status(400).json({
-                    success: false,
-                    message: 'Invalid request (missing body)'
-                });
-            }
-
-            if (!Array.isArray(req.body)) {
-                log.warn(`Failed on GET /utils/getNameBulk request body is not type Array`);
-                return res.status(400).json({
-                    success: false,
-                    message: 'body must be an array of item sku'
-                });
-            }
-
-            const isProper = req.query?.proper === undefined ? false : Boolean(req.query.proper);
-
-            const toReturn = {};
-            req.body.forEach(sku => {
-                toReturn[sku as string] = this.schema.getName(SKU.fromString(sku), isProper);
-            });
-
-            log.info(`Got GET /utils/getNameBulk request with ${req.body.length} items`);
-            res.json({
-                success: true,
-                converted: toReturn
+            return res.status(404).json({
+                message:
+                    'This endpoint is no longer available. Instead, please use https://schema.autobot.tf/getName/fromSkuBulk. Visit https://schema.autobot.tf for more.'
             });
         });
 
