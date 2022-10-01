@@ -4,9 +4,9 @@
 import rateLimit from 'express-rate-limit';
 
 export const rateLimiterUsingThirdParty = rateLimit({
-    windowMs: 60 * 1000,
-    max: 10,
-    message: 'You have exceeded the 10 requests in 60 seconds limit!',
+    windowMs: 1000,
+    max: 1,
+    message: 'You have exceeded the 1 request/second limit!',
     standardHeaders: true,
     legacyHeaders: false
 });
