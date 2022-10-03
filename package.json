@@ -1,8 +1,8 @@
 {
   "name": "autobot.tf",
-  "version": "3.6.1",
+  "version": "3.7.0",
   "description": "Official TF2Autobot website",
-  "main": "dist/app/index.js",
+  "main": "dist/server/index.js",
   "dependencies": {
     "@tf2autobot/tf2-currencies": "^2.0.1",
     "@tf2autobot/tf2-schema": "^4.2.2",
