@@ -116,7 +116,7 @@ export class Items {
 
                 void getImage(this.schema, item, itemName, baseItemData, domain)
                     .then(imageUrl => {
-                        void getMptfPrice(bptfQuery)
+                        getMptfPrice(bptfQuery)
                             .then(mptfPrice => {
                                 render(imageUrl, mptfPrice);
                             })

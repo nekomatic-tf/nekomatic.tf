@@ -11,9 +11,9 @@ interface GetMptfPrice {
     };
 }
 
-export default function getMptfPrice(bptfQuery: string): Promise<string> {
+export default async function getMptfPrice(bptfQuery: string): Promise<string> {
     return new Promise((resolve, reject) => {
-        void axios({
+        axios({
             method: 'GET',
             url: '/' + bptfQuery,
             baseURL: 'https://api.backpack.tf/item/get_third_party_prices',
