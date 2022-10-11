@@ -7,7 +7,6 @@ import testSKU from '../utils/testSKU';
 import getImage from '../utils/getImage';
 import generateOldBptfUrl from '../utils/generateOldBptfUrl';
 import generateBptfUrl from '../utils/generateBptfUrl';
-import getMptfPrice from '../utils/getMptfPrice';
 import { qualityColorHex } from '../../../lib/data';
 import generateScmUrl from '../utils/generateScmUrl';
 import generateStnTradingUrl from '../utils/generateStnTradingUrl';
@@ -92,38 +91,28 @@ export class Items {
 
                 const itemDescription = baseItemData?.item_description;
 
-                const render = (imageUrl: string, mptfPrice: string) => {
+                const render = (imageUrl: string) => {
                     res.render('items/index', {
                         sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
                         skuForDisplay: sku,
                         name: itemName,
                         quality: qualityColorHex[item.quality],
                         image: imageUrl,
-                        description:
-                            currentPrice || mptfPrice
-                                ? `${currentPrice ? `Prices.tf: ${currentPrice}` : ''}${
-                                      mptfPrice ? `${currentPrice ? '\n' : ''}Marketplace.tf: ${mptfPrice}` : ''
-                                  }${itemDescription ? `\n-----\n${itemDescription}` : ''}`
-                                : '',
+                        description: `${currentPrice ? `Prices.tf: ${currentPrice}` : ''}${
+                            itemDescription ? `\n-----\n${itemDescription}` : ''
+                        }`,
                         oldBptfUrl: oldBptfUrl,
                         bptfUrl: generateBptfUrl(this.server.options.redirects.backpacktf, this.schema, item),
                         scmUrl: generateScmUrl(this.schema, item),
                         stnUrl: generateStnTradingUrl(this.schema, item),
-                        mptfPrice,
+                        bptfQuery,
                         currentPricestfPrice: currentPrice
                     });
                 };
 
-                void getImage(this.schema, item, itemName, baseItemData, domain)
+                getImage(this.schema, item, itemName, baseItemData, domain)
                     .then(imageUrl => {
-                        getMptfPrice(bptfQuery)
-                            .then(mptfPrice => {
-                                render(imageUrl, mptfPrice);
-                            })
-                            .catch(err => {
-                                log.error('Error getting mptf prices', err);
-                                render(imageUrl, undefined);
-                            });
+                        render(imageUrl);
                     })
                     .catch(err => {
                         log.error('Error getting item image on GET /items/${sku} request', err);

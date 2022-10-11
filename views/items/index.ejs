@@ -24,16 +24,16 @@
         <img src="<%= image %>" alt="<%= name %>" width="500" height="500">
       </div>
       <div>
-        <a href="<%= bptfUrl %>">Backpack.tf</a>
-        <a href="<%= oldBptfUrl %>">Old.Backpack.tf</a>
+        <a id="bptfLink" href="<%= bptfUrl %>">Backpack.tf</a>
+        <a id="oldBptfLink" href="<%= oldBptfUrl %>">Old.Backpack.tf</a>
       </div>
       <div>
-        <a href="https://marketplace.tf/items/tf2/<%= sku %>">Marketplace.tf<%= mptfPrice ? ' (' + mptfPrice + ')' : '' %></a>
-        <a href="https://prices.tf/items/<%= sku %>"><%= currentPricestfPrice ? currentPricestfPrice : 'Prices.tf' %></a>
+        <a id="mptfLink" href="https://marketplace.tf/items/tf2/<%= sku %>">Marketplace.tf</a>
+        <a id="pricestfLink" href="https://prices.tf/items/<%= sku %>"><%= currentPricestfPrice ? currentPricestfPrice : 'Prices.tf' %></a>
       </div>
       <div>
-        <a href="<%= scmUrl %>">Steam Community Market</a>
-        <a href="<%= stnUrl %>">STN Trading</a>
+        <a id="scmLink" href="<%= scmUrl %>">Steam Community Market</a>
+        <a id="stnLink" href="<%= stnUrl %>">STN Trading</a>
       </div>
     </div>
   </div>
@@ -42,6 +42,9 @@
     const elem = document.querySelector('.quality-box');
     elem.style.backgroundColor = "<%= quality %>";
   </script>
+
+  <script type="text/javascript" src="./js/getMptfPrice.js" id="getMptfPrice" bptfQuery="<%= bptfQuery %>"></script>
+
 </main>
 <footer>
   <%- include('./partials/footer'); %>
