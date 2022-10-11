@@ -1,6 +1,6 @@
 const xhr = new XMLHttpRequest();
 xhr.onreadystatechange = function () {
-    if (this.readyState === 4 && this.status === 4) {
+    if (this.readyState === 4 && this.status === 200) {
         const json = JSON.parse(this.responseText);
         const price = json.prices?.mp?.lowest_price;
         const hasPrice = price && !Array.isArray(price);
