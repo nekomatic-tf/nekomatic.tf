@@ -10,5 +10,4 @@ xhr.onreadystatechange = function () {
 const bptfQuery = document.getElementById('getMptfPrice').getAttribute('bptfQuery');
 xhr.open('get', `https://api.backpack.tf/item/get_third_party_prices/${bptfQuery}`, true);
 xhr.setRequestHeader('Content-Type', 'application/json');
-xhr.setRequestHeader('User-Agent', navigator.userAgent + ' via autobot.tf');
 xhr.send();
