@@ -74,6 +74,7 @@ export class Items {
                 }
 
                 const baseItemData = this.schema.getItemBySKU(sku);
+                const itemDescription = baseItemData?.item_description;
                 const itemName = this.schema.getName(item, true);
                 const [oldBptfUrl, bptfQuery] = generateOldBptfUrl(
                     this.server.options.oldBptfDomain,
@@ -89,30 +90,24 @@ export class Items {
                     } / ${prices.sell.toValue(pricelist.keyPrice) === 0 ? '0 ref' : prices.sell.toString()}`;
                 }
 
-                const itemDescription = baseItemData?.item_description;
-
-                const render = (imageUrl: string) => {
-                    res.render('items/index', {
-                        sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
-                        skuForDisplay: sku,
-                        name: itemName,
-                        quality: qualityColorHex[item.quality],
-                        image: imageUrl,
-                        description: `${currentPrice ? `Prices.tf: ${currentPrice}` : ''}${
-                            itemDescription ? `\n-----\n${itemDescription}` : ''
-                        }`,
-                        oldBptfUrl: oldBptfUrl,
-                        bptfUrl: generateBptfUrl(this.server.options.redirects.backpacktf, this.schema, item),
-                        scmUrl: generateScmUrl(this.schema, item),
-                        stnUrl: generateStnTradingUrl(this.schema, item),
-                        bptfQuery,
-                        currentPricestfPrice: currentPrice
-                    });
-                };
-
                 getImage(item, itemName, baseItemData, domain)
                     .then(imageUrl => {
-                        render(imageUrl);
+                        res.render('items/index', {
+                            sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
+                            skuForDisplay: sku,
+                            name: itemName,
+                            quality: qualityColorHex[item.quality],
+                            image: imageUrl,
+                            description: `${currentPrice ? `Prices.tf: ${currentPrice}` : ''}${
+                                itemDescription ? `\n-----\n${itemDescription}` : ''
+                            }`,
+                            oldBptfUrl: oldBptfUrl,
+                            bptfUrl: generateBptfUrl(this.server.options.redirects.backpacktf, this.schema, item),
+                            scmUrl: generateScmUrl(this.schema, item),
+                            stnUrl: generateStnTradingUrl(this.schema, item),
+                            bptfQuery,
+                            currentPricestfPrice: currentPrice
+                        });
                     })
                     .catch(err => {
                         log.error('Error getting item image on GET /items/${sku} request', err);
