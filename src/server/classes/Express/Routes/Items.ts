@@ -110,7 +110,7 @@ export class Items {
                     });
                 };
 
-                getImage(this.schema, item, itemName, baseItemData, domain)
+                getImage(item, itemName, baseItemData, domain)
                     .then(imageUrl => {
                         render(imageUrl);
                     })

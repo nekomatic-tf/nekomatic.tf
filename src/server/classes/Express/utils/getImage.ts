@@ -5,13 +5,12 @@ import Jimp from 'jimp';
 import log from '../../../lib/logger';
 import fs from 'fs';
 import path from 'path';
-import { Item, Schema, SchemaItem } from '@tf2autobot/tf2-schema';
+import { Item, SchemaItem } from '@tf2autobot/tf2-schema';
 import getBaseItemImage from '../../../lib/tools/getBaseItemImage';
 
 const publicImagesDirectory = path.join(__dirname, '../../../../../public/images');
 
 export default async function getImage(
-    schema: Schema,
     item: Item,
     itemName: string,
     baseItemData: SchemaItem,
