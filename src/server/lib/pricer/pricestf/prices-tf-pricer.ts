@@ -74,7 +74,7 @@ export default class PricesTfPricer implements IPricer {
                     }
 
                     this.attempts = 0;
-                    return e;
+                    throw e;
                 }
             }
             const time = new Date().getTime() - start;
