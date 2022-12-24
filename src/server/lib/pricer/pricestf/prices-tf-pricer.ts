@@ -13,6 +13,8 @@ import log from '../../logger';
 export default class PricesTfPricer implements IPricer {
     private socketManager: PricesTfSocketManager;
 
+    private attempts = 0;
+
     public constructor(private api: PricesTfApi) {
         this.socketManager = new PricesTfSocketManager(api);
     }
@@ -66,7 +68,13 @@ export default class PricesTfPricer implements IPricer {
                 if (currentPage > 1) {
                     continue;
                 } else {
-                    return this.getPricelist();
+                    if (this.attempts < 3) {
+                        this.attempts++;
+                        return this.getPricelist();
+                    }
+
+                    this.attempts = 0;
+                    return e;
                 }
             }
             const time = new Date().getTime() - start;
@@ -144,7 +152,7 @@ export default class PricesTfPricer implements IPricer {
     bindHandlePriceEvent(onPriceChange: (item: GetItemPriceResponse) => void): void {
         this.socketManager.on('message', (message: MessageEvent) => {
             try {
-                const data = this.parsePricesTfMessageEvent(message.data);
+                const data = this.parsePricesTfMessageEvent(message.data as string);
 
                 if (data.type === 'AUTH_REQUIRED') {
                     // might be nicer to put this elsewhere
