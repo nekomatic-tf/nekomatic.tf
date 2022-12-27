@@ -62,9 +62,9 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
         process.exit(1);
     };
 
-    if (crashed) {
-        const serverReady = serverManager.isServerReady;
+    const serverReady = serverManager.isServerReady;
 
+    if (crashed) {
         const serverState =
             'Server' +
             (!serverReady
@@ -120,7 +120,7 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
     } else {
         log.warn('Received kill signal `' + (signalOrErr as string) + '`');
 
-        if (options.dev !== true && optDW.enabled && optDW.url !== '') {
+        if (serverReady && options.dev !== true && optDW.enabled && optDW.url !== '') {
             const webhook = setWebhook('server', options, `<@&${optDW.mentions.roleId}>`, [
                 {
                     title: '⚠️ Server is restarting/shutting down...',
@@ -152,7 +152,9 @@ process.on('message', message => {
         log.warn('Process received unknown message `' + (message as string) + '`');
     }
 
-    if (options.dev !== true && optDW.enabled && optDW.url !== '') {
+    const serverReady = serverManager.isServerReady;
+
+    if (serverReady && options.dev !== true && optDW.enabled && optDW.url !== '') {
         const webhook = setWebhook(
             'server',
             options,
