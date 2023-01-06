@@ -63,7 +63,7 @@ export default class PricesTfSocketManager {
     }
 
     private setupToken(): void {
-        void this.api
+        this.api
             .setupToken()
             .then(() => {
                 if (!this.isConnecting()) {

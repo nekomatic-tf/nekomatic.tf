@@ -29,7 +29,7 @@ export default class Server {
 
     start(): Promise<void> {
         return new Promise((resolve, reject) => {
-            void this.pricelist
+            this.pricelist
                 .init()
                 .then(() => {
                     log.debug('Connecting to pricestf websocket...');

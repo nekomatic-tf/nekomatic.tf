@@ -110,7 +110,7 @@ export default class PricesTfApi {
         }
 
         return new Promise((resolve, reject) => {
-            void axios(options)
+            axios(options)
                 .then(response => {
                     const body = response.data as B;
                     resolve(body);
@@ -129,7 +129,7 @@ export default class PricesTfApi {
 
     async setupToken(): Promise<void> {
         return new Promise((resolve, reject) => {
-            void PricesTfApi.requestAuthAccess()
+            PricesTfApi.requestAuthAccess()
                 .then(response => {
                     this.token = response.accessToken;
                     resolve();

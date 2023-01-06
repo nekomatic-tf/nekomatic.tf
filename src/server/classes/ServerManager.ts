@@ -34,7 +34,7 @@ export default class ServerManager {
     start(options: IOptions): Promise<void> {
         return new Promise((resolve, reject) => {
             log.debug('Connecting to PM2...');
-            void this.connectToPM2()
+            this.connectToPM2()
                 .then(() => {
                     log.info('Starting server...');
 
@@ -45,7 +45,7 @@ export default class ServerManager {
                     void this.schemaManager.initializeSchema().then(() => {
                         this.server = new Server(this, this.pricer, this.schemaManager, options);
 
-                        void this.server
+                        this.server
                             .start()
                             .then(() => {
                                 return resolve();

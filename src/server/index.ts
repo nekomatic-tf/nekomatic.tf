@@ -103,7 +103,7 @@ ON_DEATH({ uncaughtException: true })((signalOrErr, origin) => {
                 ]
             };
 
-            void axios({
+            axios({
                 method: 'POST',
                 url: optDW.url,
                 data: webhook
@@ -185,14 +185,14 @@ process.on('message', message => {
                     serverManager.stop(null, true, false);
                 });
         } else {
-            void sendWebhook(optDW.url, webhook).catch(err => {
+            sendWebhook(optDW.url, webhook).catch(err => {
                 log.error('Failed to send webhook on receive unknown message', err);
             });
         }
     }
 });
 
-void serverManager
+serverManager
     .start(options)
     .then(() => {
         log.info(`Server is now live at http://localhost:${options.port}`);
@@ -209,7 +209,7 @@ void serverManager
                 }
             ]);
 
-            void sendWebhook(optDW.url, webhook).catch(err => {
+            sendWebhook(optDW.url, webhook).catch(err => {
                 log.error('Failed to send webhook on live', err);
             });
         }

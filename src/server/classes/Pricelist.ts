@@ -127,7 +127,7 @@ export default class Pricelist {
         return new Promise((resolve, reject) => {
             log.info('Getting pricelist from prices.tf...');
 
-            void this.pricer
+            this.pricer
                 .getPricelist()
                 .then(pricelist => {
                     this.setPricelist(pricelist.items);

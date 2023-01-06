@@ -180,7 +180,7 @@ export function setWebhook(type: Type, options: IOptions, content: string, embed
 
 export function sendWebhook(url: string, webhook: Webhook): Promise<void> {
     return new Promise((resolve, reject) => {
-        void axios({
+        axios({
             method: 'POST',
             url: url,
             data: webhook
