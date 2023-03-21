@@ -8,7 +8,7 @@
     "@tf2autobot/tf2-schema": "^4.2.9",
     "@tf2autobot/tf2-sku": "^2.0.3",
     "axios": "^0.27.2",
-    "body-parser": "^1.20.1",
+    "body-parser": "^1.20.2",
     "canvas": "^2.11.0",
     "change-case": "^4.1.2",
     "dayjs": "^1.11.7",
