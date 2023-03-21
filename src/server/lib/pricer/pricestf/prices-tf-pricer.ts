@@ -60,6 +60,7 @@ export default class PricesTfPricer implements IPricer {
             const start = new Date().getTime();
 
             try {
+                log.debug(`Getting page ${currentPage}${totalPages === 0 ? '' : ` of ${totalPages}`}...`);
                 const response = await this.api.getPricelistPage(currentPage);
                 currentPage++;
                 totalPages = response.meta.totalPages;
