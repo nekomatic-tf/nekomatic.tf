@@ -125,19 +125,43 @@ export default class Pricelist {
 
     init(): Promise<void> {
         return new Promise((resolve, reject) => {
-            log.info('Getting pricelist from prices.tf...');
-
+            log.info('Getting 5021;6 from prices.tf...');
             this.pricer
-                .getPricelist()
-                .then(pricelist => {
-                    this.setPricelist(pricelist.items);
-                    this.setupPricerHealthCheck();
+                .getPrice('5021;6')
+                .then(key => {
+                    this.keyPrices = {
+                        buy: key.buy,
+                        sell: key.sell,
+                        time: key.time
+                    };
 
-                    this.pricer.bindHandlePriceEvent(this.boundHandlePriceChange);
+                    log.info('Getting pricelist from prices.tf...');
+                    this.pricer
+                        .getPricelist()
+                        .then(pricelist => {
+                            if (!pricelist.items.some(item => item.sku === '5021;6')) {
+                                // Mann Co. Supply Crate Key doesn't exist in the pricelist, request separately
+                                pricelist.items.push({
+                                    sku: key.sku,
+                                    source: key.source,
+                                    time: key.time,
+                                    buy: key.buy,
+                                    sell: key.sell
+                                });
+                            }
+                            this.setPricelist(pricelist.items);
+                            this.setupPricerHealthCheck();
 
-                    return resolve();
+                            this.pricer.bindHandlePriceEvent(this.boundHandlePriceChange);
+
+                            return resolve();
+                        })
+                        .catch(err => {
+                            return reject(err);
+                        });
                 })
                 .catch(err => {
+                    log.error('Error getting price for 5021;6');
                     return reject(err);
                 });
         });
