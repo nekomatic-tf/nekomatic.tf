@@ -1,56 +1,59 @@
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <%- include('./partials/head', { name, description, image, quality }); %>
-</head>
+    <head>
+        <%- include('./partials/head', { name, description, image, quality }); %>
+    </head>
 
-<body class="container">
-<header>
-  <%- include('./partials/header'); %>
-</header>
-<main>
-  <div class="jumbotron">
-      <div class="column">
-        <div class="row">
-            <div class="quality-box"></div>
-            <div><h1><%= name %></h1></div>
-          </div>
-          <div><h3><%= skuForDisplay %></h3></div>
-      </div>
-    
-    <div class="jumbotron-content" align="center">
-      <div>
-        <img src="<%= image %>" alt="<%= name %>" width="500" height="500">
-      </div>
-      <div>
-        <a id="bptfLink" href="<%= bptfUrl %>">Backpack.tf (Next)</a>
-        <a id="oldBptfLink" href="<%= oldBptfUrl %>">Backpack.tf</a>
-      </div>
-      <div>
-        <a id="mptfLink" href="https://marketplace.tf/items/tf2/<%= sku %>">Marketplace.tf</a>
-        <a id="pricestfLink" href="https://prices.tf/items/<%= sku %>"><%= currentPricestfPrice ? currentPricestfPrice : 'Prices.tf' %></a>
-      </div>
-      <div>
-        <a id="scmLink" href="<%= scmUrl %>">Steam Community Market</a>
-        <a id="stnLink" href="<%= stnUrl %>">STN Trading</a>
-      </div>
-      <div>
-        <a id="gladiatorSales" href="https://gladiator.tf/sales?item=<%= name %>">Gladiator.tf (Sales)</a>
-      </div>
-    </div>
-  </div>
+    <body class="container">
+        <header><%- include('./partials/header'); %></header>
+        <main>
+            <div class="jumbotron">
+                <div class="column">
+                    <div class="row">
+                        <div class="quality-box"></div>
+                        <div><h1><%= name %></h1></div>
+                    </div>
+                    <div><h3><%= skuForDisplay %></h3></div>
+                </div>
 
-  <script>
-    const elem = document.querySelector('.quality-box');
-    elem.style.backgroundColor = "<%= quality %>";
-  </script>
+                <div class="jumbotron-content" align="center">
+                    <div>
+                        <img src="<%= image %>" alt="<%= name %>" width="500" height="500" />
+                    </div>
+                    <div>
+                        <a id="bptfLink" href="<%= bptfUrl %>">Backpack.tf (Next)</a>
+                        <a id="oldBptfLink" href="<%= oldBptfUrl %>">Backpack.tf</a>
+                    </div>
+                    <div>
+                        <a id="mptfLink" href="https://marketplace.tf/items/tf2/<%= sku %>">Marketplace.tf</a>
+                        <a id="pricestfLink" href="https://prices.tf/items/<%= sku %>"
+                            ><%= currentPricestfPrice ? currentPricestfPrice : 'Prices.tf' %></a
+                        >
+                    </div>
+                    <div>
+                        <a id="scmLink" href="<%= scmUrl %>">Steam Community Market</a>
+                        <a id="stnLink" href="<%= stnUrl %>">STN Trading</a>
+                    </div>
+                    <div>
+                        <a id="gladiatorSales" href="https://gladiator.tf/sales?item=<%= name %>"
+                            >Gladiator.tf (Sales)</a
+                        >
+                    </div>
+                </div>
+            </div>
 
-  <script type="text/javascript" src="/js/getMptfPrice.js" id="getMptfPrice" bptfQuery="<%= bptfQuery %>"></script>
+            <script>
+                const elem = document.querySelector('.quality-box');
+                elem.style.backgroundColor = '<%= quality %>';
+            </script>
 
-</main>
-<footer>
-  <%- include('./partials/footer'); %>
-</footer>
-</body>
+            <script
+                type="text/javascript"
+                src="/js/getMptfPrice.js"
+                id="getMptfPrice"
+                bptfQuery="<%= bptfQuery %>"
+            ></script>
+        </main>
+        <footer><%- include('./partials/footer'); %></footer>
+    </body>
 </html>
