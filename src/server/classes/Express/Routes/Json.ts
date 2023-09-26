@@ -37,7 +37,7 @@ export default class Json {
          * { success: true, items: PricesObject }
          */
         router.get('/pricelist', (req, res) => {
-            if (this.server.pricelist.isResettingPricelist) {
+            if (this.server.pricelist.isRefreshingPricelist) {
                 log.warn(`Got GET /json/pricelist-array request in the middle of pricelist reset`);
                 return res.status(503).json({
                     message: 'Service unavailabe for the time being.'
@@ -59,7 +59,7 @@ export default class Json {
          * { success: true, items: Entry[] }
          */
         router.get('/pricelist-array', rateLimiterUsingThirdParty, (req, res) => {
-            if (this.server.pricelist.isResettingPricelist) {
+            if (this.server.pricelist.isRefreshingPricelist) {
                 log.warn(`Got GET /json/pricelist-array request in the middle of pricelist reset`);
                 return res.status(503).json({
                     message: 'Service unavailabe for the time being.'
@@ -83,7 +83,7 @@ export default class Json {
         router.get('/items/:sku', (req, res) => {
             const sku = req.params.sku;
 
-            if (this.server.pricelist.isResettingPricelist) {
+            if (this.server.pricelist.isRefreshingPricelist) {
                 log.warn(`Got GET /json/items/${sku} request in the middle of pricelist reset`);
                 return res.status(503).json({
                     message: 'Service unavailabe for the time being, please try again later.'

@@ -98,13 +98,13 @@ export default class Pricelist {
 
     private last1MinsReceivedCount = 0;
 
-    private retryAttempted = 0;
+    private noPriceChangesMins = 0;
 
-    public isResettingPricelist = false;
+    public isRefreshingPricelist = false;
 
     private isGettingPricelist = false;
 
-    private hasAlreadyResetPricelist = false;
+    private hasAlreadyRefreshPricelist = false;
 
     dailyReceivedCount = 0;
 
@@ -406,27 +406,27 @@ export default class Pricelist {
     private setupPricerHealthCheck() {
         this.autoPricerCheckInterval = setInterval(() => {
             if (this.receivedCount - this.last1MinsReceivedCount === 0) {
-                this.retryAttempted++;
-                log.warn(`[${this.retryAttempted}] No price changes in the last 1 minutes`);
+                this.noPriceChangesMins++;
+                log.warn(`[${this.noPriceChangesMins}] No price changes in the last 1 minutes`);
 
-                const isEvery100th = this.retryAttempted % 100 === 0;
-                if (isEvery100th && this.hasAlreadyResetPricelist === false && this.isGettingPricelist === false) {
+                const isEvery100th = this.noPriceChangesMins % 100 === 0;
+                if (isEvery100th && this.hasAlreadyRefreshPricelist === false && this.isGettingPricelist === false) {
                     log.warn(`Getting pricelist from prices.tf and reconnecting to the socket server...`);
                     this.isGettingPricelist = true;
                     this.pricer
                         .getPricelist()
                         .then(pricelist => {
                             this.updateMissedPrices(pricelist.items);
-                            this.isResettingPricelist = false;
+                            this.isRefreshingPricelist = false;
                             this.isGettingPricelist = false;
-                            this.hasAlreadyResetPricelist = true;
+                            this.hasAlreadyRefreshPricelist = true;
 
                             if (!this.pricer.isPricerConnecting()) {
                                 this.pricer.connect();
                             }
 
                             setTimeout(() => {
-                                this.hasAlreadyResetPricelist = false;
+                                this.hasAlreadyRefreshPricelist = false;
                             }, 5 * 60 * 1000);
                         })
                         .catch(err => {
@@ -435,7 +435,7 @@ export default class Pricelist {
                 }
             } else {
                 this.last1MinsReceivedCount = this.receivedCount;
-                this.retryAttempted = 0;
+                this.noPriceChangesMins = 0;
             }
         }, 1 * 60 * 1000);
     }
