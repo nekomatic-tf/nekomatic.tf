@@ -349,17 +349,57 @@ export default class Pricelist {
         return toArray;
     }
 
-    private resetPricelist() {
-        this.isResettingPricelist = true;
-        const skus = Object.keys(this.prices);
+    private static transformPricesFromPricer(prices: Item[]): { [p: string]: Item } {
+        return prices.reduce((obj, i) => {
+            obj[i.sku] = i;
+            return obj;
+        }, {});
+    }
 
-        for (let i = 0; i < skus.length; i++) {
-            const sku = skus[i];
+    private updateMissedPrices(newPricelist: Item[]): void {
+        const transformedPrices = Pricelist.transformPricesFromPricer(newPricelist);
+
+        for (const sku in this.prices) {
             if (!Object.prototype.hasOwnProperty.call(this.prices, sku)) {
                 continue;
             }
 
-            delete this.prices[sku];
+            const currPrice = this.prices[sku];
+
+            if (transformedPrices[sku]) {
+                const newestPrice = transformedPrices[sku];
+                // Found matching items
+                if (currPrice.time >= newestPrice.time) {
+                    continue;
+                }
+
+                const newPrices = {
+                    buy: new Currencies(newestPrice.buy),
+                    sell: new Currencies(newestPrice.sell)
+                };
+
+                currPrice.buy = newPrices.buy;
+                currPrice.sell = newPrices.sell;
+                currPrice.time = newestPrice.time;
+            }
+        }
+
+        // Now check for any new added prices
+        for (const sku in transformedPrices) {
+            if (!Object.prototype.hasOwnProperty.call(transformedPrices, sku)) {
+                continue;
+            }
+
+            if (this.prices[sku] === undefined) {
+                // Register new item
+                const newEntry = {
+                    sku: sku,
+                    buy: new Currencies(transformedPrices[sku].buy),
+                    sell: new Currencies(transformedPrices[sku].sell),
+                    time: transformedPrices[sku].time
+                };
+                this.prices[sku] = this.prices[sku] = Entry.fromData(newEntry);
+            }
         }
     }
 
@@ -376,9 +416,7 @@ export default class Pricelist {
                     this.pricer
                         .getPricelist()
                         .then(pricelist => {
-                            // reset prices
-                            this.resetPricelist();
-                            this.setPricelist(pricelist.items);
+                            this.updateMissedPrices(pricelist.items);
                             this.isResettingPricelist = false;
                             this.isGettingPricelist = false;
                             this.hasAlreadyResetPricelist = true;
