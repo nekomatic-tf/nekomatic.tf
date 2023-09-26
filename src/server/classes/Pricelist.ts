@@ -407,11 +407,11 @@ export default class Pricelist {
         this.autoPricerCheckInterval = setInterval(() => {
             if (this.receivedCount - this.last1MinsReceivedCount === 0) {
                 this.retryAttempted++;
-                log.warn(
-                    `[${this.retryAttempted}] No price changes in the last 1 minutes, retrying to connect to pricer websocket server...`
-                );
+                log.warn(`[${this.retryAttempted}] No price changes in the last 1 minutes`);
 
-                if (this.hasAlreadyResetPricelist === false && this.isGettingPricelist === false) {
+                const isEvery100th = this.retryAttempted % 100 === 0;
+                if (isEvery100th && this.hasAlreadyResetPricelist === false && this.isGettingPricelist === false) {
+                    log.warn(`Getting pricelist from prices.tf and reconnecting to the socket server...`);
                     this.isGettingPricelist = true;
                     this.pricer
                         .getPricelist()
