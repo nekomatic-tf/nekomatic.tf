@@ -60,6 +60,9 @@
                         <a id="gladiatorSales" href="https://gladiator.tf/sales?item=<%= name %>"
                             >Gladiator.tf (Sales)</a
                         >
+                        <% if (isCrate) { %>
+                            <a id="cratetfLink" href="https://crate.tf/item/<%= sku %>">Crate.tf</a>
+                        <% } %>
                     </div>
                 </div>
             </div>
