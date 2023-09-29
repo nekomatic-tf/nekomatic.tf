@@ -6,6 +6,7 @@ import SchemaManagerTF2 from './SchemaManager';
 import ServerManager from './ServerManager';
 import ExpressManager from './Express/ExpressManager';
 import DiscordWebhook from './DiscordWebhook';
+import getCratetfCratesList from '../lib/tools/getCratetfCrateList';
 
 export default class Server {
     public pricelist: Pricelist;
@@ -15,6 +16,10 @@ export default class Server {
     public discordWebhook: DiscordWebhook;
 
     public ready = false;
+
+    public cratetfCrateList: string[];
+
+    public cratetfCratesInterval: NodeJS.Timeout;
 
     constructor(
         private readonly serverManager: ServerManager,
@@ -27,7 +32,10 @@ export default class Server {
         this.pricelist = new Pricelist(this, this.schemaManagerTF2, this.pricer, this.options);
     }
 
-    start(): Promise<void> {
+    async start(): Promise<void> {
+        this.cratetfCrateList = await getCratetfCratesList();
+        this.getCratetfCratesInterval();
+
         return new Promise((resolve, reject) => {
             this.pricelist
                 .init()
@@ -61,5 +69,16 @@ export default class Server {
 
     get isReady(): boolean {
         return this.ready;
+    }
+
+    private getCratetfCratesInterval(): void {
+        this.cratetfCratesInterval = setInterval(() => {
+            void getCratetfCratesList().then(crateList => {
+                if (crateList.length > 0) {
+                    this.cratetfCrateList = crateList;
+                }
+            });
+            // Check every 12 hours
+        }, 12 * 60 * 60 * 1000);
     }
 }

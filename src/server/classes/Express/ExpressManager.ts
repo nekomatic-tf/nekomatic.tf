@@ -19,7 +19,7 @@ export default class ExpressManager {
         this.app = express();
     }
 
-    init(): Promise<void> {
+    async init(): Promise<void> {
         return new Promise(resolve => {
             const index = new Index();
             const items = new Items(this.server);
