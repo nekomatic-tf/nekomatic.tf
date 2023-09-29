@@ -19,11 +19,8 @@ export class Items {
 
     private schema: Schema;
 
-    private cratetfCrateList: string[] = [];
-
-    constructor(private readonly server: Server, cratetfCrateList: string[] | null) {
+    constructor(private readonly server: Server) {
         this.schema = this.server.schemaManagerTF2.schema;
-        this.cratetfCrateList = cratetfCrateList ?? [];
     }
 
     init(): Router {
@@ -98,7 +95,7 @@ export class Items {
                         res.render('items/index', {
                             sku: sku.replace(/;[p][0-9]+/g, ''), // Ignore painted attribute
                             skuForDisplay: sku,
-                            isCrate: this.cratetfCrateList.includes(sku),
+                            isCrate: this.server.cratetfCrateList.includes(sku),
                             name: itemName,
                             quality: qualityColorHex[item.quality],
                             image: imageUrl,

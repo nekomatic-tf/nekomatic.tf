@@ -103,8 +103,6 @@ export default class ServerManager {
 
         this.cleanup();
 
-        // TODO: Check if a poll is being made before stopping the bot
-
         if (this.server === null) {
             log.debug('Server instance was not yet created');
             return this.exit(err);
@@ -162,6 +160,8 @@ export default class ServerManager {
 
             // Close all server connections
             this.server.expressManager.shutdown();
+
+            clearInterval(this.server.cratetfCratesInterval);
         }
 
         // Disconnect from socket server to stop price updates
