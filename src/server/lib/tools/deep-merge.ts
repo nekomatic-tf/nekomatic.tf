@@ -7,7 +7,7 @@ interface O {
     (item: any): boolean;
 }
 
-interface AnyObject {
+export interface AnyObject {
     [key: string]: any;
 }
 

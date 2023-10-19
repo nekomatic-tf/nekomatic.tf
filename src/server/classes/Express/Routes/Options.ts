@@ -69,26 +69,21 @@ export default class Options {
             }
 
             try {
-                fs.writeFile(
-                    getOptionsPath(),
-                    JSON.stringify(this.server.options, null, 2),
-                    { encoding: 'utf-8' },
-                    () => {
-                        const toSend = {
-                            success: true,
-                            oldOptions,
-                            newOptions: removeCliOptions(this.server.options)
-                        };
-                        log.warn(
-                            `Got PATCH /options request from with successful changes:\n${JSON.stringify(
-                                toSend,
-                                null,
-                                2
-                            )}, request info:\n${requestRawHeader}`
-                        );
-                        return res.json(toSend);
-                    }
-                );
+                fs.writeFile(getOptionsPath(), JSON.stringify(result, null, 2), { encoding: 'utf-8' }, () => {
+                    const toSend = {
+                        success: true,
+                        oldOptions,
+                        newOptions: result
+                    };
+                    log.warn(
+                        `Got PATCH /options request from with successful changes:\n${JSON.stringify(
+                            toSend,
+                            null,
+                            2
+                        )}, request info:\n${requestRawHeader}`
+                    );
+                    return res.json(toSend);
+                });
             } catch (err) {
                 log.warn(`Got PATCH /options request with error, request info:\n${requestRawHeader}`);
                 const msg = 'Error saving patched options';
