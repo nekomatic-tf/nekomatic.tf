@@ -6,7 +6,7 @@ import SchemaManagerTF2 from './SchemaManager';
 import ServerManager from './ServerManager';
 import ExpressManager from './Express/ExpressManager';
 import DiscordWebhook from './DiscordWebhook';
-import getCratetfCratesList from '../lib/tools/getCratetfCrateList';
+import getCasestfCratesList from '../lib/tools/getCasestfCrateList';
 
 export default class Server {
     public pricelist: Pricelist;
@@ -17,9 +17,9 @@ export default class Server {
 
     public ready = false;
 
-    public cratetfCrateList: string[];
+    public casestfCrateList: string[];
 
-    public cratetfCratesInterval: NodeJS.Timeout;
+    public casestfCratesInterval: NodeJS.Timeout;
 
     constructor(
         private readonly serverManager: ServerManager,
@@ -33,8 +33,8 @@ export default class Server {
     }
 
     async start(): Promise<void> {
-        this.cratetfCrateList = await getCratetfCratesList();
-        this.getCratetfCratesInterval();
+        this.casestfCrateList = await getCasestfCratesList();
+        this.getCasestfCratesInterval();
 
         return new Promise((resolve, reject) => {
             this.pricelist
@@ -71,11 +71,11 @@ export default class Server {
         return this.ready;
     }
 
-    private getCratetfCratesInterval(): void {
-        this.cratetfCratesInterval = setInterval(() => {
-            void getCratetfCratesList().then(crateList => {
+    private getCasestfCratesInterval(): void {
+        this.casestfCratesInterval = setInterval(() => {
+            void getCasestfCratesList().then(crateList => {
                 if (crateList.length > 0) {
-                    this.cratetfCrateList = crateList;
+                    this.casestfCrateList = crateList;
                 }
             });
             // Check every 12 hours

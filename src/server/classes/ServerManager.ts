@@ -161,7 +161,7 @@ export default class ServerManager {
             // Close all server connections
             this.server.expressManager.shutdown();
 
-            clearInterval(this.server.cratetfCratesInterval);
+            clearInterval(this.server.casestfCratesInterval);
         }
 
         // Disconnect from socket server to stop price updates
