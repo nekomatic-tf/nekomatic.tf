@@ -7,7 +7,7 @@ import IPricer, {
     PricerOptions,
     RequestCheckResponse
 } from '../../../types/interfaces/IPricer';
-import PricesTfApi, { PricesTfItem, PricesTfItemMessageEvent } from './prices-tf-api';
+import PricesTfApi, { PricesTfGetPricesResponse, PricesTfItem, PricesTfItemMessageEvent } from './prices-tf-api';
 import log from '../../logger';
 
 export default class PricesTfPricer implements IPricer {
@@ -51,7 +51,8 @@ export default class PricesTfPricer implements IPricer {
         let totalPages = 0;
 
         let delay = 0;
-        const minDelay = 200;
+        const minDelay = 100;
+        let response: PricesTfGetPricesResponse;
 
         log.debug('Requesting pricelist pages...');
 
@@ -61,12 +62,12 @@ export default class PricesTfPricer implements IPricer {
 
             try {
                 log.debug(`Getting page ${currentPage}${totalPages === 0 ? '' : ` of ${totalPages}`}...`);
-                const response = await this.api.getPricelistPage(currentPage);
+                response = await this.api.getPricelistPage(currentPage);
                 currentPage++;
                 totalPages = response.meta.totalPages;
-                prices = prices.concat(response.items);
             } catch (e) {
                 if (currentPage > 1) {
+                    await new Promise(resolve => setTimeout(resolve, 60 * 1000));
                     continue;
                 } else {
                     if (this.attempts < 3) {
@@ -78,6 +79,8 @@ export default class PricesTfPricer implements IPricer {
                     throw e;
                 }
             }
+
+            prices = prices.concat(response.items);
             const time = new Date().getTime() - start;
 
             delay = Math.max(0, minDelay - time);
