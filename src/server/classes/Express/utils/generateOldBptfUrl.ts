@@ -49,25 +49,26 @@ export default function generateOldBptfUrl(oldBptfDomain: string, schema: Schema
 
     const isKillstreakKit = nameLowered.includes('kit') && item.killstreak !== 0 && item.target !== null;
 
-    const itemName = isStrangifierChemistrySet || isCollectorsChemistrySet
-        ? 'Chemistry Set'
-        : isStrangifier
-        ? 'Strangifier'
-        : isUnusualifier
-        ? 'Unusualifier'
-        : isFabricator
-        ? item.killstreak === 2
-            ? 'Specialized Killstreak Fabricator'
-            : 'Professional Killstreak Fabricator'
-        : isKillstreakKit
-        ? item.killstreak === 1
-            ? 'Killstreak Kit'
-            : item.killstreak === 2
-            ? 'Specialized Killstreak Kit'
-            : 'Professional Killstreak Kit'
-        : name.includes('Haunted Metal Scrap') || name.includes("Horseless Headless Horsemann's Headtaker")
-        ? name.replace('Unique ', '')
-        : name;
+    const itemName =
+        isStrangifierChemistrySet || isCollectorsChemistrySet
+            ? 'Chemistry Set'
+            : isStrangifier
+            ? 'Strangifier'
+            : isUnusualifier
+            ? 'Unusualifier'
+            : isFabricator
+            ? item.killstreak === 2
+                ? 'Specialized Killstreak Fabricator'
+                : 'Professional Killstreak Fabricator'
+            : isKillstreakKit
+            ? item.killstreak === 1
+                ? 'Killstreak Kit'
+                : item.killstreak === 2
+                ? 'Specialized Killstreak Kit'
+                : 'Professional Killstreak Kit'
+            : name.includes('Haunted Metal Scrap') || name.includes("Horseless Headless Horsemann's Headtaker")
+            ? name.replace('Unique ', '')
+            : name;
 
     const quality =
         (item.quality2 !== null ? schema.getQualityById(item.quality2) + ' ' : '') +
