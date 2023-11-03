@@ -109,12 +109,10 @@ export default function generateBptfUrl(bptfDomain: string, schema: Schema, item
                 ? item.crateseries
                 : isUnusualifier || isStrangifier
                 ? item.target
-                : isFabricator
+                : isFabricator || isStrangifierChemistrySet
                 ? `${item.output}-${item.outputQuality}-${item.target}`
                 : isKillstreakKit
                 ? `${item.killstreak}-${item.target}`
-                : isStrangifierChemistrySet
-                ? `${item.target}-${item.outputQuality}-${item.output}`
                 : isCollectorsChemistrySet
                 ? `${item.output}-${item.outputQuality}`
                 : isGenericFabricator

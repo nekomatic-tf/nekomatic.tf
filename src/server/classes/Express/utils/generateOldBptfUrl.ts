@@ -49,7 +49,9 @@ export default function generateOldBptfUrl(oldBptfDomain: string, schema: Schema
 
     const isKillstreakKit = nameLowered.includes('kit') && item.killstreak !== 0 && item.target !== null;
 
-    const itemName = isStrangifier
+    const itemName = isStrangifierChemistrySet || isCollectorsChemistrySet
+        ? 'Chemistry Set'
+        : isStrangifier
         ? 'Strangifier'
         : isUnusualifier
         ? 'Unusualifier'
@@ -81,12 +83,10 @@ export default function generateOldBptfUrl(oldBptfDomain: string, schema: Schema
             ? item.crateseries
             : isUnusualifier || isStrangifier
             ? item.target
-            : isFabricator
+            : isFabricator || isStrangifierChemistrySet
             ? `${item.output}-${item.outputQuality}-${item.target}`
             : isKillstreakKit
             ? `${item.killstreak}-${item.target}`
-            : isStrangifierChemistrySet
-            ? `${item.target}-${item.outputQuality}-${item.output}`
             : isCollectorsChemistrySet
             ? `${item.output}-${item.outputQuality}`
             : isGenericFabricator
