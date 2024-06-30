@@ -3,14 +3,9 @@ import log from '../../logger';
 import WS from 'ws';
 import * as Events from 'reconnecting-websocket/events';
 import PricesTfApi from './prices-tf-api';
-import { exponentialBackoff } from '../../helpers';
 
 export default class PricesTfSocketManager {
     private readonly socketClass;
-
-    private retrySetupTokenTimeout: NodeJS.Timeout;
-
-    private retryAttempts = -1;
 
     constructor(private api: PricesTfApi) {
         // https://stackoverflow.com/questions/28784375/nested-es6-classes
@@ -70,19 +65,10 @@ export default class PricesTfSocketManager {
                     log.debug('Wesocket not connecting, reconnecting...');
                     this.ws.reconnect();
                 }
-                this.retryAttempts = -1;
             })
             .catch(err => {
                 log.error('Websocket error - setupToken():', err);
-                this.retrySetupToken();
             });
-    }
-
-    private retrySetupToken(): void {
-        this.retryAttempts++;
-        log.debug(`Retry reconnect attempt ${this.retryAttempts + 1}`);
-        clearTimeout(this.retrySetupTokenTimeout);
-        this.retrySetupTokenTimeout = setTimeout(() => this.setupToken(), exponentialBackoff(this.retryAttempts));
     }
 
     isConnecting(): boolean {
