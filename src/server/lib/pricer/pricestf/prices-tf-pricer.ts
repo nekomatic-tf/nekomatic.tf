@@ -15,6 +15,8 @@ export default class PricesTfPricer implements IPricer {
 
     private attempts = 0;
 
+    public isGettingPricelist = false;
+
     public constructor(private api: PricesTfApi) {
         this.socketManager = new PricesTfSocketManager(api);
     }
@@ -56,6 +58,8 @@ export default class PricesTfPricer implements IPricer {
 
         log.debug('Requesting pricelist pages...');
 
+        this.isGettingPricelist = true;
+
         do {
             await new Promise(resolve => setTimeout(resolve, delay));
             const start = new Date().getTime();
@@ -87,6 +91,7 @@ export default class PricesTfPricer implements IPricer {
         } while (currentPage < totalPages);
 
         const parsed: Item[] = prices.map(v => this.parseItem(this.parsePrices2Item(v)));
+        this.isGettingPricelist = false;
         return { items: parsed };
     }
 

@@ -102,8 +102,6 @@ export default class Pricelist {
 
     public isRefreshingPricelist = false;
 
-    private isGettingPricelist = false;
-
     private hasAlreadyRefreshPricelist = false;
 
     dailyReceivedCount = 0;
@@ -410,15 +408,13 @@ export default class Pricelist {
                 log.warn(`[${this.noPriceChangesMins}] No price changes in the last 1 minutes`);
 
                 const isEvery100th = this.noPriceChangesMins % 100 === 0;
-                if (isEvery100th && this.hasAlreadyRefreshPricelist === false && this.isGettingPricelist === false) {
+                if (isEvery100th && this.hasAlreadyRefreshPricelist === false && this.pricer.isGettingPricelist) {
                     log.warn(`Getting pricelist from prices.tf and reconnecting to the socket server...`);
-                    this.isGettingPricelist = true;
                     this.pricer
                         .getPricelist()
                         .then(pricelist => {
                             this.updateMissedPrices(pricelist.items);
                             this.isRefreshingPricelist = false;
-                            this.isGettingPricelist = false;
                             this.hasAlreadyRefreshPricelist = true;
 
                             if (!this.pricer.isPricerConnecting()) {
