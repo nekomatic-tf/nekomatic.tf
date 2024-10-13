@@ -53,7 +53,7 @@ export default class PricesTfPricer implements IPricer {
         let totalPages = 0;
 
         let delay = 0;
-        const minDelay = 100;
+        const minDelay = 1000;
         let response: PricesTfGetPricesResponse;
 
         log.debug('Requesting pricelist pages...');
