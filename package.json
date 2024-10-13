@@ -24,7 +24,7 @@
     "pm2": "^5.4.2",
     "pretty-ms": "^7.0.1",
     "reconnecting-websocket": "^4.4.0",
-    "winston": "^3.13.0",
+    "winston": "^3.15.0",
     "winston-daily-rotate-file": "^4.7.1",
     "write-file-atomic": "^4.0.2",
     "ws": "^7.5.10"
