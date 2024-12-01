@@ -9,15 +9,15 @@ const DEFAULTS: JsonOptions = {
     oldBptfDomain: 'https://old.backpack.tf',
     redirects: {
         backpacktf: 'https://backpack.tf',
-        discord: 'https://discord.gg/4k5tmMkXjB',
-        github: 'https://github.com/TF2Autobot/tf2autobot',
-        steam: 'https://steamcommunity.com/groups/TF2Autobot',
+        discord: 'https://discord.gg/2Y3Kegc85E',
+        github: 'https://github.com/nekomatic-tf/nekomatic',
+        steam: 'https://steamcommunity.com/groups/TF2Autobot-Neko',
         youtube: 'https://www.youtube.com/channel/UCLSQJ9DRlj0oiK4JMg8gRVA'
     },
     discord: {
         server: {
-            displayName: 'Autobot.tf',
-            avatarUrl: 'https://autobot.tf/images/tf2autobot.png',
+            displayName: 'Nekomatic.tf',
+            avatarUrl: 'https://nekomatic.tf/images/nekomatic.png',
             enabled: true,
             url: '',
             mentions: {
