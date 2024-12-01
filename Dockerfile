@@ -1,5 +1,5 @@
 # Alpine appears to be broken
-ARG VERSION=lts-bookworm-slim
+ARG VERSION=20-bookworm-slim
 
 FROM node:$VERSION
 
