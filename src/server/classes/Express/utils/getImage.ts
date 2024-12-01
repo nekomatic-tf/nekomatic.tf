@@ -1,7 +1,7 @@
 import SKU from '@tf2autobot/tf2-sku';
 import mergeImages from 'merge-images';
 import { Canvas, Image } from 'canvas';
-import Jimp from 'jimp';
+import { Jimp } from 'jimp';
 import log from '../../../lib/logger';
 import fs from 'fs';
 import path from 'path';
@@ -54,7 +54,6 @@ export default async function getImage(
             try {
                 const itemImage = needResize ? await resizeImage(itemImageUrlPrint) : itemImageUrlPrint;
 
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
                 const imageBase64 = (await mergeImages(
                     [path.join(publicImagesDirectory, `/effects/${item.effect}_380x380.png`), itemImage],
                     {
@@ -86,13 +85,11 @@ export default async function getImage(
 
 async function resizeImage(itemImage: string) {
     return new Promise((resolve, reject) => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        Jimp.read({ url: itemImage })
+        Jimp.read(itemImage)
             .then(image => {
                 image
-                    .resize(380, 380)
-                    .getBase64Async(image.getMIME())
+                    .resize({ w: 380, h: 380 })
+                    .getBase64('image/png')
                     .then(resizedBase64 => {
                         return resolve(resizedBase64);
                     })

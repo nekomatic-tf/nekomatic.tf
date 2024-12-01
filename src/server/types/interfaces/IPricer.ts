@@ -13,6 +13,8 @@ export interface PricerOptions {
  * static getPricer(options: PricerOptions): Pricer
  */
 export default interface IPricer {
+    isGettingPricelist: boolean;
+
     getOptions(): PricerOptions;
 
     requestCheck(sku: string): Promise<RequestCheckResponse>;

@@ -96,11 +96,21 @@ export default class Pricelist {
 
     private receivedCount = 0;
 
+    private last1MinsReceivedCount = 0;
+
+    private noPriceChangesMins = 0;
+
+    public isRefreshingPricelist = false;
+
+    private hasAlreadyRefreshPricelist = false;
+
     dailyReceivedCount = 0;
 
     dailyUpdatedCount = 0;
 
     private resetInterval: NodeJS.Timeout;
+
+    private autoPricerCheckInterval: NodeJS.Timeout;
 
     constructor(private server: Server, tf2schema: SchemaTF2, private pricer: IPricer, private options: IOptions) {
         this.boundHandlePriceChange = this.handlePriceChange.bind(this);
@@ -138,6 +148,7 @@ export default class Pricelist {
                                 });
                             }
                             this.setPricelist(pricelist.items);
+                            this.setupPricerHealthCheck();
 
                             this.pricer.bindHandlePriceEvent(this.boundHandlePriceChange);
 
@@ -388,5 +399,123 @@ export default class Pricelist {
                 this.prices[sku] = this.prices[sku] = Entry.fromData(newEntry);
             }
         }
+    }
+
+    private setupPricerHealthCheck() {
+        this.autoPricerCheckInterval = setInterval(() => {
+            if (this.receivedCount - this.last1MinsReceivedCount === 0) {
+                this.noPriceChangesMins++;
+                log.warn(`[${this.noPriceChangesMins}] No price changes in the last 1 minutes`);
+
+                const isEvery100th = this.noPriceChangesMins % 100 === 0;
+                if (isEvery100th && this.hasAlreadyRefreshPricelist === false && this.pricer.isGettingPricelist) {
+                    log.warn(`Getting pricelist from prices.tf and reconnecting to the socket server...`);
+                    this.pricer
+                        .getPricelist()
+                        .then(pricelist => {
+                            this.updateMissedPrices(pricelist.items);
+                            this.isRefreshingPricelist = false;
+                            this.hasAlreadyRefreshPricelist = true;
+
+                            if (!this.pricer.isPricerConnecting()) {
+                                this.pricer.connect();
+                            }
+
+                            setTimeout(() => {
+                                this.hasAlreadyRefreshPricelist = false;
+                            }, 5 * 60 * 1000);
+                        })
+                        .catch(err => {
+                            log.error('Error on getting pricelist (on reset pricelist):', err);
+                        });
+                }
+            } else {
+                this.last1MinsReceivedCount = this.receivedCount;
+                this.noPriceChangesMins = 0;
+            }
+        }, 1 * 60 * 1000);
+    }
+
+    initDailyCount(): void {
+        // set interval to check current time every 1 second.
+        this.resetInterval = setInterval(() => {
+            const now = new Date().toUTCString();
+
+            if (now.includes(' 00:00:0')) {
+                clearInterval(this.resetInterval);
+
+                const webhook = setWebhook('priceUpdate', this.options, '', [
+                    {
+                        author: {
+                            name: 'Daily Count Record',
+                            url: '',
+                            icon_url: ''
+                        },
+                        footer: {
+                            text: `${now} • v${process.env.SERVER_VERSION}`
+                        },
+                        title: '',
+                        fields: [
+                            {
+                                name: 'Data received',
+                                value: this.dailyReceivedCount.toString()
+                            },
+                            {
+                                name: 'Price updated',
+                                value: this.dailyUpdatedCount.toString()
+                            },
+                            {
+                                name: 'Total items',
+                                value: Object.keys(this.prices).length.toString()
+                            }
+                        ],
+                        color: '14051524'
+                    }
+                ]);
+
+                this.sendDailyCount(webhook);
+
+                // Reset counter
+                this.dailyReceivedCount = 0;
+                this.dailyUpdatedCount = 0;
+
+                setTimeout(() => {
+                    // after 10 seconds, we initiate this again.
+                    this.initDailyCount();
+                }, 10000);
+            }
+        }, 1000);
+    }
+
+    private sendDailyCount(webhook: Webhook): void {
+        this.options.discord.priceUpdate.urls.forEach((url, i) => {
+            sendWebhook(url, webhook)
+                .then(() => log.info(`Sent daily record to Discord (${i})`))
+                .catch(err => {
+                    this.handleSendDailyCountError(err, webhook, i);
+                });
+        });
+    }
+
+    private resendDailyCount(webhook: Webhook, urlIndex: number): void {
+        sendWebhook(this.options.discord.priceUpdate.urls[urlIndex], webhook)
+            .then(() => log.info(`Resent daily record to Discord (${urlIndex})`))
+            .catch(err => {
+                this.handleSendDailyCountError(err, webhook, urlIndex);
+            });
+    }
+
+    private handleSendDailyCountError(err: any, webhook: Webhook, urlIndex: number): void {
+        /*eslint-disable */
+        if (err.text) {
+            const errContent = JSON.parse(err.text);
+            if (errContent?.message === 'The resource is being rate limited.') {
+                setTimeout(() => {
+                    // retry to send after the retry value + 10 seconds
+                    this.resendDailyCount(webhook, urlIndex);
+                }, errContent.retry_after + 10000);
+            }
+        }
+        /*eslint-enable */
     }
 }
