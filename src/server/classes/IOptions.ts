@@ -10,7 +10,7 @@ const DEFAULTS: JsonOptions = {
     redirects: {
         backpacktf: 'https://backpack.tf',
         discord: 'https://discord.gg/2Y3Kegc85E',
-        github: 'https://github.com/nekomatic-tf/nekomatic',
+        github: 'https://github.com/nekomatic-tf/',
         steam: 'https://steamcommunity.com/groups/TF2Autobot-Neko',
         youtube: 'https://www.youtube.com/channel/UCLSQJ9DRlj0oiK4JMg8gRVA'
     },
